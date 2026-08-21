@@ -1323,3 +1323,100 @@ export interface ListLedgerQueryParams {
   page?: number;
   limit?: number;
 }
+
+/**
+ * Customer Directory & CRM Interfaces
+ */
+export interface CustomerAddressRecord {
+  id: string;
+  customerId: string;
+  address: string;
+  landmark?: string | null;
+  deliveryZoneId?: string | null;
+  isDefault: boolean;
+  deliveryZone?: DeliveryZoneRecord | null;
+  createdAt?: string;
+}
+
+export interface CustomerRecentOrderRecord {
+  id: string;
+  orderCode: string;
+  businessDate: string;
+  status: string;
+  totalAmount: number;
+  deliveryAddress?: string | null;
+  createdAt: string;
+}
+
+export interface CustomerRecord {
+  id: string;
+  restaurantId: string;
+  name: string;
+  phone: string;
+  notes?: string | null;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt?: string;
+  addresses: CustomerAddressRecord[];
+  deliveryOrders?: CustomerRecentOrderRecord[];
+}
+
+export interface PaginatedCustomersData {
+  customers: CustomerRecord[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+}
+
+export interface CustomerLookupData extends CustomerRecord {
+  deliveryOrders: CustomerRecentOrderRecord[];
+}
+
+export interface CreateCustomerInput {
+  name: string;
+  phone: string;
+  notes?: string | null;
+  address?: string;
+  landmark?: string | null;
+  deliveryZoneId?: string | null;
+}
+
+export interface UpdateCustomerInput {
+  name?: string;
+  notes?: string | null;
+  isActive?: boolean;
+}
+
+export interface AddCustomerAddressInput {
+  address: string;
+  landmark?: string | null;
+  deliveryZoneId?: string | null;
+  isDefault?: boolean;
+}
+
+export interface ListCustomersQueryParams {
+  search?: string;
+  page?: number;
+  limit?: number;
+}
+
+export interface CustomerLoyaltyAccountData {
+  id: string;
+  customerId: string;
+  currentPoints: number;
+  lifetimePoints: number;
+  lifetimeSpend: number;
+  tier?: {
+    id: string;
+    name: string;
+    pointsMultiplier: number;
+  } | null;
+}
+
+export interface EnrollCustomerLoyaltyInput {
+  customerId: string;
+  initialPoints?: number;
+}
