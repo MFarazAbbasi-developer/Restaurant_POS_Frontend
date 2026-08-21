@@ -347,3 +347,93 @@ export interface UpdateTakeawayStatusInput {
 export interface CancelTakeawayOrderInput {
   reason: string;
 }
+
+/**
+ * Delivery Dispatch Models
+ */
+export type DeliveryOrderStatus =
+  'PENDING' | 'PREPARING' | 'READY' | 'DISPATCHED' | 'DELIVERED' | 'CANCELLED' | 'FAILED';
+
+export type DeliveryPaymentStatus = 'PENDING' | 'PAID';
+
+export interface DeliveryRiderRecord {
+  id: string;
+  name: string;
+  username: string;
+  phone?: string | null;
+  isActive: boolean;
+}
+
+export interface DeliveryZoneRecord {
+  id: string;
+  name: string;
+  deliveryCharge: number;
+  estimatedMinutes?: number | null;
+  isActive: boolean;
+}
+
+export interface DeliveryOrderItem {
+  id: string;
+  name: string;
+  variantName?: string | null;
+  quantity: number;
+  unitPrice: number;
+  subtotal: number;
+  specialInstructions?: string | null;
+  modifiers?:
+    | Array<{
+        id: string;
+        name: string;
+        priceAdjustment: number;
+      }>
+    | unknown;
+}
+
+export interface DeliveryOrderRecord {
+  id: string;
+  orderCode: string;
+  businessDate: string;
+  customerName: string;
+  customerPhone: string;
+  deliveryAddress: string;
+  landmark?: string | null;
+  deliveryZoneName?: string | null;
+  status: DeliveryOrderStatus;
+  paymentStatus: DeliveryPaymentStatus;
+  paymentMethod: string;
+  totalAmount: number;
+  deliveryCharge: number;
+  orderAgeMinutes: number;
+  isAggregator: boolean;
+  aggregatorName?: string | null;
+  rider?: { id: string; name: string; phone?: string | null } | null;
+  createdAt: string;
+  items: DeliveryOrderItem[];
+}
+
+export interface DeliveryDispatcherSummary {
+  totalActive: number;
+  pending: number;
+  preparing: number;
+  ready: number;
+  dispatched: number;
+}
+
+export interface DeliveryDispatcherData {
+  summary: DeliveryDispatcherSummary;
+  queue: DeliveryOrderRecord[];
+}
+
+export interface UpdateDeliveryStatusInput {
+  status: 'PREPARING' | 'READY' | 'DISPATCHED' | 'DELIVERED' | 'FAILED';
+  riderId?: string;
+  markPaid?: boolean;
+}
+
+export interface AssignRiderInput {
+  riderId: string;
+}
+
+export interface CancelDeliveryOrderInput {
+  reason: string;
+}
