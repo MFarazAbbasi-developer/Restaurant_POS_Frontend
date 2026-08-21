@@ -1978,3 +1978,175 @@ export interface ExpensesSummaryQueryParams {
   paymentMethod?: ExpensePaymentMethod;
   supplierId?: string;
 }
+
+/**
+ * Discounts & Promotions Management Interfaces
+ */
+export type PromotionType = 'PERCENTAGE' | 'FIXED_AMOUNT' | 'BUY_X_GET_Y' | 'FREE_ITEM';
+
+export type PromotionTargetType = 'ORDER' | 'ITEM' | 'CATEGORY';
+
+export type PromotionOrderType = 'DINE_IN' | 'TAKEAWAY' | 'DELIVERY';
+
+export interface PromotionUsageRecord {
+  id: string;
+  promotionId: string;
+  orderId: string;
+  customerId?: string | null;
+  discountAmount: number;
+  createdAt: string;
+  order?: {
+    id: string;
+    orderCode: string;
+    totalAmount: number;
+    createdAt: string;
+  } | null;
+  customer?: {
+    id: string;
+    name: string;
+    phone: string;
+  } | null;
+}
+
+export interface PromotionRecord {
+  id: string;
+  restaurantId: string;
+  name: string;
+  code?: string | null;
+  description?: string | null;
+  type: PromotionType;
+  targetType: PromotionTargetType;
+  discountValue: number;
+  maxDiscountAmount?: number | null;
+  minOrderAmount?: number | null;
+  minQuantity?: number | null;
+  buyQuantity?: number | null;
+  getQuantity?: number | null;
+  getDiscountPercentage?: number | null;
+  orderTypes?: PromotionOrderType[] | null;
+  daysOfWeek?: number[] | null;
+  startDate?: string | null;
+  endDate?: string | null;
+  startTime?: string | null;
+  endTime?: string | null;
+  isActive: boolean;
+  isAutoApply: boolean;
+  isStackable: boolean;
+  priority: number;
+  usageLimit?: number | null;
+  perCustomerLimit?: number | null;
+  currentUsageCount: number;
+  createdAt: string;
+  updatedAt?: string;
+  menuItems?: Array<{
+    id: string;
+    name: string;
+    basePrice: number;
+  }>;
+  categories?: Array<{
+    id: string;
+    name: string;
+  }>;
+  customer?: {
+    id: string;
+    name: string;
+    phone: string;
+  } | null;
+  _count?: {
+    usages: number;
+  };
+}
+
+export interface PaginatedPromotionsData {
+  items: PromotionRecord[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+}
+
+export interface CreatePromotionInput {
+  name: string;
+  code?: string | null;
+  description?: string | null;
+  type: PromotionType;
+  targetType: PromotionTargetType;
+  discountValue: number;
+  maxDiscountAmount?: number | null;
+  minOrderAmount?: number | null;
+  minQuantity?: number | null;
+  buyQuantity?: number | null;
+  getQuantity?: number | null;
+  getDiscountPercentage?: number | null;
+  orderTypes?: PromotionOrderType[] | null;
+  daysOfWeek?: number[] | null;
+  startDate?: string | null;
+  endDate?: string | null;
+  startTime?: string | null;
+  endTime?: string | null;
+  isActive?: boolean;
+  isAutoApply?: boolean;
+  isStackable?: boolean;
+  priority?: number;
+  usageLimit?: number | null;
+  perCustomerLimit?: number | null;
+  customerId?: string | null;
+  menuItemIds?: string[];
+  categoryIds?: string[];
+}
+
+export interface UpdatePromotionInput {
+  name?: string;
+  code?: string | null;
+  description?: string | null;
+  type?: PromotionType;
+  targetType?: PromotionTargetType;
+  discountValue?: number;
+  maxDiscountAmount?: number | null;
+  minOrderAmount?: number | null;
+  minQuantity?: number | null;
+  buyQuantity?: number | null;
+  getQuantity?: number | null;
+  getDiscountPercentage?: number | null;
+  orderTypes?: PromotionOrderType[] | null;
+  daysOfWeek?: number[] | null;
+  startDate?: string | null;
+  endDate?: string | null;
+  startTime?: string | null;
+  endTime?: string | null;
+  isActive?: boolean;
+  isAutoApply?: boolean;
+  isStackable?: boolean;
+  priority?: number;
+  usageLimit?: number | null;
+  perCustomerLimit?: number | null;
+  customerId?: string | null;
+  menuItemIds?: string[];
+  categoryIds?: string[];
+}
+
+export interface ListPromotionsQueryParams {
+  page?: number;
+  limit?: number;
+  search?: string;
+  type?: PromotionType;
+  targetType?: PromotionTargetType;
+  isActive?: boolean;
+  isAutoApply?: boolean;
+  orderType?: PromotionOrderType;
+  hasCode?: boolean;
+}
+
+export interface ValidatePromoCodeInput {
+  code: string;
+  orderType?: PromotionOrderType;
+  customerId?: string | null;
+  items: Array<{
+    menuItemId: string;
+    quantity: number;
+    unitPrice: number;
+    categoryId?: string;
+  }>;
+}
