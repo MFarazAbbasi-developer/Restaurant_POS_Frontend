@@ -62,9 +62,9 @@ export const useUpdateDeliveryStatusMutation = () => {
       payload: UpdateDeliveryStatusInput;
     }) => DeliveryApi.updateStatus(orderId, payload),
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: DELIVERY_QUERY_KEYS.DISPATCHER,
-      });
+      queryClient.invalidateQueries({ queryKey: ['delivery'] });
+      queryClient.invalidateQueries({ queryKey: ['orders'] });
+      queryClient.invalidateQueries({ queryKey: ['shifts'] });
     },
   });
 };
@@ -79,9 +79,8 @@ export const useAssignRiderMutation = () => {
     mutationFn: ({ orderId, payload }: { orderId: string; payload: AssignRiderInput }) =>
       DeliveryApi.assignRider(orderId, payload),
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: DELIVERY_QUERY_KEYS.DISPATCHER,
-      });
+      queryClient.invalidateQueries({ queryKey: ['delivery'] });
+      queryClient.invalidateQueries({ queryKey: ['orders'] });
     },
   });
 };
@@ -101,9 +100,9 @@ export const useCancelDeliveryOrderMutation = () => {
       payload: CancelDeliveryOrderInput;
     }) => DeliveryApi.cancelOrder(orderId, payload),
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: DELIVERY_QUERY_KEYS.DISPATCHER,
-      });
+      queryClient.invalidateQueries({ queryKey: ['delivery'] });
+      queryClient.invalidateQueries({ queryKey: ['orders'] });
+      queryClient.invalidateQueries({ queryKey: ['shifts'] });
     },
   });
 };

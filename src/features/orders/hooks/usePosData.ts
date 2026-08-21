@@ -42,6 +42,12 @@ export const useCreateOrderMutation = () => {
     mutationFn: (input: CreateOrderInput) => OrdersApi.createOrder(input),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: POS_QUERY_KEYS.TABLES });
+      queryClient.invalidateQueries({ queryKey: ['kitchen'] });
+      queryClient.invalidateQueries({ queryKey: ['takeaway'] });
+      queryClient.invalidateQueries({ queryKey: ['delivery'] });
+      queryClient.invalidateQueries({ queryKey: ['shifts'] });
+      queryClient.invalidateQueries({ queryKey: ['inventory'] });
+      queryClient.invalidateQueries({ queryKey: ['orders'] });
     },
   });
 };
@@ -56,6 +62,11 @@ export const useProcessPaymentMutation = () => {
     mutationFn: (input: CreatePaymentInput) => OrdersApi.processPayment(input),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: POS_QUERY_KEYS.TABLES });
+      queryClient.invalidateQueries({ queryKey: ['shifts'] });
+      queryClient.invalidateQueries({ queryKey: ['takeaway'] });
+      queryClient.invalidateQueries({ queryKey: ['delivery'] });
+      queryClient.invalidateQueries({ queryKey: ['orders'] });
+      queryClient.invalidateQueries({ queryKey: ['reports'] });
     },
   });
 };

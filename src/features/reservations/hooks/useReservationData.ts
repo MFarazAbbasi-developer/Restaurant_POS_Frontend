@@ -54,6 +54,7 @@ export const useCreateReservationMutation = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['reservations'] });
       queryClient.invalidateQueries({ queryKey: ['tables'] });
+      queryClient.invalidateQueries({ queryKey: ['pos', 'tables'] });
     },
   });
 };
@@ -69,6 +70,7 @@ export const useUpdateReservationMutation = () => {
         queryKey: RESERVATION_QUERY_KEYS.DETAIL(variables.id),
       });
       queryClient.invalidateQueries({ queryKey: ['tables'] });
+      queryClient.invalidateQueries({ queryKey: ['pos', 'tables'] });
     },
   });
 };
@@ -84,6 +86,7 @@ export const useAssignReservationTableMutation = () => {
         queryKey: RESERVATION_QUERY_KEYS.DETAIL(variables.id),
       });
       queryClient.invalidateQueries({ queryKey: ['tables'] });
+      queryClient.invalidateQueries({ queryKey: ['pos', 'tables'] });
     },
   });
 };
@@ -104,6 +107,7 @@ export const useUpdateReservationStatusMutation = () => {
         queryKey: RESERVATION_QUERY_KEYS.DETAIL(variables.id),
       });
       queryClient.invalidateQueries({ queryKey: ['tables'] });
+      queryClient.invalidateQueries({ queryKey: ['pos', 'tables'] });
     },
   });
 };

@@ -19,6 +19,7 @@ import { useSocketStatus } from '@/core/socket/useSocket';
 import { socketManager } from '@/core/socket/socketClient';
 import { useAuthStore } from '@/core/auth/authStore';
 import { usePermissions } from '@/core/auth/usePermissions';
+import { useCurrentShiftQuery } from '@/features/shifts/hooks/useShiftsData';
 import { StatusIndicator } from '@/components/ui/StatusIndicator';
 import { NAVIGATION_GROUPS } from '@/config/navigation';
 import { env } from '@/config/env';
@@ -35,6 +36,7 @@ export const POSLayout: React.FC = () => {
   const userMenuRef = useRef<HTMLDivElement>(null);
 
   const { status: socketStatus } = useSocketStatus();
+  const { data: currentShift } = useCurrentShiftQuery();
   const { user, terminal, logout, logoutAll, isLoading } = useAuthStore();
   const { roles, permissions, hasPermission } = usePermissions();
 
@@ -162,10 +164,32 @@ export const POSLayout: React.FC = () => {
           </div>
 
           {/* Shift Status */}
-          <div className="flex items-center gap-1.5 text-xs bg-pos-bg/80 px-2.5 py-1.5 rounded-lg border border-pos-border/50">
-            <CircleDot size={12} className="text-pos-success animate-pulse" />
-            <span className="font-semibold text-[11px] text-pos-text">Shift Active</span>
-          </div>
+          <NavLink
+            to="/shifts"
+            className={cn(
+              'flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-lg border transition-colors hover:border-pos-accent',
+              currentShift?.status === 'OPEN'
+                ? 'bg-pos-bg/80 border-pos-border/50 text-pos-text'
+                : 'bg-pos-warning/10 border-pos-warning/40 text-pos-warning'
+            )}
+            title={
+              currentShift?.status === 'OPEN'
+                ? `Shift #${currentShift.id.slice(0, 8)}: ${currentShift.cashier?.name || currentShift.registerName}`
+                : 'Click to open register shift'
+            }
+          >
+            <CircleDot
+              size={12}
+              className={cn(
+                currentShift?.status === 'OPEN'
+                  ? 'text-pos-success animate-pulse'
+                  : 'text-pos-warning'
+              )}
+            />
+            <span className="font-semibold text-[11px]">
+              {currentShift?.status === 'OPEN' ? 'Shift Open' : 'Open Shift'}
+            </span>
+          </NavLink>
 
           {/* Digital Clock */}
           <div className="flex items-center gap-1.5 font-mono text-xs font-semibold text-pos-text bg-pos-bg/80 px-3 py-1.5 rounded-lg border border-pos-border/50 tracking-wider">

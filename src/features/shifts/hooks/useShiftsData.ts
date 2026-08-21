@@ -67,6 +67,8 @@ export const useCashAdjustmentMutation = () => {
     mutationFn: (payload: CashAdjustmentInput) => ShiftsApi.recordCashAdjustment(payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['shifts'] });
+      queryClient.invalidateQueries({ queryKey: ['expenses'] });
+      queryClient.invalidateQueries({ queryKey: ['reports'] });
     },
   });
 };
@@ -81,6 +83,7 @@ export const useCloseShiftMutation = () => {
     mutationFn: (payload: CloseShiftInput) => ShiftsApi.closeShift(payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['shifts'] });
+      queryClient.invalidateQueries({ queryKey: ['reports'] });
     },
   });
 };
@@ -136,6 +139,8 @@ export const useRefundPaymentMutation = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['payments'] });
       queryClient.invalidateQueries({ queryKey: ['shifts'] });
+      queryClient.invalidateQueries({ queryKey: ['expenses'] });
+      queryClient.invalidateQueries({ queryKey: ['reports'] });
     },
   });
 };

@@ -65,6 +65,10 @@ export const useUpdateOrderKitchenStatusMutation = () => {
     }) => KitchenApi.updateOrderStatus(orderId, payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['kitchen'] });
+      queryClient.invalidateQueries({ queryKey: ['orders'] });
+      queryClient.invalidateQueries({ queryKey: ['pos', 'tables'] });
+      queryClient.invalidateQueries({ queryKey: ['takeaway'] });
+      queryClient.invalidateQueries({ queryKey: ['delivery'] });
     },
   });
 };
@@ -87,6 +91,10 @@ export const useUpdateItemKitchenStatusMutation = () => {
     }) => KitchenApi.updateItemStatus(orderId, itemId, payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['kitchen'] });
+      queryClient.invalidateQueries({ queryKey: ['orders'] });
+      queryClient.invalidateQueries({ queryKey: ['pos', 'tables'] });
+      queryClient.invalidateQueries({ queryKey: ['takeaway'] });
+      queryClient.invalidateQueries({ queryKey: ['delivery'] });
     },
   });
 };
@@ -107,6 +115,10 @@ export const useRecallKitchenOrderMutation = () => {
     }) => KitchenApi.recallOrder(orderId, payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['kitchen'] });
+      queryClient.invalidateQueries({ queryKey: ['orders'] });
+      queryClient.invalidateQueries({ queryKey: ['pos', 'tables'] });
+      queryClient.invalidateQueries({ queryKey: ['takeaway'] });
+      queryClient.invalidateQueries({ queryKey: ['delivery'] });
     },
   });
 };
@@ -129,6 +141,10 @@ export const useRecallKitchenItemMutation = () => {
     }) => KitchenApi.recallItem(orderId, itemId, payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['kitchen'] });
+      queryClient.invalidateQueries({ queryKey: ['orders'] });
+      queryClient.invalidateQueries({ queryKey: ['pos', 'tables'] });
+      queryClient.invalidateQueries({ queryKey: ['takeaway'] });
+      queryClient.invalidateQueries({ queryKey: ['delivery'] });
     },
   });
 };

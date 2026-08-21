@@ -35,6 +35,8 @@ export const useUpdateTakeawayStatusMutation = () => {
     }) => TakeawayApi.updateStatus(orderId, payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: TAKEAWAY_QUERY_KEYS.QUEUE });
+      queryClient.invalidateQueries({ queryKey: ['orders'] });
+      queryClient.invalidateQueries({ queryKey: ['shifts'] });
     },
   });
 };
@@ -55,6 +57,8 @@ export const useCancelTakeawayOrderMutation = () => {
     }) => TakeawayApi.cancelOrder(orderId, payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: TAKEAWAY_QUERY_KEYS.QUEUE });
+      queryClient.invalidateQueries({ queryKey: ['orders'] });
+      queryClient.invalidateQueries({ queryKey: ['shifts'] });
     },
   });
 };
