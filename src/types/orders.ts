@@ -283,3 +283,67 @@ export interface PaymentResponseData {
   order: OrderRecord;
   changeAmount?: number;
 }
+
+/**
+ * Takeaway Queue Models
+ */
+export type TakeawayOrderStatus =
+  'PENDING' | 'PREPARING' | 'READY' | 'COMPLETED' | 'CANCELLED';
+
+export type TakeawayPaymentStatus = 'PAID' | 'PENDING';
+
+export interface TakeawayOrderItem {
+  id: string;
+  name: string;
+  variantName?: string | null;
+  quantity: number;
+  unitPrice: number;
+  subtotal: number;
+  specialInstructions?: string | null;
+  modifiers?:
+    | Array<{
+        id: string;
+        name: string;
+        priceAdjustment: number;
+      }>
+    | unknown;
+}
+
+export interface TakeawayOrderRecord {
+  id: string;
+  tokenNumber: number;
+  orderCode: string;
+  businessDate: string;
+  customerName: string;
+  customerPhone?: string | null;
+  status: TakeawayOrderStatus;
+  paymentStatus: TakeawayPaymentStatus;
+  paymentMethod: string;
+  totalAmount: number;
+  isPayOnPickup: boolean;
+  specialInstructions?: string | null;
+  createdAt: string;
+  items: TakeawayOrderItem[];
+}
+
+export interface TakeawayQueueSummary {
+  totalActive: number;
+  pending: number;
+  preparing: number;
+  ready: number;
+}
+
+export interface TakeawayQueueData {
+  restaurantId: string;
+  summary: TakeawayQueueSummary;
+  queue: TakeawayOrderRecord[];
+}
+
+export interface UpdateTakeawayStatusInput {
+  status: 'PREPARING' | 'READY' | 'COMPLETED';
+  markPaid?: boolean;
+}
+
+export interface CancelTakeawayOrderInput {
+  reason: string;
+}
