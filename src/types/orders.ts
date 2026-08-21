@@ -437,3 +437,126 @@ export interface AssignRiderInput {
 export interface CancelDeliveryOrderInput {
   reason: string;
 }
+
+/**
+ * Kitchen Display System (KDS) Models
+ */
+export type KitchenUrgencyTier = 'NORMAL' | 'WARNING' | 'CRITICAL';
+export type OrderKitchenStatus = 'PREPARING' | 'READY' | 'SERVED';
+export type ItemKitchenStatus = 'PENDING' | 'PREPARING' | 'READY' | 'SERVED';
+
+export interface KitchenStationRecord {
+  id: string;
+  name: string;
+  code?: string | null;
+  displayOrder: number;
+  isActive?: boolean;
+  categories?: Array<{
+    category: {
+      id: string;
+      name: string;
+      sortOrder?: number;
+    };
+  }>;
+}
+
+export interface KitchenTicketItem {
+  id: string;
+  orderId: string;
+  menuItemId: string;
+  itemName: string;
+  variantName: string | null;
+  quantity: number;
+  status: string;
+  kitchenStatus: ItemKitchenStatus | string;
+  preparedAt: string | Date | null;
+  kitchenNotes: string | null;
+  specialInstructions: string | null;
+  stationId: string | null;
+  stationName: string | null;
+  modifiers: Array<{
+    id: string;
+    modifierOptionName: string;
+    quantity: number;
+  }>;
+}
+
+export interface KitchenTicket {
+  id: string;
+  orderCode: string;
+  dailySequence: number;
+  businessDate: string;
+  orderType: string;
+  status: string;
+  paymentStatus: string;
+  tableId: string | null;
+  tableName: string | null;
+  zoneName: string | null;
+  tokenNumber: number | null;
+  customerName: string | null;
+  customerPhone: string | null;
+  deliveryAddress: string | null;
+  notes: string | null;
+  createdAt: string | Date;
+  elapsedSeconds: number;
+  elapsedMinutes: number;
+  urgencyTier: KitchenUrgencyTier;
+  itemsSummary: {
+    total: number;
+    pending: number;
+    preparing: number;
+    ready: number;
+    served: number;
+  };
+  items: KitchenTicketItem[];
+}
+
+export interface KitchenQueueSummaryCounts {
+  total: number;
+  confirmed: number;
+  preparing: number;
+  ready: number;
+}
+
+export interface KitchenQueueData {
+  tickets: KitchenTicket[];
+  counts: KitchenQueueSummaryCounts;
+  pagination: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
+}
+
+export interface KitchenPerformanceData {
+  activeTicketsCount: number;
+  preparingTicketsCount: number;
+  readyTicketsCount: number;
+  delayedTicketsCount: number;
+  completedTicketsToday: number;
+  avgPrepTimeMinutes: number;
+}
+
+export interface KitchenQueueQueryParams {
+  orderType?: 'DINE_IN' | 'TAKEAWAY' | 'DELIVERY';
+  status?: 'PENDING' | 'CONFIRMED' | 'PREPARING' | 'READY' | 'ALL_ACTIVE';
+  stationId?: string;
+  categoryId?: string;
+  search?: string;
+  page?: number;
+  limit?: number;
+}
+
+export interface UpdateOrderKitchenStatusInput {
+  status: OrderKitchenStatus;
+}
+
+export interface UpdateItemKitchenStatusInput {
+  status: ItemKitchenStatus;
+  kitchenNotes?: string;
+}
+
+export interface RecallKitchenInput {
+  reason?: string;
+}
