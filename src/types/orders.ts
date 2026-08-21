@@ -1420,3 +1420,144 @@ export interface EnrollCustomerLoyaltyInput {
   customerId: string;
   initialPoints?: number;
 }
+
+/**
+ * Reservations & Table Bookings Interfaces
+ */
+export type ReservationStatus =
+  'PENDING' | 'CONFIRMED' | 'SEATED' | 'COMPLETED' | 'CANCELLED' | 'NO_SHOW';
+
+export interface ReservationTableInfo {
+  id: string;
+  name: string;
+  capacity: number;
+  status: string;
+  zone?: {
+    id: string;
+    name: string;
+  } | null;
+}
+
+export interface ReservationRecord {
+  id: string;
+  restaurantId: string;
+  reservationCode: string;
+  customerName: string;
+  customerPhone: string;
+  customerEmail?: string | null;
+  customerId?: string | null;
+  guestCount: number;
+  tableId?: string | null;
+  reservationDate: string;
+  startTime: string;
+  endTime: string;
+  durationMinutes: number;
+  status: ReservationStatus;
+  specialRequests?: string | null;
+  cancelReason?: string | null;
+  createdAt: string;
+  updatedAt?: string;
+  table?: ReservationTableInfo | null;
+  customer?: CustomerRecord | null;
+  createdByUser?: {
+    id: string;
+    name: string;
+    username: string;
+  } | null;
+}
+
+export interface PaginatedReservationsData {
+  reservations: ReservationRecord[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+}
+
+export interface ReservationAvailableTableItem {
+  id: string;
+  name: string;
+  capacity: number;
+  zone?: {
+    id: string;
+    name: string;
+  } | null;
+}
+
+export interface ReservationUnavailableTableItem {
+  id: string;
+  name: string;
+  capacity: number;
+  reason: string;
+  zone?: {
+    id: string;
+    name: string;
+  } | null;
+}
+
+export interface ReservationAvailabilityData {
+  startDateTime: string;
+  endDateTime: string;
+  durationMinutes: number;
+  guestCount: number;
+  totalActiveTables: number;
+  availableTablesCount: number;
+  availableTables: ReservationAvailableTableItem[];
+  unavailableTables: ReservationUnavailableTableItem[];
+}
+
+export interface CreateReservationInput {
+  customerName: string;
+  customerPhone: string;
+  customerEmail?: string | null;
+  customerId?: string | null;
+  guestCount: number;
+  tableId?: string | null;
+  reservationDate: string;
+  startTime: string;
+  durationMinutes?: number;
+  status?: ReservationStatus;
+  specialRequests?: string | null;
+}
+
+export interface UpdateReservationInput {
+  customerName?: string;
+  customerPhone?: string;
+  customerEmail?: string | null;
+  guestCount?: number;
+  tableId?: string | null;
+  reservationDate?: string;
+  startTime?: string;
+  durationMinutes?: number;
+  specialRequests?: string | null;
+}
+
+export interface UpdateReservationStatusInput {
+  status: ReservationStatus;
+  cancelReason?: string | null;
+}
+
+export interface AssignReservationTableInput {
+  tableId: string;
+}
+
+export interface CheckReservationAvailabilityQueryParams {
+  reservationDate: string;
+  startTime: string;
+  durationMinutes?: number;
+  guestCount?: number;
+}
+
+export interface ListReservationsQueryParams {
+  page?: number;
+  limit?: number;
+  reservationDate?: string;
+  startDate?: string;
+  endDate?: string;
+  status?: ReservationStatus;
+  tableId?: string;
+  customerId?: string;
+  search?: string;
+}
