@@ -1561,3 +1561,238 @@ export interface ListReservationsQueryParams {
   customerId?: string;
   search?: string;
 }
+
+/**
+ * Purchasing & Supplier Management Interfaces
+ */
+export interface PurchasingSupplierRecord {
+  id: string;
+  restaurantId: string;
+  name: string;
+  contactPerson?: string | null;
+  phone?: string | null;
+  email?: string | null;
+  address?: string | null;
+  taxNumber?: string | null;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt?: string;
+  _count?: {
+    inventoryItems: number;
+    purchaseOrders: number;
+  };
+}
+
+export interface PaginatedSuppliersData {
+  items: PurchasingSupplierRecord[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+}
+
+export type PurchaseOrderStatus =
+  'DRAFT' | 'ORDERED' | 'PARTIALLY_RECEIVED' | 'RECEIVED' | 'CANCELLED';
+
+export interface PurchasingOrderItemRecord {
+  id: string;
+  purchaseOrderId: string;
+  inventoryItemId: string;
+  quantity: number;
+  unitCost: number;
+  taxRate: number;
+  discountRate: number;
+  totalAmount: number;
+  quantityReceived: number;
+  inventoryItem: {
+    id: string;
+    itemCode: string;
+    name: string;
+    unit: string;
+  };
+  returnItems?: Array<{
+    id: string;
+    quantity: number;
+  }>;
+}
+
+export interface PurchasingReturnItemRecord {
+  id: string;
+  purchaseOrderItemId: string;
+  inventoryItemId: string;
+  quantity: number;
+  unitCost: number;
+  totalAmount: number;
+  inventoryItem: {
+    id: string;
+    itemCode: string;
+    name: string;
+    unit: string;
+  };
+}
+
+export interface PurchasingReturnRecord {
+  id: string;
+  returnNumber: string;
+  reason: string;
+  totalRefundAmount: number;
+  status: string;
+  notes?: string | null;
+  createdAt: string;
+  items?: PurchasingReturnItemRecord[];
+}
+
+export interface PurchasingOrderRecord {
+  id: string;
+  restaurantId: string;
+  orderNumber: string;
+  invoiceNumber?: string | null;
+  supplierId?: string | null;
+  locationId?: string | null;
+  status: PurchaseOrderStatus;
+  totalAmount: number;
+  totalTax: number;
+  totalDiscount: number;
+  grandTotal: number;
+  expectedDeliveryDate?: string | null;
+  receivedAt?: string | null;
+  notes?: string | null;
+  createdAt: string;
+  updatedAt?: string;
+  supplier?: {
+    id: string;
+    name: string;
+    contactPerson?: string | null;
+    phone?: string | null;
+  } | null;
+  location?: {
+    id: string;
+    name: string;
+  } | null;
+  items: PurchasingOrderItemRecord[];
+  returns?: PurchasingReturnRecord[];
+  createdByUser?: {
+    id: string;
+    name: string;
+    username: string;
+  } | null;
+}
+
+export interface PaginatedPurchasingOrdersData {
+  items: PurchasingOrderRecord[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+}
+
+export interface PurchasingSummaryData {
+  totalOrders: number;
+  totalSpend: number;
+  statusBreakdown: Record<string, number>;
+  topSuppliers: Array<{
+    supplierId: string;
+    name: string;
+    totalSpend: number;
+    ordersCount: number;
+  }>;
+  topPurchasedItems: Array<{
+    inventoryItemId: string;
+    name: string;
+    unit: string;
+    totalQuantity: number;
+    totalSpend: number;
+  }>;
+}
+
+export interface CreateSupplierInput {
+  name: string;
+  contactPerson?: string | null;
+  phone?: string | null;
+  email?: string | null;
+  address?: string | null;
+  taxNumber?: string | null;
+  isActive?: boolean;
+}
+
+export interface UpdateSupplierInput {
+  name?: string;
+  contactPerson?: string | null;
+  phone?: string | null;
+  email?: string | null;
+  address?: string | null;
+  taxNumber?: string | null;
+  isActive?: boolean;
+}
+
+export interface CreatePurchasingOrderItemInput {
+  inventoryItemId: string;
+  quantity: number;
+  unitCost: number;
+  taxRate?: number;
+  discountRate?: number;
+}
+
+export interface CreatePurchasingOrderInput {
+  supplierId?: string | null;
+  locationId?: string | null;
+  invoiceNumber?: string | null;
+  expectedDeliveryDate?: string | null;
+  status?: 'DRAFT' | 'ORDERED' | 'RECEIVED';
+  notes?: string | null;
+  items: CreatePurchasingOrderItemInput[];
+}
+
+export interface UpdatePurchasingOrderInput {
+  supplierId?: string | null;
+  locationId?: string | null;
+  invoiceNumber?: string | null;
+  expectedDeliveryDate?: string | null;
+  notes?: string | null;
+  items?: CreatePurchasingOrderItemInput[];
+}
+
+export interface ReceivePurchasingGoodsItemInput {
+  purchaseOrderItemId: string;
+  quantityReceived: number;
+}
+
+export interface ReceivePurchasingGoodsInput {
+  invoiceNumber?: string | null;
+  receivedLocationId?: string | null;
+  notes?: string | null;
+  items: ReceivePurchasingGoodsItemInput[];
+}
+
+export interface CreatePurchasingReturnItemInput {
+  purchaseOrderItemId: string;
+  quantity: number;
+}
+
+export interface CreatePurchasingReturnInput {
+  reason: string;
+  notes?: string | null;
+  items: CreatePurchasingReturnItemInput[];
+}
+
+export interface ListSuppliersQueryParams {
+  page?: number;
+  limit?: number;
+  search?: string;
+  isActive?: boolean;
+}
+
+export interface ListPurchasingOrdersQueryParams {
+  page?: number;
+  limit?: number;
+  status?: PurchaseOrderStatus;
+  supplierId?: string;
+  locationId?: string;
+  startDate?: string;
+  endDate?: string;
+  search?: string;
+}
