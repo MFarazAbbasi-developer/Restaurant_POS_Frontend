@@ -2150,3 +2150,284 @@ export interface ValidatePromoCodeInput {
     categoryId?: string;
   }>;
 }
+
+/**
+ * Reporting & Business Analytics Interfaces
+ */
+export interface BaseReportFilter {
+  startDate?: string;
+  endDate?: string;
+  from?: string;
+  to?: string;
+}
+
+export interface OrderTypeReportFilter extends BaseReportFilter {
+  orderType?: 'DINE_IN' | 'TAKEAWAY' | 'DELIVERY';
+}
+
+export interface PaymentMethodReportFilter extends BaseReportFilter {
+  paymentMethod?: 'CASH' | 'CARD' | 'BANK_TRANSFER' | 'DIGITAL_WALLET' | 'OTHER';
+}
+
+export interface ItemsRankingReportFilter extends BaseReportFilter {
+  categoryId?: string;
+  sortBy?: 'quantity' | 'revenue';
+  sortOrder?: 'asc' | 'desc';
+  page?: number;
+  limit?: number;
+}
+
+export interface ReportPeriodInfo {
+  startDate: string | null;
+  endDate: string | null;
+  from: string | null;
+  to: string | null;
+}
+
+export interface SalesSummaryReportData {
+  period: ReportPeriodInfo;
+  summary: {
+    grossSales: number;
+    itemDiscounts: number;
+    orderDiscounts: number;
+    totalDiscounts: number;
+    netSales: number;
+    taxCollected: number;
+    serviceCharges: number;
+    deliveryCharges: number;
+    packagingCharges: number;
+    rounding: number;
+    grandTotal: number;
+    totalPaid: number;
+    outstandingBalance: number;
+    totalPaymentsCollected: number;
+    totalPaymentsCount: number;
+  };
+  ordersMetrics: {
+    totalOrdersCount: number;
+    validOrdersCount: number;
+    completedOrdersCount: number;
+    cancelledOrdersCount: number;
+    cancelledValue: number;
+    voidedOrdersCount: number;
+    voidedValue: number;
+    averageOrderValue: number;
+  };
+}
+
+export interface SalesByOrderTypeItem {
+  orderType: 'DINE_IN' | 'TAKEAWAY' | 'DELIVERY';
+  orderCount: number;
+  percentageOfOrders: number;
+  grossSales: number;
+  totalDiscount: number;
+  netSales: number;
+  taxAmount: number;
+  grandTotal: number;
+  percentageOfSales: number;
+  averageOrderValue: number;
+}
+
+export interface SalesByOrderTypeReportData {
+  period: ReportPeriodInfo;
+  breakdown: SalesByOrderTypeItem[];
+  totals: {
+    totalOrders: number;
+    totalSales: number;
+    totalDiscounts: number;
+  };
+}
+
+export interface SalesByPaymentMethodItem {
+  paymentMethod: string;
+  transactionCount: number;
+  percentageOfTransactions: number;
+  totalAmountCollected: number;
+  percentageOfAmount: number;
+  averageTransactionValue: number;
+}
+
+export interface SalesByPaymentMethodReportData {
+  period: ReportPeriodInfo;
+  breakdown: SalesByPaymentMethodItem[];
+  totals: {
+    totalTransactions: number;
+    totalAmountCollected: number;
+  };
+}
+
+export interface ItemRankingRecord {
+  menuItemId: string;
+  itemName: string;
+  itemCode: string;
+  categoryName: string;
+  quantitySold: number;
+  grossSales: number;
+  discountAmount: number;
+  netSales: number;
+  averagePrice: number;
+  orderCount: number;
+}
+
+export interface ItemsRankingReportData {
+  period: ReportPeriodInfo;
+  pagination: {
+    page: number;
+    limit: number;
+    totalItems: number;
+    totalPages: number;
+  };
+  items: ItemRankingRecord[];
+}
+
+export interface CategorySalesItem {
+  categoryId: string;
+  categoryName: string;
+  itemsCount: number;
+  quantitySold: number;
+  grossSales: number;
+  netSales: number;
+  percentageOfSales: number;
+}
+
+export interface CategorySalesReportData {
+  period: ReportPeriodInfo;
+  categories: CategorySalesItem[];
+  totals: {
+    totalQuantitySold: number;
+    totalGrossSales: number;
+    totalNetSales: number;
+  };
+}
+
+export interface FinancialAdjustmentsReportData {
+  period: ReportPeriodInfo;
+  summary: {
+    totalTaxCollected: number;
+    totalDiscountsGiven: number;
+    totalVoidsValue: number;
+    totalVoidsCount: number;
+    totalCancelledValue: number;
+    totalCancelledCount: number;
+  };
+  taxBreakdown: Array<{
+    taxRate: number;
+    amount: number;
+  }>;
+  discountBreakdown: {
+    itemDiscounts: number;
+    orderDiscounts: number;
+    totalDiscounts: number;
+  };
+  voidedOrders: Array<{
+    orderId: string;
+    orderCode: string;
+    voidReason: string | null;
+    voidedAt: string;
+    grandTotal: number;
+    staffName: string;
+  }>;
+  cancelledOrders: Array<{
+    orderId: string;
+    orderCode: string;
+    cancelReason: string | null;
+    cancelledAt: string;
+    grandTotal: number;
+    staffName: string;
+  }>;
+}
+
+export interface HourlyTrendsItem {
+  hour: number;
+  hourLabel: string;
+  orderCount: number;
+  grossSales: number;
+  netSales: number;
+  averageOrderValue: number;
+}
+
+export interface HourlyTrendsReportData {
+  period: ReportPeriodInfo;
+  hourlyData: HourlyTrendsItem[];
+  peakHour: {
+    hour: number;
+    hourLabel: string;
+    orderCount: number;
+    netSales: number;
+  };
+}
+
+export interface StaffPerformanceRecord {
+  staffId: string;
+  staffName: string;
+  role: string;
+  username: string;
+  totalOrders: number;
+  completedOrders: number;
+  cancelledOrders: number;
+  totalSales: number;
+  averageOrderValue: number;
+  averagePreparationTimeMinutes: number;
+}
+
+export interface StaffPerformanceReportData {
+  period: ReportPeriodInfo;
+  staff: StaffPerformanceRecord[];
+}
+
+export interface ShiftSummaryReportRecord {
+  shiftId: string;
+  registerName: string;
+  cashierName: string;
+  openedAt: string;
+  closedAt: string | null;
+  status: string;
+  openingFloat: number;
+  closingCash: number;
+  systemExpectedCash: number;
+  cashVariance: number;
+  cashSales: number;
+  cardSales: number;
+  otherSales: number;
+  totalSales: number;
+  dropsCount: number;
+  totalDropsAmount: number;
+  expensesCount: number;
+  totalExpensesAmount: number;
+}
+
+export interface ShiftsSummaryReportData {
+  period: ReportPeriodInfo;
+  shifts: ShiftSummaryReportRecord[];
+  totals: {
+    totalShifts: number;
+    totalSales: number;
+    totalCashVariance: number;
+    totalExpenses: number;
+  };
+}
+
+export interface OperationsPerformanceReportData {
+  period: ReportPeriodInfo;
+  delivery: {
+    totalDeliveries: number;
+    completedDeliveries: number;
+    cancelledDeliveries: number;
+    averageDeliveryTimeMinutes: number;
+    riderPerformance: Array<{
+      riderId: string;
+      riderName: string;
+      deliveriesCompleted: number;
+      averageTimeMinutes: number;
+    }>;
+  };
+  takeaway: {
+    totalTakeaways: number;
+    completedTakeaways: number;
+    averagePreparationTimeMinutes: number;
+  };
+  dineIn: {
+    totalDineIn: number;
+    averageSeatingTimeMinutes: number;
+  };
+}
