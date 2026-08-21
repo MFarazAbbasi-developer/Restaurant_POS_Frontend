@@ -950,3 +950,376 @@ export interface LinkItemModifierGroupInput {
   minSelections?: number | null;
   maxSelections?: number | null;
 }
+
+/**
+ * Inventory Management Interfaces & Inputs
+ */
+export interface InventoryLocationRecord {
+  id: string;
+  restaurantId: string;
+  name: string;
+  code?: string | null;
+  isDefault: boolean;
+  isActive: boolean;
+}
+
+export interface SupplierRecord {
+  id: string;
+  restaurantId: string;
+  name: string;
+  contactPerson?: string | null;
+  phone?: string | null;
+  email?: string | null;
+  address?: string | null;
+  taxNumber?: string | null;
+  isActive: boolean;
+}
+
+export interface InventoryItemRecord {
+  id: string;
+  restaurantId: string;
+  itemCode: string;
+  name: string;
+  description?: string | null;
+  unit: string;
+  costPerUnit: number;
+  currentStock: number;
+  minStockLevel: number;
+  targetStockLevel?: number | null;
+  locationId?: string | null;
+  supplierId?: string | null;
+  isActive: boolean;
+  location?: InventoryLocationRecord | null;
+  supplier?: SupplierRecord | null;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface PaginatedInventoryItemsData {
+  items: InventoryItemRecord[];
+  pagination: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
+}
+
+export interface InventorySummaryData {
+  totalItemsCount: number;
+  totalValuation: number;
+  lowStockItemsCount: number;
+  outOfStockItemsCount: number;
+}
+
+export interface LowStockItemData {
+  id: string;
+  itemCode: string;
+  name: string;
+  unit: string;
+  costPerUnit: number;
+  currentStock: number;
+  minStockLevel: number;
+  targetStockLevel: number;
+  recommendedReorderQuantity: number;
+  estimatedReorderCost: number;
+  supplier?: SupplierRecord | null;
+  location?: InventoryLocationRecord | null;
+}
+
+export interface LowStockReportData {
+  totalLowStockItems: number;
+  items: LowStockItemData[];
+}
+
+export interface ValuationLocationBreakdown {
+  locationId: string;
+  locationName: string;
+  itemCount: number;
+  totalValuation: number;
+  percentageOfTotal: number;
+}
+
+export interface ValuationReportData {
+  grandTotalValuation: number;
+  locationsBreakdown: ValuationLocationBreakdown[];
+  items: Array<{
+    id: string;
+    itemCode: string;
+    name: string;
+    unit: string;
+    costPerUnit: number;
+    currentStock: number;
+    totalValuation: number;
+    location?: InventoryLocationRecord | null;
+  }>;
+}
+
+export interface RecipeIngredientRecord {
+  id: string;
+  restaurantId: string;
+  menuItemId?: string | null;
+  variantId?: string | null;
+  modifierId?: string | null;
+  inventoryItemId: string;
+  quantity: number;
+  wastePercentage: number;
+  inventoryItem?: InventoryItemRecord;
+  createdAt?: string;
+}
+
+export interface StockMovementRecord {
+  id: string;
+  restaurantId: string;
+  inventoryItemId: string;
+  type:
+    | 'PURCHASE_RECEIPT'
+    | 'SALE_CONSUMPTION'
+    | 'ORDER_VOID_RETURN'
+    | 'ADJUSTMENT_INCREASE'
+    | 'ADJUSTMENT_DECREASE'
+    | 'WASTAGE'
+    | 'TRANSFER_IN'
+    | 'TRANSFER_OUT';
+  quantityChange: number;
+  balanceAfter: number;
+  unitCost: number;
+  totalCost: number;
+  referenceType?: string | null;
+  referenceId?: string | null;
+  reason?: string | null;
+  createdAt: string;
+  inventoryItem?: {
+    id: string;
+    itemCode: string;
+    name: string;
+    unit: string;
+  };
+  createdByUser?: {
+    id: string;
+    name: string;
+    username: string;
+  };
+}
+
+export interface PaginatedLedgerData {
+  movements: StockMovementRecord[];
+  pagination: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
+}
+
+export interface StockAdjustmentItemRecord {
+  id: string;
+  inventoryItemId: string;
+  systemStock: number;
+  actualStock: number;
+  variance: number;
+  unitCost: number;
+  totalVarianceCost: number;
+  inventoryItem?: {
+    id: string;
+    itemCode: string;
+    name: string;
+    unit: string;
+  };
+}
+
+export interface StockAdjustmentRecord {
+  id: string;
+  adjustmentNumber: string;
+  reason: string;
+  notes?: string | null;
+  totalVarianceCost: number;
+  createdAt: string;
+  items: StockAdjustmentItemRecord[];
+  createdByUser?: {
+    id: string;
+    name: string;
+    username: string;
+  };
+}
+
+export interface PaginatedAdjustmentsData {
+  adjustments: StockAdjustmentRecord[];
+  pagination: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
+}
+
+export interface StockWastageItemRecord {
+  id: string;
+  inventoryItemId: string;
+  quantity: number;
+  unitCost: number;
+  totalCost: number;
+  itemReason?: string | null;
+  inventoryItem?: {
+    id: string;
+    itemCode: string;
+    name: string;
+    unit: string;
+  };
+}
+
+export interface StockWastageRecord {
+  id: string;
+  wastageNumber: string;
+  reason:
+    'EXPIRED' | 'SPOILED' | 'PREPARATION_ERROR' | 'DAMAGED' | 'CONTAMINATED' | 'OTHER';
+  notes?: string | null;
+  totalWastedValue: number;
+  createdAt: string;
+  items: StockWastageItemRecord[];
+  createdByUser?: {
+    id: string;
+    name: string;
+    username: string;
+  };
+}
+
+export interface PaginatedWastageData {
+  wastage: StockWastageRecord[];
+  pagination: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
+}
+
+export interface PurchaseItemRecord {
+  id: string;
+  inventoryItemId: string;
+  quantity: number;
+  unitCost: number;
+  totalCost: number;
+  inventoryItem?: {
+    id: string;
+    itemCode: string;
+    name: string;
+    unit: string;
+  };
+}
+
+export interface PurchaseOrderRecord {
+  id: string;
+  purchaseNumber: string;
+  invoiceNumber?: string | null;
+  totalAmount: number;
+  notes?: string | null;
+  createdAt: string;
+  supplier?: SupplierRecord | null;
+  items: PurchaseItemRecord[];
+  createdByUser?: {
+    id: string;
+    name: string;
+    username: string;
+  };
+}
+
+export interface PaginatedPurchasesData {
+  purchases: PurchaseOrderRecord[];
+  pagination: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
+}
+
+export interface CreateInventoryItemInput {
+  itemCode: string;
+  name: string;
+  description?: string | null;
+  unit: string;
+  costPerUnit: number;
+  currentStock?: number;
+  minStockLevel?: number;
+  targetStockLevel?: number | null;
+  locationId?: string | null;
+  supplierId?: string | null;
+}
+
+export interface UpdateInventoryItemInput {
+  itemCode?: string;
+  name?: string;
+  description?: string | null;
+  unit?: string;
+  costPerUnit?: number;
+  minStockLevel?: number;
+  targetStockLevel?: number | null;
+  locationId?: string | null;
+  supplierId?: string | null;
+  isActive?: boolean;
+}
+
+export interface ListInventoryItemsQueryParams {
+  supplierId?: string;
+  locationId?: string;
+  lowStock?: boolean;
+  search?: string;
+  isActive?: boolean;
+  page?: number;
+  limit?: number;
+}
+
+export interface CreateStockAdjustmentInput {
+  locationId?: string;
+  reason: string;
+  notes?: string;
+  items: Array<{
+    inventoryItemId: string;
+    actualStock: number;
+  }>;
+}
+
+export interface CreateStockWastageInput {
+  locationId?: string;
+  reason:
+    'EXPIRED' | 'SPOILED' | 'PREPARATION_ERROR' | 'DAMAGED' | 'CONTAMINATED' | 'OTHER';
+  notes?: string;
+  items: Array<{
+    inventoryItemId: string;
+    quantity: number;
+    unitCost?: number;
+    itemReason?: string;
+  }>;
+}
+
+export interface CreatePurchaseOrderInput {
+  supplierId?: string;
+  locationId?: string;
+  invoiceNumber?: string;
+  notes?: string;
+  items: Array<{
+    inventoryItemId: string;
+    quantity: number;
+    unitCost: number;
+  }>;
+}
+
+export interface UpsertRecipeInput {
+  menuItemId?: string;
+  variantId?: string;
+  modifierId?: string;
+  inventoryItemId: string;
+  quantity: number;
+  wastePercentage?: number;
+}
+
+export interface ListLedgerQueryParams {
+  inventoryItemId?: string;
+  locationId?: string;
+  type?: string;
+  startDate?: string;
+  endDate?: string;
+  page?: number;
+  limit?: number;
+}

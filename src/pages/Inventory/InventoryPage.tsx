@@ -1,23 +1,1040 @@
-import React from 'react';
-import { Boxes } from 'lucide-react';
-import { DomainPlaceholder } from '@/components/common/DomainPlaceholder';
+import React, { useState } from 'react';
+import {
+  useInventorySummaryQuery,
+  useLowStockQuery,
+  useValuationQuery,
+  useInventoryItemsQuery,
+  useStockLedgerQuery,
+  useStockWastageQuery,
+  useInventoryLocationsQuery,
+  useSuppliersQuery,
+} from '@/features/inventory/hooks/useInventoryData';
+import { useMenuItemsQuery } from '@/features/menu/hooks/useMenuData';
+import { useAuthStore } from '@/core/auth/authStore';
+import { InventoryItemRecord, MenuItemRecord } from '@/types';
+import { InventoryItemModal } from '@/features/inventory/components/InventoryItemModal';
+import { StockAdjustmentModal } from '@/features/inventory/components/StockAdjustmentModal';
+import { RecordWastageModal } from '@/features/inventory/components/RecordWastageModal';
+import { ReceiveStockModal } from '@/features/inventory/components/ReceiveStockModal';
+import { RecipeManagerModal } from '@/features/inventory/components/RecipeManagerModal';
+import { Button } from '@/components/ui/Button';
+import { Badge } from '@/components/ui/Badge';
+import { Spinner } from '@/components/ui/Spinner';
+import {
+  Package,
+  AlertTriangle,
+  History,
+  Trash2,
+  ChefHat,
+  PieChart,
+  Plus,
+  Search,
+  RotateCw,
+  Edit2,
+  Sliders,
+  Truck,
+  ArrowUpRight,
+  ArrowDownRight,
+  TrendingDown,
+  Phone,
+  Mail,
+  Warehouse,
+} from 'lucide-react';
+import { cn } from '@/utils/cn';
 
 export const InventoryPage: React.FC = () => {
+  const { user } = useAuthStore();
+  const currency =
+    user && 'restaurant' in user && user.restaurant?.currency
+      ? user.restaurant.currency
+      : 'USD';
+
+  // Active Tab
+  const [activeTab, setActiveTab] = useState<
+    'ITEMS' | 'LOW_STOCK' | 'LEDGER' | 'WASTAGE' | 'RECIPES' | 'VALUATION'
+  >('ITEMS');
+
+  // Filters for Items Tab
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [selectedLocationId, setSelectedLocationId] = useState<string>('ALL');
+  const [lowStockFilterOnly, setLowStockFilterOnly] = useState<boolean>(false);
+
+  // Modals state
+  const [itemModal, setItemModal] = useState<{
+    open: boolean;
+    item?: InventoryItemRecord | null;
+  }>({ open: false });
+
+  const [adjustmentModal, setAdjustmentModal] = useState<{
+    open: boolean;
+    item?: InventoryItemRecord | null;
+  }>({ open: false });
+
+  const [wastageModal, setWastageModal] = useState<{
+    open: boolean;
+    item?: InventoryItemRecord | null;
+  }>({ open: false });
+
+  const [receiveModalOpen, setReceiveModalOpen] = useState<boolean>(false);
+
+  const [recipeModalItem, setRecipeModalItem] = useState<MenuItemRecord | null>(null);
+
+  // Queries
+  const {
+    data: summaryData,
+    isLoading: isSummaryLoading,
+    refetch: refetchSummary,
+  } = useInventorySummaryQuery();
+
+  const {
+    data: lowStockData,
+    isLoading: isLowStockLoading,
+    refetch: refetchLowStock,
+  } = useLowStockQuery();
+
+  const {
+    data: valuationData,
+    isLoading: isValuationLoading,
+    refetch: refetchValuation,
+  } = useValuationQuery();
+
+  const { data: locations = [], refetch: refetchLocations } =
+    useInventoryLocationsQuery();
+
+  const { data: suppliers = [], refetch: refetchSuppliers } = useSuppliersQuery();
+
+  const {
+    data: itemsData,
+    isLoading: isItemsLoading,
+    isRefetching: isItemsRefetching,
+    refetch: refetchItems,
+  } = useInventoryItemsQuery({
+    locationId: selectedLocationId !== 'ALL' ? selectedLocationId : undefined,
+    lowStock: lowStockFilterOnly ? true : undefined,
+    search: searchQuery.trim() || undefined,
+    limit: 100,
+  });
+
+  const {
+    data: ledgerData,
+    isLoading: isLedgerLoading,
+    refetch: refetchLedger,
+  } = useStockLedgerQuery({ limit: 50 });
+
+  const {
+    data: wastageData,
+    isLoading: isWastageLoading,
+    refetch: refetchWastage,
+  } = useStockWastageQuery({ limit: 50 });
+
+  const { data: menuItemsData, refetch: refetchMenuItems } = useMenuItemsQuery({
+    limit: 100,
+  });
+
+  const items = itemsData?.items || [];
+  const menuItems = menuItemsData?.items || [];
+  const lowStockItems = lowStockData?.items || [];
+  const movements = ledgerData?.movements || [];
+  const wastageList = wastageData?.wastage || [];
+
+  const formatPrice = (val: number) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: currency || 'USD',
+      minimumFractionDigits: 2,
+    }).format(val);
+  };
+
+  const handleRefreshAll = () => {
+    refetchSummary();
+    refetchLowStock();
+    refetchValuation();
+    refetchItems();
+    refetchLedger();
+    refetchWastage();
+    refetchLocations();
+    refetchSuppliers();
+    refetchMenuItems();
+  };
+
   return (
-    <DomainPlaceholder
-      title="Stock & Inventory Management"
-      subtitle="Raw ingredient stock levels, stock locations, recipe ingredient mapping, wastage logs, and physical adjustments."
-      icon={Boxes}
-      apiPrefix="/api/v1/inventory"
-      permissionKey="inventory.view"
-      features={[
-        'Real-time raw ingredient on-hand stock balances',
-        'Multi-location stock management (Main Store, Kitchen, Bar)',
-        'Menu item recipe ingredient mapping for auto-deduction',
-        'Physical stock count adjustment audits with manager authorization',
-        'Spoilage, expiration, and wastage recording with reason codes',
-        'Low-stock threshold alerts and reorder quantity warnings',
-      ]}
-    />
+    <div className="h-[calc(100vh-5rem)] flex flex-col overflow-hidden select-none -m-4 md:-m-6 p-3 sm:p-4 bg-pos-bg">
+      {/* =========================================================================
+          TOP HEADER BAR: Metrics & Quick Action CTAs
+      ========================================================================= */}
+      <div className="p-3.5 border-b border-pos-border bg-pos-header/90 rounded-t-2xl flex flex-wrap items-center justify-between gap-3 shrink-0 shadow-xs">
+        <div className="flex items-center gap-3">
+          <div className="h-10 w-10 rounded-xl bg-pos-accent/15 border border-pos-accent/30 text-pos-accent flex items-center justify-center">
+            <Package size={20} />
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <h2 className="text-base font-black text-pos-text">
+                Stock & Inventory Control
+              </h2>
+              {summaryData && summaryData.lowStockItemsCount > 0 && (
+                <Badge variant="danger" className="text-[10px] animate-pulse">
+                  {summaryData.lowStockItemsCount} Low Stock
+                </Badge>
+              )}
+            </div>
+            <p className="text-[11px] text-pos-text-muted mt-0.5 font-medium">
+              Real-time stock valuation, BOM recipes, wastage, deliveries, and movement
+              ledger
+            </p>
+          </div>
+        </div>
+
+        {/* Action Buttons */}
+        <div className="flex items-center gap-2">
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={handleRefreshAll}
+            disabled={isItemsRefetching}
+            className="min-h-[36px] px-3 font-semibold flex items-center gap-1.5"
+          >
+            <RotateCw size={14} className={isItemsRefetching ? 'animate-spin' : ''} />
+            <span className="hidden sm:inline">Refresh</span>
+          </Button>
+
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={() => setReceiveModalOpen(true)}
+            className="min-h-[36px] text-xs font-semibold flex items-center gap-1.5 text-pos-success"
+          >
+            <Truck size={14} />
+            <span>+ Receive Stock</span>
+          </Button>
+
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={() => setAdjustmentModal({ open: true, item: null })}
+            className="min-h-[36px] text-xs font-semibold flex items-center gap-1.5"
+          >
+            <Sliders size={14} />
+            <span>Adjust Stock</span>
+          </Button>
+
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={() => setWastageModal({ open: true, item: null })}
+            className="min-h-[36px] text-xs font-semibold flex items-center gap-1.5 text-pos-danger"
+          >
+            <Trash2 size={14} />
+            <span>Record Wastage</span>
+          </Button>
+
+          <Button
+            variant="primary"
+            size="sm"
+            onClick={() => setItemModal({ open: true, item: null })}
+            className="min-h-[36px] text-xs font-bold flex items-center gap-1.5 shadow-sm"
+          >
+            <Plus size={16} />
+            <span>+ New Item</span>
+          </Button>
+        </div>
+      </div>
+
+      {/* =========================================================================
+          SUMMARY METRICS TILES
+      ========================================================================= */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 p-3 border-b border-pos-border bg-pos-surface shrink-0">
+        <div className="p-2.5 rounded-xl bg-pos-bg border border-pos-border/60">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-pos-text-muted block">
+            Total Inventory Items
+          </span>
+          <span className="text-base font-mono font-bold text-pos-text mt-0.5 block">
+            {isSummaryLoading ? '...' : summaryData?.totalItemsCount || 0}
+          </span>
+        </div>
+
+        <div className="p-2.5 rounded-xl bg-pos-bg border border-pos-border/60">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-pos-text-muted block">
+            Stock Valuation
+          </span>
+          <span className="text-base font-mono font-bold text-pos-accent mt-0.5 block">
+            {isSummaryLoading ? '...' : formatPrice(summaryData?.totalValuation || 0)}
+          </span>
+        </div>
+
+        <div
+          onClick={() => setActiveTab('LOW_STOCK')}
+          className="p-2.5 rounded-xl bg-pos-bg border border-pos-border/60 cursor-pointer hover:border-pos-warning/50 transition-colors"
+        >
+          <span className="text-[10px] font-bold uppercase tracking-wider text-pos-warning flex items-center gap-1">
+            <AlertTriangle size={11} /> Low Stock Items
+          </span>
+          <span className="text-base font-mono font-bold text-pos-warning mt-0.5 block">
+            {isSummaryLoading ? '...' : summaryData?.lowStockItemsCount || 0}
+          </span>
+        </div>
+
+        <div className="p-2.5 rounded-xl bg-pos-bg border border-pos-border/60">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-pos-danger flex items-center gap-1">
+            <TrendingDown size={11} /> Out of Stock (0)
+          </span>
+          <span className="text-base font-mono font-bold text-pos-danger mt-0.5 block">
+            {isSummaryLoading ? '...' : summaryData?.outOfStockItemsCount || 0}
+          </span>
+        </div>
+      </div>
+
+      {/* =========================================================================
+          VIEW SWITCHER TABS
+      ========================================================================= */}
+      <div className="px-3.5 py-2 border-b border-pos-border bg-pos-surface flex items-center gap-2 overflow-x-auto custom-scrollbar shrink-0">
+        <button
+          type="button"
+          onClick={() => setActiveTab('ITEMS')}
+          className={cn(
+            'px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all flex items-center gap-1.5 min-h-[34px]',
+            activeTab === 'ITEMS'
+              ? 'bg-pos-accent text-white shadow-sm'
+              : 'bg-pos-bg text-pos-text-muted hover:text-pos-text border border-pos-border'
+          )}
+        >
+          <Package size={14} />
+          <span>Stock Catalog ({items.length})</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveTab('LOW_STOCK')}
+          className={cn(
+            'px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all flex items-center gap-1.5 min-h-[34px]',
+            activeTab === 'LOW_STOCK'
+              ? 'bg-pos-warning text-white shadow-sm'
+              : 'bg-pos-bg text-pos-text-muted hover:text-pos-text border border-pos-border'
+          )}
+        >
+          <AlertTriangle size={14} />
+          <span>Low-Stock Alerts ({lowStockItems.length})</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveTab('LEDGER')}
+          className={cn(
+            'px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all flex items-center gap-1.5 min-h-[34px]',
+            activeTab === 'LEDGER'
+              ? 'bg-pos-accent text-white shadow-sm'
+              : 'bg-pos-bg text-pos-text-muted hover:text-pos-text border border-pos-border'
+          )}
+        >
+          <History size={14} />
+          <span>Movement Ledger</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveTab('WASTAGE')}
+          className={cn(
+            'px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all flex items-center gap-1.5 min-h-[34px]',
+            activeTab === 'WASTAGE'
+              ? 'bg-pos-danger text-white shadow-sm'
+              : 'bg-pos-bg text-pos-text-muted hover:text-pos-text border border-pos-border'
+          )}
+        >
+          <Trash2 size={14} />
+          <span>Wastage Log</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveTab('RECIPES')}
+          className={cn(
+            'px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all flex items-center gap-1.5 min-h-[34px]',
+            activeTab === 'RECIPES'
+              ? 'bg-pos-accent text-white shadow-sm'
+              : 'bg-pos-bg text-pos-text-muted hover:text-pos-text border border-pos-border'
+          )}
+        >
+          <ChefHat size={14} />
+          <span>Recipe / BOM Linker ({menuItems.length})</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveTab('VALUATION')}
+          className={cn(
+            'px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all flex items-center gap-1.5 min-h-[34px]',
+            activeTab === 'VALUATION'
+              ? 'bg-pos-accent text-white shadow-sm'
+              : 'bg-pos-bg text-pos-text-muted hover:text-pos-text border border-pos-border'
+          )}
+        >
+          <PieChart size={14} />
+          <span>Valuation & Locations</span>
+        </button>
+      </div>
+
+      {/* =========================================================================
+          VIEWPORT CONTENT AREA
+      ========================================================================= */}
+      <div className="flex-1 overflow-hidden bg-pos-surface/40 border-x border-b border-pos-border rounded-b-2xl flex flex-col min-h-0">
+        {/* =======================================================================
+            TAB 1: Stock Catalog & Levels
+        ======================================================================= */}
+        {activeTab === 'ITEMS' && (
+          <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
+            {/* Filter Bar */}
+            <div className="p-3 border-b border-pos-border bg-pos-bg/60 flex flex-wrap items-center justify-between gap-3 shrink-0">
+              <div className="flex items-center gap-2">
+                <div className="relative">
+                  <Search
+                    size={14}
+                    className="absolute left-3 top-1/2 -translate-y-1/2 text-pos-text-muted"
+                  />
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={e => setSearchQuery(e.target.value)}
+                    placeholder="Search raw items or SKU..."
+                    className="pl-8 pr-3 py-1.5 rounded-xl bg-pos-surface border border-pos-border text-xs text-pos-text placeholder-pos-text-muted/60 focus:outline-none focus:ring-2 focus:ring-pos-accent w-48 sm:w-64 font-medium"
+                  />
+                </div>
+
+                <select
+                  value={selectedLocationId}
+                  onChange={e => setSelectedLocationId(e.target.value)}
+                  className="px-2.5 py-1.5 rounded-xl bg-pos-surface border border-pos-border text-xs text-pos-text font-semibold focus:outline-none focus:ring-2 focus:ring-pos-accent"
+                >
+                  <option value="ALL">All Storage Locations</option>
+                  {locations.map(loc => (
+                    <option key={loc.id} value={loc.id}>
+                      {loc.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <label className="flex items-center gap-2 text-xs font-semibold text-pos-text cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={lowStockFilterOnly}
+                  onChange={e => setLowStockFilterOnly(e.target.checked)}
+                  className="h-4 w-4 rounded accent-pos-warning cursor-pointer"
+                />
+                <span>Show Low Stock Only</span>
+              </label>
+            </div>
+
+            {/* Catalog Table */}
+            <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
+              {isItemsLoading ? (
+                <div className="py-24 flex flex-col items-center justify-center gap-3 text-pos-text-muted text-xs">
+                  <Spinner size="lg" />
+                  <span>Loading Inventory Items...</span>
+                </div>
+              ) : items.length === 0 ? (
+                <div className="py-24 text-center text-xs text-pos-text-muted flex flex-col items-center gap-3">
+                  <Package size={40} className="text-pos-text-muted/40" />
+                  <p className="font-bold text-base text-pos-text">
+                    No Inventory Items Found
+                  </p>
+                  <p className="text-xs max-w-sm">
+                    {searchQuery || selectedLocationId !== 'ALL'
+                      ? 'No items match your active search filters.'
+                      : 'No raw material inventory registered. Add your first item below.'}
+                  </p>
+                  <Button
+                    variant="primary"
+                    size="sm"
+                    onClick={() => setItemModal({ open: true, item: null })}
+                    className="font-bold mt-2"
+                  >
+                    + Add Inventory Item
+                  </Button>
+                </div>
+              ) : (
+                <div className="overflow-x-auto border border-pos-border rounded-xl bg-pos-surface">
+                  <table className="w-full text-left text-xs">
+                    <thead className="bg-pos-header border-b border-pos-border text-pos-text-muted font-bold uppercase text-[10px] tracking-wider">
+                      <tr>
+                        <th className="p-3">SKU</th>
+                        <th className="p-3">Item Name</th>
+                        <th className="p-3">Location</th>
+                        <th className="p-3">Unit Cost</th>
+                        <th className="p-3">Current Stock</th>
+                        <th className="p-3">Min / Target</th>
+                        <th className="p-3">Total Value</th>
+                        <th className="p-3 text-center">Status</th>
+                        <th className="p-3 text-right">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-pos-border/60">
+                      {items.map(it => {
+                        const isLow = it.currentStock <= it.minStockLevel;
+                        const isOut = it.currentStock <= 0;
+                        const totalVal = it.currentStock * it.costPerUnit;
+
+                        return (
+                          <tr
+                            key={it.id}
+                            className="hover:bg-pos-surface-hover transition-colors"
+                          >
+                            <td className="p-3 font-mono font-bold text-pos-accent text-xs">
+                              #{it.itemCode}
+                            </td>
+
+                            <td className="p-3 font-bold text-pos-text">{it.name}</td>
+
+                            <td className="p-3 text-pos-text-muted">
+                              {it.location?.name || 'Unassigned'}
+                            </td>
+
+                            <td className="p-3 font-mono font-medium text-pos-text">
+                              {formatPrice(it.costPerUnit)} / {it.unit}
+                            </td>
+
+                            <td className="p-3 font-mono font-bold text-sm text-pos-text">
+                              {it.currentStock} {it.unit}
+                            </td>
+
+                            <td className="p-3 font-mono text-[11px] text-pos-text-muted">
+                              Min: {it.minStockLevel} • Target:{' '}
+                              {it.targetStockLevel || '-'}
+                            </td>
+
+                            <td className="p-3 font-mono font-bold text-pos-accent">
+                              {formatPrice(totalVal)}
+                            </td>
+
+                            <td className="p-3 text-center">
+                              {isOut ? (
+                                <Badge variant="danger" className="text-[10px]">
+                                  Out of Stock
+                                </Badge>
+                              ) : isLow ? (
+                                <Badge variant="warning" className="text-[10px]">
+                                  Low Stock
+                                </Badge>
+                              ) : (
+                                <Badge variant="success" className="text-[10px]">
+                                  Adequate
+                                </Badge>
+                              )}
+                            </td>
+
+                            <td className="p-3 text-right">
+                              <div className="flex items-center justify-end gap-1">
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    setAdjustmentModal({
+                                      open: true,
+                                      item: it,
+                                    })
+                                  }
+                                  className="p-1.5 rounded-lg text-pos-text-muted hover:text-pos-accent hover:bg-pos-accent/10 transition-colors"
+                                  title="Adjust Count"
+                                  aria-label="Adjust count"
+                                >
+                                  <Sliders size={14} />
+                                </button>
+
+                                <button
+                                  type="button"
+                                  onClick={() => setItemModal({ open: true, item: it })}
+                                  className="p-1.5 rounded-lg text-pos-text-muted hover:text-pos-text hover:bg-pos-surface-hover transition-colors"
+                                  title="Edit item"
+                                  aria-label="Edit item"
+                                >
+                                  <Edit2 size={14} />
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* =======================================================================
+            TAB 2: Low-Stock & Reorder Alerts
+        ======================================================================= */}
+        {activeTab === 'LOW_STOCK' && (
+          <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
+            {isLowStockLoading ? (
+              <div className="py-24 flex flex-col items-center justify-center gap-3 text-pos-text-muted text-xs">
+                <Spinner size="lg" />
+                <span>Checking Low-Stock Levels...</span>
+              </div>
+            ) : lowStockItems.length === 0 ? (
+              <div className="py-24 text-center text-xs text-pos-text-muted flex flex-col items-center gap-3">
+                <Package size={40} className="text-pos-success/50" />
+                <p className="font-bold text-base text-pos-text">
+                  All Inventory Levels Are Healthy!
+                </p>
+                <p className="text-xs max-w-sm">
+                  No items are currently below their configured minimum threshold.
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                <div className="p-3.5 rounded-xl bg-pos-warning/10 border border-pos-warning/30 flex items-center justify-between text-xs">
+                  <div className="flex items-center gap-2">
+                    <AlertTriangle size={18} className="text-pos-warning shrink-0" />
+                    <span className="font-bold text-pos-text">
+                      {lowStockItems.length} items require reordering to reach target
+                      stock
+                    </span>
+                  </div>
+                  <Button
+                    variant="primary"
+                    size="sm"
+                    onClick={() => setReceiveModalOpen(true)}
+                    className="font-bold text-xs"
+                  >
+                    <Truck size={14} className="mr-1" /> Create Purchase Receipt
+                  </Button>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  {lowStockItems.map(it => (
+                    <div
+                      key={it.id}
+                      className="p-4 rounded-2xl bg-pos-surface border border-pos-border shadow-xs flex flex-col justify-between"
+                    >
+                      <div>
+                        <div className="flex items-center justify-between mb-2">
+                          <div>
+                            <span className="font-mono text-xs font-bold text-pos-accent">
+                              #{it.itemCode}
+                            </span>
+                            <h4 className="font-bold text-pos-text text-sm">{it.name}</h4>
+                          </div>
+
+                          <Badge variant="warning" className="text-[10px]">
+                            {it.currentStock <= 0 ? 'Out of Stock' : 'Low Stock'}
+                          </Badge>
+                        </div>
+
+                        <div className="grid grid-cols-3 gap-2 p-2.5 rounded-xl bg-pos-bg border border-pos-border/60 text-xs font-mono mb-3">
+                          <div>
+                            <span className="text-[10px] text-pos-text-muted block">
+                              Current
+                            </span>
+                            <span className="font-bold text-pos-danger">
+                              {it.currentStock} {it.unit}
+                            </span>
+                          </div>
+                          <div>
+                            <span className="text-[10px] text-pos-text-muted block">
+                              Min Level
+                            </span>
+                            <span className="text-pos-text">
+                              {it.minStockLevel} {it.unit}
+                            </span>
+                          </div>
+                          <div>
+                            <span className="text-[10px] text-pos-text-muted block">
+                              Target
+                            </span>
+                            <span className="text-pos-success">
+                              {it.targetStockLevel} {it.unit}
+                            </span>
+                          </div>
+                        </div>
+
+                        <div className="text-xs space-y-1 text-pos-text-muted">
+                          <p>
+                            Recommended Reorder:{' '}
+                            <strong className="text-pos-text font-mono">
+                              {it.recommendedReorderQuantity} {it.unit}
+                            </strong>{' '}
+                            (Est. Cost: {formatPrice(it.estimatedReorderCost)})
+                          </p>
+                          {it.supplier && (
+                            <div className="flex items-center gap-3 pt-1 text-[11px]">
+                              <span className="font-semibold text-pos-text">
+                                {it.supplier.name}
+                              </span>
+                              {it.supplier.phone && (
+                                <span className="flex items-center gap-1">
+                                  <Phone size={11} /> {it.supplier.phone}
+                                </span>
+                              )}
+                              {it.supplier.email && (
+                                <span className="flex items-center gap-1">
+                                  <Mail size={11} /> {it.supplier.email}
+                                </span>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="pt-3 mt-3 border-t border-pos-border/60 flex items-center justify-end gap-2">
+                        <Button
+                          variant="secondary"
+                          size="sm"
+                          onClick={() => {
+                            const raw = items.find(rawItem => rawItem.id === it.id);
+                            setAdjustmentModal({ open: true, item: raw || null });
+                          }}
+                          className="text-xs font-semibold"
+                        >
+                          Audit Count
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* =======================================================================
+            TAB 3: Movement Ledger (Audit Trail)
+        ======================================================================= */}
+        {activeTab === 'LEDGER' && (
+          <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
+            {isLedgerLoading ? (
+              <div className="py-24 flex flex-col items-center justify-center gap-3 text-pos-text-muted text-xs">
+                <Spinner size="lg" />
+                <span>Loading Movement Ledger...</span>
+              </div>
+            ) : movements.length === 0 ? (
+              <div className="py-24 text-center text-xs text-pos-text-muted">
+                No stock movement transactions recorded yet.
+              </div>
+            ) : (
+              <div className="overflow-x-auto border border-pos-border rounded-xl bg-pos-surface">
+                <table className="w-full text-left text-xs">
+                  <thead className="bg-pos-header border-b border-pos-border text-pos-text-muted font-bold uppercase text-[10px] tracking-wider">
+                    <tr>
+                      <th className="p-3">Time</th>
+                      <th className="p-3">Item</th>
+                      <th className="p-3">Type</th>
+                      <th className="p-3">Qty Change</th>
+                      <th className="p-3">Balance After</th>
+                      <th className="p-3">Unit Cost</th>
+                      <th className="p-3">Reason / Ref</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-pos-border/60">
+                    {movements.map(mov => {
+                      const isPositive = mov.quantityChange > 0;
+                      return (
+                        <tr
+                          key={mov.id}
+                          className="hover:bg-pos-surface-hover transition-colors font-mono"
+                        >
+                          <td className="p-3 text-pos-text-muted text-[11px]">
+                            {new Date(mov.createdAt).toLocaleTimeString([], {
+                              hour: '2-digit',
+                              minute: '2-digit',
+                              second: '2-digit',
+                            })}
+                          </td>
+
+                          <td className="p-3 font-sans font-bold text-pos-text">
+                            {mov.inventoryItem?.name || 'Item'} ( #
+                            {mov.inventoryItem?.itemCode})
+                          </td>
+
+                          <td className="p-3">
+                            <Badge
+                              variant={
+                                isPositive
+                                  ? 'success'
+                                  : mov.type === 'WASTAGE'
+                                    ? 'danger'
+                                    : 'default'
+                              }
+                              className="text-[10px]"
+                            >
+                              {mov.type.replace('_', ' ')}
+                            </Badge>
+                          </td>
+
+                          <td
+                            className={cn(
+                              'p-3 font-bold flex items-center gap-1',
+                              isPositive ? 'text-pos-success' : 'text-pos-danger'
+                            )}
+                          >
+                            {isPositive ? (
+                              <ArrowUpRight size={14} />
+                            ) : (
+                              <ArrowDownRight size={14} />
+                            )}
+                            <span>
+                              {isPositive ? `+${mov.quantityChange}` : mov.quantityChange}{' '}
+                              {mov.inventoryItem?.unit}
+                            </span>
+                          </td>
+
+                          <td className="p-3 font-bold text-pos-text">
+                            {mov.balanceAfter} {mov.inventoryItem?.unit}
+                          </td>
+
+                          <td className="p-3 text-pos-text-muted">
+                            {formatPrice(mov.unitCost)}
+                          </td>
+
+                          <td className="p-3 font-sans text-pos-text-muted truncate max-w-xs">
+                            {mov.reason || mov.referenceType || '-'}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* =======================================================================
+            TAB 4: Wastage Log
+        ======================================================================= */}
+        {activeTab === 'WASTAGE' && (
+          <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
+            {isWastageLoading ? (
+              <div className="py-24 flex flex-col items-center justify-center gap-3 text-pos-text-muted text-xs">
+                <Spinner size="lg" />
+                <span>Loading Wastage Records...</span>
+              </div>
+            ) : wastageList.length === 0 ? (
+              <div className="py-24 text-center text-xs text-pos-text-muted flex flex-col items-center gap-3">
+                <Trash2 size={40} className="text-pos-text-muted/40" />
+                <p className="font-bold text-base text-pos-text">
+                  No Wastage Records Logged
+                </p>
+                <p className="text-xs max-w-sm">
+                  Log expired or spoiled materials using the Record Wastage button.
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {wastageList.map(w => (
+                  <div
+                    key={w.id}
+                    className="p-4 rounded-2xl bg-pos-surface border border-pos-border shadow-xs"
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        <span className="font-mono font-bold text-xs text-pos-danger">
+                          #{w.wastageNumber}
+                        </span>
+                        <Badge variant="danger" className="text-[10px]">
+                          {w.reason}
+                        </Badge>
+                      </div>
+
+                      <span className="font-mono font-bold text-sm text-pos-danger">
+                        {formatPrice(w.totalWastedValue)}
+                      </span>
+                    </div>
+
+                    <div className="space-y-1 my-2">
+                      {w.items.map(it => (
+                        <div
+                          key={it.id}
+                          className="flex items-center justify-between text-xs text-pos-text-muted"
+                        >
+                          <span>
+                            {it.inventoryItem?.name} (#{it.inventoryItem?.itemCode})
+                            {it.itemReason && <> — {it.itemReason}</>}
+                          </span>
+                          <span className="font-mono font-bold text-pos-text">
+                            {it.quantity} {it.inventoryItem?.unit} (
+                            {formatPrice(it.totalCost)})
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+
+                    {w.notes && (
+                      <p className="text-[11px] text-pos-text-muted mt-2 pt-2 border-t border-pos-border/60">
+                        Notes: {w.notes}
+                      </p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* =======================================================================
+            TAB 5: Recipe / BOM Linker
+        ======================================================================= */}
+        {activeTab === 'RECIPES' && (
+          <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              {menuItems.map(dish => (
+                <div
+                  key={dish.id}
+                  className="p-4 rounded-2xl bg-pos-surface border border-pos-border shadow-xs flex flex-col justify-between"
+                >
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <div>
+                        <span className="font-mono text-xs font-bold text-pos-accent">
+                          #{dish.itemCode}
+                        </span>
+                        <h4 className="font-bold text-pos-text text-sm">{dish.name}</h4>
+                      </div>
+                      <Badge variant="default" className="text-[10px]">
+                        {dish.category?.name || 'Catalog'}
+                      </Badge>
+                    </div>
+
+                    <p className="text-xs text-pos-text-muted line-clamp-2 mb-3">
+                      {dish.description || 'No description provided.'}
+                    </p>
+                  </div>
+
+                  <div className="pt-3 border-t border-pos-border/60 flex items-center justify-between">
+                    <span className="font-mono font-bold text-xs text-pos-text">
+                      {formatPrice(dish.basePrice)}
+                    </span>
+
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      onClick={() => setRecipeModalItem(dish)}
+                      className="text-xs font-semibold flex items-center gap-1.5"
+                    >
+                      <ChefHat size={13} />
+                      <span>Manage Recipe (BOM)</span>
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* =======================================================================
+            TAB 6: Valuation & Locations
+        ======================================================================= */}
+        {activeTab === 'VALUATION' && (
+          <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
+            {isValuationLoading ? (
+              <div className="py-24 flex flex-col items-center justify-center gap-3 text-pos-text-muted text-xs">
+                <Spinner size="lg" />
+                <span>Calculating Warehouse Valuation...</span>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                <div className="p-5 rounded-2xl bg-pos-surface border border-pos-border shadow-xs flex items-center justify-between">
+                  <div>
+                    <span className="text-xs font-bold uppercase tracking-wider text-pos-text-muted block">
+                      Grand Total Inventory Valuation
+                    </span>
+                    <h3 className="text-2xl font-mono font-black text-pos-accent mt-1">
+                      {formatPrice(valuationData?.grandTotalValuation || 0)}
+                    </h3>
+                  </div>
+
+                  <Warehouse size={40} className="text-pos-accent/30" />
+                </div>
+
+                <h4 className="text-xs font-bold uppercase tracking-wider text-pos-text">
+                  Valuation Breakdown By Storage Location
+                </h4>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                  {valuationData?.locationsBreakdown.map(loc => (
+                    <div
+                      key={loc.locationId}
+                      className="p-4 rounded-2xl bg-pos-surface border border-pos-border shadow-xs space-y-2"
+                    >
+                      <div className="flex items-center justify-between">
+                        <h5 className="font-bold text-pos-text text-sm">
+                          {loc.locationName}
+                        </h5>
+                        <Badge variant="default" className="text-[10px]">
+                          {loc.percentageOfTotal}%
+                        </Badge>
+                      </div>
+
+                      <div className="flex items-center justify-between pt-2 border-t border-pos-border/60">
+                        <span className="text-xs text-pos-text-muted">
+                          {loc.itemCount} items stored
+                        </span>
+                        <span className="font-mono font-bold text-sm text-pos-accent">
+                          {formatPrice(loc.totalValuation)}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* =========================================================================
+          INTERACTIVE MODALS
+      ========================================================================= */}
+      {itemModal.open && (
+        <InventoryItemModal
+          item={itemModal.item}
+          locations={locations}
+          suppliers={suppliers}
+          currency={currency}
+          onClose={() => setItemModal({ open: false, item: null })}
+          onSuccess={() => handleRefreshAll()}
+        />
+      )}
+
+      {adjustmentModal.open && (
+        <StockAdjustmentModal
+          initialItem={adjustmentModal.item}
+          allItems={items}
+          locations={locations}
+          onClose={() => setAdjustmentModal({ open: false, item: null })}
+          onSuccess={() => handleRefreshAll()}
+        />
+      )}
+
+      {wastageModal.open && (
+        <RecordWastageModal
+          initialItem={wastageModal.item}
+          allItems={items}
+          locations={locations}
+          currency={currency}
+          onClose={() => setWastageModal({ open: false, item: null })}
+          onSuccess={() => handleRefreshAll()}
+        />
+      )}
+
+      {receiveModalOpen && (
+        <ReceiveStockModal
+          allItems={items}
+          locations={locations}
+          suppliers={suppliers}
+          currency={currency}
+          onClose={() => setReceiveModalOpen(false)}
+          onSuccess={() => handleRefreshAll()}
+        />
+      )}
+
+      {recipeModalItem && (
+        <RecipeManagerModal
+          menuItem={recipeModalItem}
+          allItems={items}
+          onClose={() => setRecipeModalItem(null)}
+          onSuccess={() => handleRefreshAll()}
+        />
+      )}
+    </div>
   );
 };
