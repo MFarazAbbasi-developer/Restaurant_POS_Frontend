@@ -84,8 +84,7 @@ export const StaffLoginForm: React.FC = () => {
 
         // Redirect to target path or dashboard
         const from =
-          (location.state as { from?: { pathname?: string } })?.from?.pathname ||
-          '/';
+          (location.state as { from?: { pathname?: string } })?.from?.pathname || '/';
         navigate(from, { replace: true });
       } catch {
         // Error is caught and stored in authStore.error
@@ -117,10 +116,10 @@ export const StaffLoginForm: React.FC = () => {
 
       if (/^[0-9]$/.test(e.key)) {
         if (pin.length < 8) {
-          setPin((prev) => prev + e.key);
+          setPin(prev => prev + e.key);
         }
       } else if (e.key === 'Backspace') {
-        setPin((prev) => prev.slice(0, -1));
+        setPin(prev => prev.slice(0, -1));
       } else if (e.key === 'Enter') {
         handleFormSubmit();
       }
@@ -132,7 +131,7 @@ export const StaffLoginForm: React.FC = () => {
 
   const handleNumpadPress = (digit: string) => {
     if (pin.length < 8) {
-      setPin((prev) => prev + digit);
+      setPin(prev => prev + digit);
     }
   };
 
@@ -141,7 +140,7 @@ export const StaffLoginForm: React.FC = () => {
   };
 
   const handleNumpadBackspace = () => {
-    setPin((prev) => prev.slice(0, -1));
+    setPin(prev => prev.slice(0, -1));
   };
 
   const handleSelectPreset = (staff: PresetStaff) => {
@@ -156,9 +155,7 @@ export const StaffLoginForm: React.FC = () => {
         <div className="inline-flex items-center justify-center h-14 w-14 rounded-2xl bg-pos-accent/10 border border-pos-accent/20 text-pos-accent mb-3">
           <KeyRound size={28} />
         </div>
-        <h2 className="text-2xl font-bold text-pos-text">
-          Terminal Staff Sign-In
-        </h2>
+        <h2 className="text-2xl font-bold text-pos-text">Terminal Staff Sign-In</h2>
         <p className="text-xs text-pos-text-muted mt-1">
           Enter your staff credentials or PIN to access this register
         </p>
@@ -173,7 +170,7 @@ export const StaffLoginForm: React.FC = () => {
           </span>
         </div>
         <div className="grid grid-cols-3 gap-2">
-          {PRESET_STAFF.map((staff) => (
+          {PRESET_STAFF.map(staff => (
             <button
               key={staff.username}
               type="button"
@@ -188,9 +185,7 @@ export const StaffLoginForm: React.FC = () => {
               <p className="truncate font-medium">
                 {staff.label.split(' ')[1] || staff.label}
               </p>
-              <p className="text-[10px] text-pos-text-muted capitalize">
-                {staff.role}
-              </p>
+              <p className="text-[10px] text-pos-text-muted capitalize">{staff.role}</p>
             </button>
           ))}
         </div>
@@ -206,11 +201,7 @@ export const StaffLoginForm: React.FC = () => {
         </div>
       )}
 
-      <form
-        onSubmit={handleFormSubmit}
-        autoComplete="off"
-        className="space-y-4"
-      >
+      <form onSubmit={handleFormSubmit} autoComplete="off" className="space-y-4">
         {/* Username Input */}
         <div>
           <label className="block text-xs font-semibold text-pos-text-muted mb-1.5 uppercase tracking-wider">
@@ -226,7 +217,7 @@ export const StaffLoginForm: React.FC = () => {
               required
               autoComplete="off"
               value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              onChange={e => setUsername(e.target.value)}
               placeholder="e.g. owner_admin"
               className="w-full pl-10 pr-3.5 py-2.5 rounded-lg bg-pos-bg border border-pos-border text-pos-text placeholder-pos-text-muted/60 text-sm focus:outline-none focus:ring-2 focus:ring-pos-accent focus:border-transparent font-medium"
             />
@@ -240,7 +231,7 @@ export const StaffLoginForm: React.FC = () => {
           </span>
           <button
             type="button"
-            onClick={() => setIsPasswordMode((prev) => !prev)}
+            onClick={() => setIsPasswordMode(prev => !prev)}
             className="text-xs text-pos-accent hover:underline font-medium focus:outline-none"
           >
             {isPasswordMode ? 'Use PIN Numpad' : 'Use Password'}
@@ -257,12 +248,12 @@ export const StaffLoginForm: React.FC = () => {
                 type="password"
                 maxLength={8}
                 value={pin}
-                onChange={(e) => setPin(e.target.value.replace(/\D/g, ''))}
+                onChange={e => setPin(e.target.value.replace(/\D/g, ''))}
                 className="opacity-0 absolute inset-0 w-full h-full cursor-pointer z-10"
                 autoComplete="off"
               />
               <div className="flex items-center gap-3 pointer-events-none">
-                {[0, 1, 2, 3].map((index) => (
+                {[0, 1, 2, 3].map(index => (
                   <div
                     key={index}
                     className={cn(
@@ -283,7 +274,7 @@ export const StaffLoginForm: React.FC = () => {
 
             {/* Tactile Touch Numpad */}
             <div className="grid grid-cols-3 gap-2 pt-1">
-              {['1', '2', '3', '4', '5', '6', '7', '8', '9'].map((digit) => (
+              {['1', '2', '3', '4', '5', '6', '7', '8', '9'].map(digit => (
                 <button
                   key={digit}
                   type="button"
@@ -331,7 +322,7 @@ export const StaffLoginForm: React.FC = () => {
               required
               autoComplete="current-password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={e => setPassword(e.target.value)}
               placeholder="Enter account password"
               className="w-full pl-10 pr-3.5 py-2.5 rounded-lg bg-pos-bg border border-pos-border text-pos-text placeholder-pos-text-muted/60 text-sm focus:outline-none focus:ring-2 focus:ring-pos-accent focus:border-transparent font-medium"
             />
@@ -342,7 +333,7 @@ export const StaffLoginForm: React.FC = () => {
         <div className="pt-1">
           <button
             type="button"
-            onClick={() => setShowAdvanced((prev) => !prev)}
+            onClick={() => setShowAdvanced(prev => !prev)}
             className="flex items-center gap-1 text-[11px] text-pos-text-muted hover:text-pos-text font-medium"
           >
             {showAdvanced ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
@@ -353,7 +344,7 @@ export const StaffLoginForm: React.FC = () => {
               <Input
                 placeholder="Optional Restaurant ID"
                 value={restaurantId}
-                onChange={(e) => setRestaurantId(e.target.value)}
+                onChange={e => setRestaurantId(e.target.value)}
                 className="text-xs font-mono"
               />
             </div>

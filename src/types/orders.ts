@@ -268,14 +268,28 @@ export interface PaymentRecord {
   orderId: string;
   paymentMethod: PaymentMethod;
   status: PaymentStatus;
-  amount: string | number;
-  amountTendered?: string | number | null;
-  changeGiven?: string | number | null;
+  amount: number;
+  amountTendered?: number | null;
+  changeAmount?: number | null;
+  changeGiven?: number | null;
+  refundedAmount?: number;
   reference?: string | null;
   cardLast4?: string | null;
   cardBrand?: string | null;
   notes?: string | null;
   createdAt: string;
+  order?: {
+    id: string;
+    orderCode: string;
+    orderType: string;
+    grandTotal: number;
+    paymentStatus: string;
+  };
+  createdByUser?: {
+    id: string;
+    name: string;
+    username: string;
+  };
 }
 
 export interface PaymentResponseData {
@@ -559,4 +573,166 @@ export interface UpdateItemKitchenStatusInput {
 
 export interface RecallKitchenInput {
   reason?: string;
+}
+
+/**
+ * Cashier Shift & Reconciliation Models
+ */
+export type ShiftStatus = 'OPEN' | 'CLOSED';
+export type CashAdjustmentType = 'PAY_IN' | 'PAY_OUT';
+export type CashTransactionType = 'OPENING_FLOAT' | 'CASH_DROP' | 'PAY_IN' | 'PAY_OUT';
+
+export interface CashTransactionRecord {
+  id: string;
+  shiftId: string;
+  type: CashTransactionType;
+  amount: number;
+  reason: string | null;
+  createdAt: string;
+  createdByUser?: {
+    id: string;
+    name: string;
+    username: string;
+  };
+}
+
+export interface CashierShiftRecord {
+  id: string;
+  restaurantId: string;
+  cashierId: string;
+  registerName: string;
+  businessDate: string;
+  status: ShiftStatus;
+  openedAt: string;
+  closedAt?: string | null;
+  openingCash: number;
+  cashSales: number;
+  cashRefunds: number;
+  cashDrops: number;
+  cashAdjustments: number;
+  cashExpenses: number;
+  expectedClosingCash: number | null;
+  actualClosingCash: number | null;
+  variance: number | null;
+  currentDrawerCash: number;
+  notes?: string | null;
+  closingNotes?: string | null;
+  cashier: {
+    id: string;
+    name: string;
+    username: string;
+  };
+  closedByUser?: {
+    id: string;
+    name: string;
+    username: string;
+  } | null;
+  cashTransactions?: CashTransactionRecord[];
+}
+
+export interface ShiftSummaryData {
+  shiftId: string;
+  businessDate: string;
+  registerName: string;
+  status: ShiftStatus | string;
+  openedAt: string;
+  closedAt: string | null;
+  cashier: {
+    id: string;
+    name: string;
+    username: string;
+  };
+  cashDrawer: {
+    openingCash: number;
+    cashSales: number;
+    cashRefunds: number;
+    cashDrops: number;
+    cashAdjustments: number;
+    cashExpenses: number;
+    expectedClosingCash: number;
+    actualClosingCash: number | null;
+    variance: number | null;
+  };
+  paymentsByMethod: Record<string, { count: number; totalAmount: number }>;
+  refundsByMethod: Record<string, { count: number; totalAmount: number }>;
+  totals: {
+    totalSales: number;
+    totalRefunds: number;
+    netSales: number;
+    transactionsCount: number;
+  };
+}
+
+export interface OpenShiftInput {
+  openingCash?: number;
+  registerName?: string;
+  notes?: string;
+}
+
+export interface CloseShiftInput {
+  actualClosingCash: number;
+  closingNotes?: string;
+}
+
+export interface CashDropInput {
+  amount: number;
+  reason: string;
+  managerPin?: string;
+}
+
+export interface CashAdjustmentInput {
+  type: CashAdjustmentType;
+  amount: number;
+  reason: string;
+  managerPin?: string;
+}
+
+export interface ListShiftsQueryParams {
+  cashierId?: string;
+  status?: ShiftStatus;
+  businessDate?: string;
+  startDate?: string;
+  endDate?: string;
+  page?: number;
+  limit?: number;
+}
+
+export interface CreateRefundInput {
+  amount: number;
+  reason: string;
+  refundMethod?: PaymentMethod;
+  reference?: string;
+  managerPin?: string;
+}
+
+export interface ListPaymentsQueryParams {
+  orderId?: string;
+  shiftId?: string;
+  paymentMethod?: PaymentMethod;
+  status?: PaymentStatus;
+  businessDate?: string;
+  startDate?: string;
+  endDate?: string;
+  page?: number;
+  limit?: number;
+}
+
+export interface PaginatedPaymentsData {
+  payments: PaymentRecord[];
+  pagination: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
+}
+
+export interface PaginatedShiftsData {
+  shifts: CashierShiftRecord[];
+  pagination: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
 }
