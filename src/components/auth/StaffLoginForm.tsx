@@ -26,10 +26,10 @@ interface PresetStaff {
 
 const PRESET_STAFF: PresetStaff[] = [
   {
-    label: 'Cashier Sarah',
-    username: 'cashier_sarah',
-    role: 'Cashier',
-    defaultPin: '4321',
+    label: 'Owner Admin',
+    username: 'owner_admin',
+    role: 'Owner',
+    defaultPin: '1234',
   },
   {
     label: 'Manager John',
@@ -37,7 +37,12 @@ const PRESET_STAFF: PresetStaff[] = [
     role: 'Manager',
     defaultPin: '2233',
   },
-  { label: 'Owner Admin', username: 'owner_admin', role: 'Owner', defaultPin: '1234' },
+  {
+    label: 'Cashier Sarah',
+    username: 'cashier_sarah',
+    role: 'Cashier',
+    defaultPin: '4321',
+  },
 ];
 
 export const StaffLoginForm: React.FC = () => {
@@ -45,8 +50,8 @@ export const StaffLoginForm: React.FC = () => {
   const location = useLocation();
   const { login, isLoading, error, clearError } = useAuthStore();
 
-  const [username, setUsername] = useState('cashier_sarah');
-  const [pin, setPin] = useState('');
+  const [username, setUsername] = useState('owner_admin');
+  const [pin, setPin] = useState('1234');
   const [password, setPassword] = useState('');
   const [isPasswordMode, setIsPasswordMode] = useState(false);
   const [restaurantId, setRestaurantId] = useState('');
@@ -61,21 +66,26 @@ export const StaffLoginForm: React.FC = () => {
     async (e?: React.FormEvent) => {
       if (e) e.preventDefault();
 
-      if (!username.trim()) return;
-      if (!isPasswordMode && !pin.trim()) return;
-      if (isPasswordMode && !password.trim()) return;
+      const trimmedUser = username.trim();
+      const trimmedPin = pin.trim();
+      const trimmedPass = password.trim();
+
+      if (!trimmedUser) return;
+      if (!isPasswordMode && !trimmedPin) return;
+      if (isPasswordMode && !trimmedPass) return;
 
       try {
         await login({
-          username: username.trim(),
-          pin: !isPasswordMode && pin ? pin : undefined,
-          password: isPasswordMode && password ? password : undefined,
+          username: trimmedUser,
+          pin: !isPasswordMode && trimmedPin ? trimmedPin : undefined,
+          password: isPasswordMode && trimmedPass ? trimmedPass : undefined,
           restaurantId: restaurantId.trim() || undefined,
         });
 
         // Redirect to target path or dashboard
         const from =
-          (location.state as { from?: { pathname?: string } })?.from?.pathname || '/';
+          (location.state as { from?: { pathname?: string } })?.from?.pathname ||
+          '/';
         navigate(from, { replace: true });
       } catch {
         // Error is caught and stored in authStore.error
@@ -98,20 +108,19 @@ export const StaffLoginForm: React.FC = () => {
     if (isPasswordMode) return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Avoid intercepting if focus is in a standard text input other than the numpad
       if (
         document.activeElement?.tagName === 'INPUT' &&
-        (document.activeElement as HTMLInputElement).id !== 'pin-hidden'
+        (document.activeElement as HTMLInputElement).id !== 'pin-input'
       ) {
         return;
       }
 
       if (/^[0-9]$/.test(e.key)) {
         if (pin.length < 8) {
-          setPin(prev => prev + e.key);
+          setPin((prev) => prev + e.key);
         }
       } else if (e.key === 'Backspace') {
-        setPin(prev => prev.slice(0, -1));
+        setPin((prev) => prev.slice(0, -1));
       } else if (e.key === 'Enter') {
         handleFormSubmit();
       }
@@ -123,7 +132,7 @@ export const StaffLoginForm: React.FC = () => {
 
   const handleNumpadPress = (digit: string) => {
     if (pin.length < 8) {
-      setPin(prev => prev + digit);
+      setPin((prev) => prev + digit);
     }
   };
 
@@ -132,7 +141,7 @@ export const StaffLoginForm: React.FC = () => {
   };
 
   const handleNumpadBackspace = () => {
-    setPin(prev => prev.slice(0, -1));
+    setPin((prev) => prev.slice(0, -1));
   };
 
   const handleSelectPreset = (staff: PresetStaff) => {
@@ -147,7 +156,9 @@ export const StaffLoginForm: React.FC = () => {
         <div className="inline-flex items-center justify-center h-14 w-14 rounded-2xl bg-pos-accent/10 border border-pos-accent/20 text-pos-accent mb-3">
           <KeyRound size={28} />
         </div>
-        <h2 className="text-2xl font-bold text-pos-text">Terminal Staff Sign-In</h2>
+        <h2 className="text-2xl font-bold text-pos-text">
+          Terminal Staff Sign-In
+        </h2>
         <p className="text-xs text-pos-text-muted mt-1">
           Enter your staff credentials or PIN to access this register
         </p>
@@ -162,7 +173,7 @@ export const StaffLoginForm: React.FC = () => {
           </span>
         </div>
         <div className="grid grid-cols-3 gap-2">
-          {PRESET_STAFF.map(staff => (
+          {PRESET_STAFF.map((staff) => (
             <button
               key={staff.username}
               type="button"
@@ -177,7 +188,9 @@ export const StaffLoginForm: React.FC = () => {
               <p className="truncate font-medium">
                 {staff.label.split(' ')[1] || staff.label}
               </p>
-              <p className="text-[10px] text-pos-text-muted capitalize">{staff.role}</p>
+              <p className="text-[10px] text-pos-text-muted capitalize">
+                {staff.role}
+              </p>
             </button>
           ))}
         </div>
@@ -193,7 +206,11 @@ export const StaffLoginForm: React.FC = () => {
         </div>
       )}
 
-      <form onSubmit={handleFormSubmit} className="space-y-4">
+      <form
+        onSubmit={handleFormSubmit}
+        autoComplete="off"
+        className="space-y-4"
+      >
         {/* Username Input */}
         <div>
           <label className="block text-xs font-semibold text-pos-text-muted mb-1.5 uppercase tracking-wider">
@@ -207,9 +224,10 @@ export const StaffLoginForm: React.FC = () => {
             <input
               type="text"
               required
+              autoComplete="off"
               value={username}
-              onChange={e => setUsername(e.target.value)}
-              placeholder="e.g. cashier_sarah"
+              onChange={(e) => setUsername(e.target.value)}
+              placeholder="e.g. owner_admin"
               className="w-full pl-10 pr-3.5 py-2.5 rounded-lg bg-pos-bg border border-pos-border text-pos-text placeholder-pos-text-muted/60 text-sm focus:outline-none focus:ring-2 focus:ring-pos-accent focus:border-transparent font-medium"
             />
           </div>
@@ -222,7 +240,7 @@ export const StaffLoginForm: React.FC = () => {
           </span>
           <button
             type="button"
-            onClick={() => setIsPasswordMode(prev => !prev)}
+            onClick={() => setIsPasswordMode((prev) => !prev)}
             className="text-xs text-pos-accent hover:underline font-medium focus:outline-none"
           >
             {isPasswordMode ? 'Use PIN Numpad' : 'Use Password'}
@@ -232,10 +250,19 @@ export const StaffLoginForm: React.FC = () => {
         {/* Mode 1: PIN Pad */}
         {!isPasswordMode ? (
           <div className="space-y-3">
-            {/* PIN Display Visualizer */}
-            <div className="h-14 rounded-xl bg-pos-bg border border-pos-border flex items-center justify-center px-4">
-              <div className="flex items-center gap-3">
-                {[0, 1, 2, 3].map(index => (
+            {/* PIN Display Visualizer & Interactive Input */}
+            <div className="relative h-14 rounded-xl bg-pos-bg border border-pos-border flex items-center justify-center px-4">
+              <input
+                id="pin-input"
+                type="password"
+                maxLength={8}
+                value={pin}
+                onChange={(e) => setPin(e.target.value.replace(/\D/g, ''))}
+                className="opacity-0 absolute inset-0 w-full h-full cursor-pointer z-10"
+                autoComplete="off"
+              />
+              <div className="flex items-center gap-3 pointer-events-none">
+                {[0, 1, 2, 3].map((index) => (
                   <div
                     key={index}
                     className={cn(
@@ -256,7 +283,7 @@ export const StaffLoginForm: React.FC = () => {
 
             {/* Tactile Touch Numpad */}
             <div className="grid grid-cols-3 gap-2 pt-1">
-              {['1', '2', '3', '4', '5', '6', '7', '8', '9'].map(digit => (
+              {['1', '2', '3', '4', '5', '6', '7', '8', '9'].map((digit) => (
                 <button
                   key={digit}
                   type="button"
@@ -302,8 +329,9 @@ export const StaffLoginForm: React.FC = () => {
             <input
               type="password"
               required
+              autoComplete="current-password"
               value={password}
-              onChange={e => setPassword(e.target.value)}
+              onChange={(e) => setPassword(e.target.value)}
               placeholder="Enter account password"
               className="w-full pl-10 pr-3.5 py-2.5 rounded-lg bg-pos-bg border border-pos-border text-pos-text placeholder-pos-text-muted/60 text-sm focus:outline-none focus:ring-2 focus:ring-pos-accent focus:border-transparent font-medium"
             />
@@ -314,7 +342,7 @@ export const StaffLoginForm: React.FC = () => {
         <div className="pt-1">
           <button
             type="button"
-            onClick={() => setShowAdvanced(prev => !prev)}
+            onClick={() => setShowAdvanced((prev) => !prev)}
             className="flex items-center gap-1 text-[11px] text-pos-text-muted hover:text-pos-text font-medium"
           >
             {showAdvanced ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
@@ -325,7 +353,7 @@ export const StaffLoginForm: React.FC = () => {
               <Input
                 placeholder="Optional Restaurant ID"
                 value={restaurantId}
-                onChange={e => setRestaurantId(e.target.value)}
+                onChange={(e) => setRestaurantId(e.target.value)}
                 className="text-xs font-mono"
               />
             </div>
