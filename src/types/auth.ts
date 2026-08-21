@@ -31,6 +31,8 @@ export interface RestaurantProfile {
   address: string | null;
   currency: string;
   timezone: string;
+  taxRate?: number | null;
+  serviceChargeRate?: number | null;
   isActive: boolean;
 }
 

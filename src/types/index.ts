@@ -1,4 +1,5 @@
 export * from './auth';
+export * from './orders';
 
 /**
  * Standard API response envelope from backend service
