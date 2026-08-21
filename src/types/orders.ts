@@ -2431,3 +2431,114 @@ export interface OperationsPerformanceReportData {
     averageSeatingTimeMinutes: number;
   };
 }
+
+/**
+ * Restaurant Settings & Configuration Interfaces
+ */
+export interface RestaurantConfiguration {
+  id: string;
+  name: string;
+  slug: string;
+  legalName?: string | null;
+  phone?: string | null;
+  address?: string | null;
+  logo?: string | null;
+  currency: string;
+  timezone: string;
+  taxNumber?: string | null;
+  taxRate: number;
+  taxInclusive: boolean;
+  serviceChargeRate: number;
+  serviceChargeEnabled: boolean;
+  dineInEnabled: boolean;
+  takeawayEnabled: boolean;
+  deliveryEnabled: boolean;
+  receiptHeader?: string | null;
+  receiptFooter?: string | null;
+  settings?: Record<string, unknown> | null;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt?: string;
+}
+
+export interface UpdateRestaurantInput {
+  name?: string;
+  legalName?: string | null;
+  phone?: string | null;
+  address?: string | null;
+  logo?: string | null;
+  currency?: string;
+  timezone?: string;
+  taxNumber?: string | null;
+  taxRate?: number;
+  taxInclusive?: boolean;
+  serviceChargeRate?: number;
+  serviceChargeEnabled?: boolean;
+  dineInEnabled?: boolean;
+  takeawayEnabled?: boolean;
+  deliveryEnabled?: boolean;
+  receiptHeader?: string | null;
+  receiptFooter?: string | null;
+  settings?: Record<string, unknown> | null;
+}
+
+export interface ReceiptPreviewData {
+  restaurant: {
+    name: string;
+    legalName?: string | null;
+    address?: string | null;
+    phone?: string | null;
+    taxNumber?: string | null;
+    logo?: string | null;
+    currency: string;
+    receiptHeader?: string | null;
+    receiptFooter?: string | null;
+  };
+  order: {
+    orderCode: string;
+    dailySequence: number;
+    orderType: string;
+    createdAt: string;
+    formattedDate: string;
+    formattedTime: string;
+    tableNumber?: string;
+    zoneName?: string;
+    customerName?: string;
+    customerPhone?: string;
+    cashierName: string;
+    items: Array<{
+      name: string;
+      quantity: number;
+      unitPrice: number;
+      totalPrice: number;
+      notes?: string;
+      modifiers?: Array<{ name: string; price: number }>;
+    }>;
+    totals: {
+      subtotal: number;
+      itemDiscounts: number;
+      orderDiscount: number;
+      totalDiscounts: number;
+      netSubtotal: number;
+      taxAmount: number;
+      taxRate: number;
+      taxInclusive: boolean;
+      serviceCharge: number;
+      deliveryCharge: number;
+      packagingCharge: number;
+      rounding: number;
+      grandTotal: number;
+      paidAmount: number;
+      changeAmount: number;
+    };
+    payments: Array<{
+      method: string;
+      amount: number;
+      reference?: string;
+    }>;
+  };
+  meta: {
+    paperWidth: '80mm' | '58mm';
+    isReprint: boolean;
+  };
+}
