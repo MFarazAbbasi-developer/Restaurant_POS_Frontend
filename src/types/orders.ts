@@ -1796,3 +1796,185 @@ export interface ListPurchasingOrdersQueryParams {
   endDate?: string;
   search?: string;
 }
+
+/**
+ * Expenses & Petty Cash Management Interfaces
+ */
+export type ExpensePaymentMethod =
+  'CASH' | 'CARD' | 'BANK_TRANSFER' | 'DIGITAL_WALLET' | 'OTHER';
+
+export type ExpenseStatus = 'RECORDED' | 'VOIDED';
+
+export interface ExpenseCategoryRecord {
+  id: string;
+  restaurantId: string;
+  name: string;
+  description?: string | null;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt?: string;
+  _count?: {
+    expenses: number;
+  };
+}
+
+export interface PaginatedExpenseCategoriesData {
+  items: ExpenseCategoryRecord[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+}
+
+export interface ExpenseRecord {
+  id: string;
+  restaurantId: string;
+  expenseNumber: string;
+  categoryId: string;
+  amount: number;
+  paymentMethod: ExpensePaymentMethod;
+  description: string;
+  date: string;
+  businessDate?: string | null;
+  status: ExpenseStatus;
+  reference?: string | null;
+  receiptUrl?: string | null;
+  supplierId?: string | null;
+  shiftId?: string | null;
+  notes?: string | null;
+  voidReason?: string | null;
+  voidedAt?: string | null;
+  voidedById?: string | null;
+  createdById?: string | null;
+  createdAt: string;
+  updatedAt?: string;
+  category: {
+    id: string;
+    name: string;
+  };
+  supplier?: {
+    id: string;
+    name: string;
+  } | null;
+  shift?: {
+    id: string;
+    registerName: string;
+    status: string;
+    businessDate?: string;
+  } | null;
+  createdByUser?: {
+    id: string;
+    name: string;
+    username: string;
+  } | null;
+  voidedByUser?: {
+    id: string;
+    name: string;
+    username: string;
+  } | null;
+}
+
+export interface PaginatedExpensesData {
+  items: ExpenseRecord[];
+  summary: {
+    totalActiveExpensesAmount: number;
+  };
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+}
+
+export interface ExpensesSummaryData {
+  totalExpensesCount: number;
+  totalExpensesAmount: number;
+  byCategory: Array<{
+    categoryId: string;
+    name: string;
+    totalAmount: number;
+    count: number;
+  }>;
+  byPaymentMethod: Array<{
+    paymentMethod: string;
+    totalAmount: number;
+    count: number;
+  }>;
+  dailyBreakdown: Array<{
+    date: string;
+    totalAmount: number;
+    count: number;
+  }>;
+}
+
+export interface CreateExpenseCategoryInput {
+  name: string;
+  description?: string | null;
+  isActive?: boolean;
+}
+
+export interface UpdateExpenseCategoryInput {
+  name?: string;
+  description?: string | null;
+  isActive?: boolean;
+}
+
+export interface CreateExpenseInput {
+  categoryId: string;
+  amount: number;
+  paymentMethod?: ExpensePaymentMethod;
+  description: string;
+  date?: string | null;
+  businessDate?: string | null;
+  supplierId?: string | null;
+  shiftId?: string | null;
+  reference?: string | null;
+  receiptUrl?: string | null;
+  notes?: string | null;
+}
+
+export interface UpdateExpenseInput {
+  categoryId?: string;
+  description?: string;
+  reference?: string | null;
+  receiptUrl?: string | null;
+  notes?: string | null;
+}
+
+export interface VoidExpenseInput {
+  reason: string;
+  managerPin?: string;
+}
+
+export interface ListExpenseCategoriesQueryParams {
+  page?: number;
+  limit?: number;
+  search?: string;
+  isActive?: boolean;
+}
+
+export interface ListExpensesQueryParams {
+  page?: number;
+  limit?: number;
+  startDate?: string;
+  endDate?: string;
+  businessDate?: string;
+  categoryId?: string;
+  paymentMethod?: ExpensePaymentMethod;
+  status?: ExpenseStatus;
+  supplierId?: string;
+  shiftId?: string;
+  search?: string;
+}
+
+export interface ExpensesSummaryQueryParams {
+  startDate?: string;
+  endDate?: string;
+  businessDate?: string;
+  categoryId?: string;
+  paymentMethod?: ExpensePaymentMethod;
+  supplierId?: string;
+}
