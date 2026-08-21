@@ -1,3 +1,5 @@
+export * from './auth';
+
 /**
  * Standard API response envelope from backend service
  */
@@ -30,23 +32,6 @@ export interface BaseEntity {
 }
 
 /**
- * User roles in the POS ecosystem
- */
-export type UserRole = 'ADMIN' | 'MANAGER' | 'CASHIER' | 'WAITER' | 'KITCHEN';
-
-/**
- * Authenticated User Profile
- */
-export interface User extends BaseEntity {
-  name: string;
-  email: string;
-  role: UserRole;
-  pinRequired?: boolean;
-  isActive: boolean;
-  branchId?: string;
-}
-
-/**
  * POS Terminal Session Information
  */
 export interface TerminalSession {
@@ -55,15 +40,6 @@ export interface TerminalSession {
   registerOpen: boolean;
   shiftId?: string;
   openedAt?: string;
-}
-
-/**
- * Auth Token Pair
- */
-export interface AuthTokens {
-  accessToken: string;
-  refreshToken?: string;
-  expiresIn?: number;
 }
 
 /**

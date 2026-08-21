@@ -11,7 +11,13 @@ export interface ApiErrorPayload {
 
 interface ServerErrorResponseBody {
   message?: string;
-  error?: string;
+  error?:
+    | string
+    | {
+        code?: string;
+        message?: string;
+        details?: unknown;
+      };
   errors?: Record<string, string[]>;
   code?: string;
 }
@@ -37,16 +43,23 @@ export class ApiError extends Error {
   static fromAxiosError(error: AxiosError<unknown>): ApiError {
     if (error.response) {
       const data = error.response.data as ServerErrorResponseBody | undefined;
+      const errorObj =
+        typeof data?.error === 'object' && data?.error !== null ? data.error : undefined;
+      const errorStr = typeof data?.error === 'string' ? data.error : undefined;
+
       const message =
+        errorObj?.message ||
         data?.message ||
-        data?.error ||
+        errorStr ||
         error.message ||
         `Request failed with status ${error.response.status}`;
+
+      const code = errorObj?.code || data?.code || error.code;
 
       return new ApiError({
         message,
         statusCode: error.response.status,
-        code: data?.code || error.code,
+        code,
         errors: data?.errors,
         raw: error.response.data,
       });

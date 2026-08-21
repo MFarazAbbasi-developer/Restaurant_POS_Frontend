@@ -2,67 +2,226 @@ import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { POSLayout } from '@/layouts/POSLayout';
 import { NotFound } from '@/components/boundaries/NotFound';
-import { Card } from '@/components/ui/Card';
-import { Badge } from '@/components/ui/Badge';
-import { env } from '@/config/env';
+import { ProtectedRoute } from '@/routes/ProtectedRoute';
+import { PublicRoute } from '@/routes/PublicRoute';
+import { RequirePermission } from '@/routes/RequirePermission';
 
-/**
- * Root Foundation Landing View
- */
-const POSDashboardShell: React.FC = () => {
-  return (
-    <div className="max-w-4xl mx-auto space-y-6">
-      <Card className="border-pos-accent/30 bg-pos-surface/60 backdrop-blur">
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <h2 className="text-xl font-bold text-pos-text">
-              {env.appName} Engine Ready
-            </h2>
-            <p className="text-sm text-pos-text-muted mt-1">
-              Core architecture and foundation initialized successfully.
-            </p>
-          </div>
-          <Badge variant="success">Foundation Online</Badge>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-6">
-          <div className="p-4 rounded-lg bg-pos-bg/80 border border-pos-border">
-            <span className="text-xs text-pos-text-muted font-medium uppercase">
-              API Client
-            </span>
-            <p className="text-sm font-semibold text-pos-text mt-1">Axios + Zod</p>
-            <p className="text-xs text-pos-text-muted mt-0.5 truncate">
-              {env.apiBaseUrl}
-            </p>
-          </div>
-          <div className="p-4 rounded-lg bg-pos-bg/80 border border-pos-border">
-            <span className="text-xs text-pos-text-muted font-medium uppercase">
-              Realtime Stream
-            </span>
-            <p className="text-sm font-semibold text-pos-text mt-1">Socket.IO Client</p>
-            <p className="text-xs text-pos-text-muted mt-0.5 truncate">{env.wsUrl}</p>
-          </div>
-          <div className="p-4 rounded-lg bg-pos-bg/80 border border-pos-border">
-            <span className="text-xs text-pos-text-muted font-medium uppercase">
-              State Layers
-            </span>
-            <p className="text-sm font-semibold text-pos-text mt-1">
-              TanStack Query + Zustand
-            </p>
-            <p className="text-xs text-pos-text-muted mt-0.5">Offline-first ready</p>
-          </div>
-        </div>
-      </Card>
-    </div>
-  );
-};
+// Pages
+import { LoginPage } from '@/pages/Login/LoginPage';
+import { DashboardPage } from '@/pages/Dashboard/DashboardPage';
+import { OrdersPage } from '@/pages/Orders/OrdersPage';
+import { TablesPage } from '@/pages/Tables/TablesPage';
+import { TakeawayPage } from '@/pages/Takeaway/TakeawayPage';
+import { DeliveryPage } from '@/pages/Delivery/DeliveryPage';
+import { KitchenPage } from '@/pages/Kitchen/KitchenPage';
+import { ShiftsPage } from '@/pages/Shifts/ShiftsPage';
+import { MenuPage } from '@/pages/Menu/MenuPage';
+import { InventoryPage } from '@/pages/Inventory/InventoryPage';
+import { PurchasingPage } from '@/pages/Purchasing/PurchasingPage';
+import { ExpensesPage } from '@/pages/Expenses/ExpensesPage';
+import { CustomersPage } from '@/pages/Customers/CustomersPage';
+import { ReservationsPage } from '@/pages/Reservations/ReservationsPage';
+import { PromotionsPage } from '@/pages/Promotions/PromotionsPage';
+import { LoyaltyPage } from '@/pages/Loyalty/LoyaltyPage';
+import { ReportsPage } from '@/pages/Reports/ReportsPage';
+import { StaffPage } from '@/pages/Staff/StaffPage';
+import { SettingsPage } from '@/pages/Settings/SettingsPage';
 
 export const AppRouter: React.FC = () => {
   return (
     <Routes>
-      <Route element={<POSLayout />}>
-        <Route index element={<POSDashboardShell />} />
+      {/* Public Routes */}
+      <Route element={<PublicRoute />}>
+        <Route path="/login" element={<LoginPage />} />
       </Route>
+
+      {/* Protected POS Shell Routes */}
+      <Route element={<ProtectedRoute />}>
+        <Route element={<POSLayout />}>
+          {/* 1. Dashboard Overview */}
+          <Route index element={<DashboardPage />} />
+
+          {/* 2. Operations Modules */}
+          <Route
+            path="orders"
+            element={
+              <RequirePermission permissionKey="orders.view" moduleName="POS Register">
+                <OrdersPage />
+              </RequirePermission>
+            }
+          />
+          <Route
+            path="tables"
+            element={
+              <RequirePermission permissionKey="tables.view" moduleName="Floor & Tables">
+                <TablesPage />
+              </RequirePermission>
+            }
+          />
+          <Route
+            path="takeaway"
+            element={
+              <RequirePermission permissionKey="orders.view" moduleName="Takeaway Queue">
+                <TakeawayPage />
+              </RequirePermission>
+            }
+          />
+          <Route
+            path="delivery"
+            element={
+              <RequirePermission
+                permissionKey="delivery.view"
+                moduleName="Delivery Dispatch"
+              >
+                <DeliveryPage />
+              </RequirePermission>
+            }
+          />
+          <Route
+            path="kitchen"
+            element={
+              <RequirePermission
+                permissionKey="kitchen.view"
+                moduleName="Kitchen Display"
+              >
+                <KitchenPage />
+              </RequirePermission>
+            }
+          />
+
+          {/* 3. Management Modules */}
+          <Route
+            path="shifts"
+            element={
+              <RequirePermission
+                permissionKey="shifts.view"
+                moduleName="Payments & Shifts"
+              >
+                <ShiftsPage />
+              </RequirePermission>
+            }
+          />
+          <Route
+            path="menu"
+            element={
+              <RequirePermission permissionKey="menu.view" moduleName="Menu & Catalog">
+                <MenuPage />
+              </RequirePermission>
+            }
+          />
+          <Route
+            path="inventory"
+            element={
+              <RequirePermission
+                permissionKey="inventory.view"
+                moduleName="Stock & Inventory"
+              >
+                <InventoryPage />
+              </RequirePermission>
+            }
+          />
+          <Route
+            path="customers"
+            element={
+              <RequirePermission
+                permissionKey="customer.view"
+                moduleName="Customer Directory"
+              >
+                <CustomersPage />
+              </RequirePermission>
+            }
+          />
+          <Route
+            path="reservations"
+            element={
+              <RequirePermission
+                permissionKey="reservations.view"
+                moduleName="Reservations"
+              >
+                <ReservationsPage />
+              </RequirePermission>
+            }
+          />
+
+          {/* 4. Administration Modules */}
+          <Route
+            path="purchasing"
+            element={
+              <RequirePermission
+                permissionKey="purchasing.view"
+                moduleName="Purchasing & Suppliers"
+              >
+                <PurchasingPage />
+              </RequirePermission>
+            }
+          />
+          <Route
+            path="expenses"
+            element={
+              <RequirePermission
+                permissionKey="expenses.view"
+                moduleName="Expenses & Petty Cash"
+              >
+                <ExpensesPage />
+              </RequirePermission>
+            }
+          />
+          <Route
+            path="promotions"
+            element={
+              <RequirePermission
+                permissionKey="promotions.view"
+                moduleName="Discounts & Promotions"
+              >
+                <PromotionsPage />
+              </RequirePermission>
+            }
+          />
+          <Route
+            path="loyalty"
+            element={
+              <RequirePermission
+                permissionKey="loyalty.view"
+                moduleName="Loyalty Rewards"
+              >
+                <LoyaltyPage />
+              </RequirePermission>
+            }
+          />
+          <Route
+            path="reports"
+            element={
+              <RequirePermission
+                permissionKey="reports.view"
+                moduleName="Reports & Analytics"
+              >
+                <ReportsPage />
+              </RequirePermission>
+            }
+          />
+          <Route
+            path="staff"
+            element={
+              <RequirePermission permissionKey="users.view" moduleName="Staff Management">
+                <StaffPage />
+              </RequirePermission>
+            }
+          />
+          <Route
+            path="settings"
+            element={
+              <RequirePermission
+                permissionKey="settings.view"
+                moduleName="Restaurant Settings"
+              >
+                <SettingsPage />
+              </RequirePermission>
+            }
+          />
+        </Route>
+      </Route>
+
+      {/* 404 Catch-All */}
       <Route path="*" element={<NotFound />} />
     </Routes>
   );

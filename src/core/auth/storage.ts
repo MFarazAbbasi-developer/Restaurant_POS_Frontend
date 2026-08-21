@@ -1,11 +1,13 @@
-import { AuthTokens, TerminalSession, User } from '@/types';
+import { AuthTokens, AuthUser, FullUserProfile, TerminalSession } from '@/types';
+
+export type StoredUser = AuthUser | FullUserProfile;
 
 export interface IAuthStorage {
   getTokens(): AuthTokens | null;
   setTokens(tokens: AuthTokens): void;
   clearTokens(): void;
-  getUser(): User | null;
-  setUser(user: User): void;
+  getUser(): StoredUser | null;
+  setUser(user: StoredUser): void;
   clearUser(): void;
   getTerminalSession(): TerminalSession | null;
   setTerminalSession(session: TerminalSession): void;
@@ -48,7 +50,7 @@ export class LocalAuthStorage implements IAuthStorage {
     }
   }
 
-  getUser(): User | null {
+  getUser(): StoredUser | null {
     try {
       const data = localStorage.getItem(STORAGE_KEYS.USER);
       return data ? JSON.parse(data) : null;
@@ -57,7 +59,7 @@ export class LocalAuthStorage implements IAuthStorage {
     }
   }
 
-  setUser(user: User): void {
+  setUser(user: StoredUser): void {
     try {
       localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(user));
     } catch (e) {
