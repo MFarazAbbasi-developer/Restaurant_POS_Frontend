@@ -736,3 +736,217 @@ export interface PaginatedShiftsData {
     totalPages: number;
   };
 }
+
+/**
+ * Menu Management Interfaces & Inputs
+ */
+export interface CategoryRecord {
+  id: string;
+  restaurantId: string;
+  name: string;
+  description?: string | null;
+  sortOrder: number;
+  isActive: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+  _count?: {
+    menuItems: number;
+  };
+}
+
+export interface VariantRecord {
+  id: string;
+  menuItemId: string;
+  name: string;
+  price: number;
+  sortOrder: number;
+  isActive: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface ModifierRecord {
+  id: string;
+  modifierGroupId: string;
+  name: string;
+  priceAdjustment: number;
+  sortOrder: number;
+  isActive: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface ModifierGroupRecord {
+  id: string;
+  restaurantId: string;
+  name: string;
+  selectionType: 'SINGLE' | 'MULTIPLE';
+  minSelections: number;
+  maxSelections: number;
+  sortOrder: number;
+  isActive: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+  modifiers?: ModifierRecord[];
+  _count?: {
+    menuItems: number;
+  };
+}
+
+export interface ItemModifierGroupLinkRecord {
+  id: string;
+  menuItemId: string;
+  modifierGroupId: string;
+  isRequired: boolean;
+  minSelections?: number | null;
+  maxSelections?: number | null;
+  sortOrder: number;
+  modifierGroup?: ModifierGroupRecord;
+}
+
+export interface MenuItemRecord {
+  id: string;
+  restaurantId: string;
+  categoryId: string;
+  itemCode: string;
+  name: string;
+  urduName?: string | null;
+  description?: string | null;
+  basePrice: number;
+  taxRate?: number | null;
+  sortOrder: number;
+  isActive: boolean;
+  isAvailable: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+  category?: CategoryRecord;
+  variants?: VariantRecord[];
+  modifierGroups?: ItemModifierGroupLinkRecord[];
+}
+
+export interface CategoryWithCount extends CategoryRecord {
+  _count?: {
+    menuItems: number;
+  };
+}
+
+export interface CreateCategoryInput {
+  name: string;
+  description?: string | null;
+  sortOrder?: number;
+  isActive?: boolean;
+}
+
+export interface UpdateCategoryInput {
+  name?: string;
+  description?: string | null;
+  sortOrder?: number;
+}
+
+export interface ReorderCategoriesInput {
+  items: Array<{ id: string; sortOrder: number }>;
+}
+
+export interface CreateMenuItemInput {
+  categoryId: string;
+  itemCode: string;
+  name: string;
+  urduName?: string | null;
+  description?: string | null;
+  basePrice?: number;
+  taxRate?: number | null;
+  sortOrder?: number;
+  isActive?: boolean;
+  isAvailable?: boolean;
+}
+
+export interface UpdateMenuItemInput {
+  categoryId?: string;
+  itemCode?: string;
+  name?: string;
+  urduName?: string | null;
+  description?: string | null;
+  basePrice?: number;
+  taxRate?: number | null;
+  sortOrder?: number;
+}
+
+export interface ListMenuItemsQueryParams {
+  categoryId?: string;
+  isActive?: boolean;
+  isAvailable?: boolean;
+  search?: string;
+  page?: number;
+  limit?: number;
+  sortBy?: 'name' | 'itemCode' | 'sortOrder' | 'basePrice' | 'createdAt';
+  sortOrder?: 'asc' | 'desc';
+}
+
+export interface PaginatedMenuItemsData {
+  items: MenuItemRecord[];
+  pagination: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
+}
+
+export interface CreateVariantInput {
+  name: string;
+  price: number;
+  sortOrder?: number;
+  isActive?: boolean;
+}
+
+export interface UpdateVariantInput {
+  name?: string;
+  price?: number;
+  sortOrder?: number;
+  isActive?: boolean;
+}
+
+export interface ModifierGroupWithCount extends ModifierGroupRecord {
+  _count?: {
+    menuItems: number;
+  };
+}
+
+export interface CreateModifierGroupInput {
+  name: string;
+  selectionType?: 'SINGLE' | 'MULTIPLE';
+  minSelections?: number;
+  maxSelections?: number;
+  sortOrder?: number;
+  isActive?: boolean;
+}
+
+export interface UpdateModifierGroupInput {
+  name?: string;
+  selectionType?: 'SINGLE' | 'MULTIPLE';
+  minSelections?: number;
+  maxSelections?: number;
+  sortOrder?: number;
+}
+
+export interface CreateModifierInput {
+  name: string;
+  priceAdjustment?: number;
+  sortOrder?: number;
+  isActive?: boolean;
+}
+
+export interface UpdateModifierInput {
+  name?: string;
+  priceAdjustment?: number;
+  sortOrder?: number;
+  isActive?: boolean;
+}
+
+export interface LinkItemModifierGroupInput {
+  modifierGroupId: string;
+  sortOrder?: number;
+  isRequired?: boolean;
+  minSelections?: number | null;
+  maxSelections?: number | null;
+}
