@@ -61,6 +61,7 @@ export type TableStatus =
 export interface PosActiveTableOrder {
   id: string;
   orderCode: string;
+  subBillName?: string | null;
   guestCount: number;
   status: string;
   totalAmount: number;
@@ -88,12 +89,29 @@ export interface PosZone {
 export interface PosFloorViewData {
   restaurantId: string;
   summary: {
-    totalTablesCount: number;
-    occupiedTablesCount: number;
-    availableTablesCount: number;
+    totalZones?: number;
+    totalTables: number;
+    occupiedTables: number;
+    availableTables: number;
     totalGuestsSeated: number;
   };
   zones: PosZone[];
+}
+
+export interface TransferTableInput {
+  fromTableId: string;
+  toTableId: string;
+  targetStatus?: 'OCCUPIED' | 'BILL_PRINTED';
+}
+
+export interface CreateTableOrderInput {
+  subBillName?: string;
+  guestCount?: number;
+  notes?: string;
+}
+
+export interface UpdateTableStatusInput {
+  status: TableStatus;
 }
 
 /**

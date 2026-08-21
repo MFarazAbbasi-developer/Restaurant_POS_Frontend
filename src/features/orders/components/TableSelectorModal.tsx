@@ -80,7 +80,7 @@ export const TableSelectorModal: React.FC<TableSelectorModalProps> = ({
                 : 'bg-pos-surface text-pos-text-muted hover:text-pos-text hover:bg-pos-surface-hover border border-pos-border'
             )}
           >
-            All Zones ({floorData?.summary.totalTablesCount || 0})
+            All Zones ({floorData?.summary.totalTables || 0})
           </button>
           {zones.map(zone => (
             <button

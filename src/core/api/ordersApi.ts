@@ -67,4 +67,50 @@ export class OrdersApi {
     >('/payments', input);
     return response.data;
   }
+
+  /**
+   * PATCH /api/v1/tables/:id/status
+   * Update table operational status (AVAILABLE, OCCUPIED, BILL_PRINTED, RESERVED, CLEANING)
+   */
+  public static async updateTableStatus(
+    tableId: string,
+    status: string
+  ): Promise<{ table: unknown }> {
+    const response = await apiClient.patch<
+      ApiResponse<{ table: unknown }>,
+      { status: string }
+    >(`/tables/${tableId}/status`, { status });
+    return response.data;
+  }
+
+  /**
+   * POST /api/v1/tables/:id/orders
+   * Open a new dine-in sub-bill / table order context
+   */
+  public static async createTableOrder(
+    tableId: string,
+    payload: { subBillName?: string; guestCount?: number; notes?: string }
+  ): Promise<{ order: unknown }> {
+    const response = await apiClient.post<
+      ApiResponse<{ order: unknown }>,
+      typeof payload
+    >(`/tables/${tableId}/orders`, payload);
+    return response.data;
+  }
+
+  /**
+   * POST /api/v1/tables/transfer
+   * Transfer active table orders from one table to another
+   */
+  public static async transferTable(payload: {
+    fromTableId: string;
+    toTableId: string;
+    targetStatus?: string;
+  }): Promise<{ message: string }> {
+    const response = await apiClient.post<
+      ApiResponse<{ message: string }>,
+      typeof payload
+    >('/tables/transfer', payload);
+    return response.data;
+  }
 }

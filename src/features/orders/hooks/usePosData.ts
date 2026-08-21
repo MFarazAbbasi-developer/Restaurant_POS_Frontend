@@ -59,3 +59,56 @@ export const useProcessPaymentMutation = () => {
     },
   });
 };
+
+/**
+ * Mutation hook to update a table's operational status
+ */
+export const useUpdateTableStatusMutation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ tableId, status }: { tableId: string; status: string }) =>
+      OrdersApi.updateTableStatus(tableId, status),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: POS_QUERY_KEYS.TABLES });
+    },
+  });
+};
+
+/**
+ * Mutation hook to open a new sub-bill / table order context
+ */
+export const useCreateTableOrderMutation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      tableId,
+      payload,
+    }: {
+      tableId: string;
+      payload: { subBillName?: string; guestCount?: number; notes?: string };
+    }) => OrdersApi.createTableOrder(tableId, payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: POS_QUERY_KEYS.TABLES });
+    },
+  });
+};
+
+/**
+ * Mutation hook to transfer table orders
+ */
+export const useTransferTableMutation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (payload: {
+      fromTableId: string;
+      toTableId: string;
+      targetStatus?: string;
+    }) => OrdersApi.transferTable(payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: POS_QUERY_KEYS.TABLES });
+    },
+  });
+};
