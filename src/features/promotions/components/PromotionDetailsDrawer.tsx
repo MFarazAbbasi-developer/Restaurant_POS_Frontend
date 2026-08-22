@@ -90,21 +90,22 @@ export const PromotionDetailsDrawer: React.FC<PromotionDetailsDrawerProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 overflow-hidden bg-black/60 backdrop-blur-xs flex justify-end animate-in fade-in duration-200 select-none">
-      <div className="w-full max-w-lg bg-pos-surface border-l border-pos-border shadow-2xl flex flex-col h-full overflow-hidden animate-in slide-in-from-right duration-200">
+    <div className="fixed inset-0 z-50 overflow-hidden bg-black/50 backdrop-blur-xs flex justify-end animate-in fade-in duration-200 select-none">
+      <div className="w-full max-w-lg bg-pos-surface border-l border-pos-border shadow-modal flex flex-col h-full overflow-hidden animate-in slide-in-from-right duration-200">
         {/* Header */}
-        <div className="p-4 sm:p-5 border-b border-pos-border flex items-center justify-between bg-pos-header shrink-0">
+        <div className="p-4 sm:p-5 border-b border-pos-border flex items-center justify-between bg-pos-surface shrink-0">
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-xl bg-pos-accent/15 border border-pos-accent/30 text-pos-accent flex items-center justify-center">
-              <Gift size={20} />
+            <div className="h-9 w-9 rounded-lg bg-pos-primary-soft border border-pos-primary/20 text-pos-primary flex items-center justify-center">
+              <Gift size={18} />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="text-base font-black text-pos-text line-clamp-1">
+                <h3 className="text-base font-bold text-pos-text line-clamp-1">
                   {promotion.name}
                 </h3>
                 <Badge
                   variant={promotion.isActive ? 'success' : 'default'}
+                  size="sm"
                   className="text-[10px]"
                 >
                   {promotion.isActive ? 'Active' : 'Inactive'}
@@ -120,34 +121,34 @@ export const PromotionDetailsDrawer: React.FC<PromotionDetailsDrawerProps> = ({
             <button
               type="button"
               onClick={() => onEdit(promotion)}
-              className="p-2 rounded-xl text-pos-text-muted hover:text-pos-text hover:bg-pos-surface-hover transition-colors"
+              className="p-1.5 rounded-lg text-pos-text-muted hover:text-pos-text hover:bg-pos-surface-subtle transition-colors"
               title="Edit campaign"
               aria-label="Edit campaign"
             >
-              <Edit2 size={16} />
+              <Edit2 size={15} />
             </button>
             <button
               type="button"
               onClick={onClose}
-              className="p-2 rounded-xl text-pos-text-muted hover:text-pos-text hover:bg-pos-surface-hover transition-colors"
+              className="p-1.5 rounded-lg text-pos-text-muted hover:text-pos-text hover:bg-pos-surface-subtle transition-colors"
               aria-label="Close drawer"
             >
-              <X size={20} />
+              <X size={18} />
             </button>
           </div>
         </div>
 
         {/* Sub Navigation */}
         <div className="px-5 pt-3 pb-2 border-b border-pos-border bg-pos-surface flex items-center justify-between gap-2 shrink-0">
-          <div className="flex items-center gap-1 bg-pos-bg p-1 rounded-xl border border-pos-border text-xs">
+          <div className="flex items-center gap-1 bg-pos-surface-subtle p-1 rounded-lg border border-pos-border text-xs">
             <button
               type="button"
               onClick={() => setActiveSubTab('rules')}
               className={cn(
-                'px-3 py-1 rounded-lg font-bold transition-all',
+                'px-3 py-1 rounded-md font-semibold transition-all',
                 activeSubTab === 'rules'
-                  ? 'bg-pos-accent text-white'
-                  : 'text-pos-text-muted hover:text-pos-text'
+                  ? 'bg-pos-primary text-white shadow-xs'
+                  : 'text-pos-text-secondary hover:text-pos-text'
               )}
             >
               Campaign Rules
@@ -156,14 +157,18 @@ export const PromotionDetailsDrawer: React.FC<PromotionDetailsDrawerProps> = ({
               type="button"
               onClick={() => setActiveSubTab('usages')}
               className={cn(
-                'px-3 py-1 rounded-lg font-bold transition-all flex items-center gap-1',
+                'px-3 py-1 rounded-md font-semibold transition-all flex items-center gap-1',
                 activeSubTab === 'usages'
-                  ? 'bg-pos-accent text-white'
-                  : 'text-pos-text-muted hover:text-pos-text'
+                  ? 'bg-pos-primary text-white shadow-xs'
+                  : 'text-pos-text-secondary hover:text-pos-text'
               )}
             >
               <span>Usages</span>
-              <Badge variant="default" className="text-[9px] py-0 px-1 font-mono">
+              <Badge
+                variant="default"
+                size="sm"
+                className="text-[9px] py-0 px-1 font-mono"
+              >
                 {promotion._count?.usages || promotion.currentUsageCount || usages.length}
               </Badge>
             </button>
@@ -186,29 +191,33 @@ export const PromotionDetailsDrawer: React.FC<PromotionDetailsDrawerProps> = ({
           {activeSubTab === 'rules' && (
             <>
               {/* Promo Code & Discount Hero Banner */}
-              <div className="p-4 rounded-2xl bg-pos-bg border border-pos-border space-y-2">
+              <div className="p-3.5 rounded-lg bg-pos-surface-subtle border border-pos-border space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-pos-text-muted">
+                  <span className="text-[10px] font-semibold uppercase tracking-wider text-pos-text-secondary">
                     Discount Formula
                   </span>
                   {promotion.isAutoApply && (
-                    <Badge variant="info" className="text-[9px] flex items-center gap-1">
+                    <Badge
+                      variant="info"
+                      size="sm"
+                      className="text-[9px] flex items-center gap-1"
+                    >
                       <Sparkles size={10} /> Auto-Applies
                     </Badge>
                   )}
                 </div>
 
-                <div className="text-xl font-black font-mono text-pos-accent">
+                <div className="text-xl font-bold font-mono text-pos-primary">
                   {formatDiscountFormula()}
                 </div>
 
                 {promotion.code ? (
-                  <div className="pt-2 border-t border-pos-border/60 flex items-center justify-between">
+                  <div className="pt-2 border-t border-pos-border flex items-center justify-between">
                     <span className="text-pos-text-muted text-[11px]">Coupon Code:</span>
                     <button
                       type="button"
                       onClick={handleCopyCode}
-                      className="px-2.5 py-1 rounded-lg bg-pos-surface border border-pos-border font-mono font-black text-pos-text hover:border-pos-accent flex items-center gap-1.5 transition-all text-xs"
+                      className="px-2.5 py-1 rounded-md bg-pos-surface border border-pos-border font-mono font-bold text-pos-text hover:border-pos-primary flex items-center gap-1.5 transition-colors text-xs shadow-xs"
                     >
                       <span>{promotion.code}</span>
                       {copiedCode ? (
@@ -227,8 +236,8 @@ export const PromotionDetailsDrawer: React.FC<PromotionDetailsDrawerProps> = ({
 
               {/* Description */}
               {promotion.description && (
-                <div className="p-3.5 rounded-xl bg-pos-surface border border-pos-border space-y-1">
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-pos-text-muted block">
+                <div className="p-3.5 rounded-lg bg-pos-surface border border-pos-border space-y-1 shadow-xs">
+                  <span className="text-[10px] font-semibold uppercase tracking-wider text-pos-text-secondary block">
                     Description & Terms
                   </span>
                   <p className="font-medium text-pos-text">{promotion.description}</p>
@@ -236,8 +245,8 @@ export const PromotionDetailsDrawer: React.FC<PromotionDetailsDrawerProps> = ({
               )}
 
               {/* Scope & Target Items */}
-              <div className="p-3.5 rounded-xl bg-pos-surface border border-pos-border space-y-2">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-pos-text-muted block flex items-center gap-1">
+              <div className="p-3.5 rounded-lg bg-pos-surface border border-pos-border space-y-2 shadow-xs">
+                <span className="text-[10px] font-semibold uppercase tracking-wider text-pos-text-secondary block flex items-center gap-1">
                   <Layers size={12} /> Target Scope: {promotion.targetType}
                 </span>
 
@@ -254,7 +263,12 @@ export const PromotionDetailsDrawer: React.FC<PromotionDetailsDrawerProps> = ({
                     </span>
                     <div className="flex flex-wrap gap-1">
                       {promotion.menuItems.map(it => (
-                        <Badge key={it.id} variant="default" className="text-[10px]">
+                        <Badge
+                          key={it.id}
+                          variant="default"
+                          size="sm"
+                          className="text-[10px]"
+                        >
                           {it.name}
                         </Badge>
                       ))}
@@ -269,7 +283,12 @@ export const PromotionDetailsDrawer: React.FC<PromotionDetailsDrawerProps> = ({
                     </span>
                     <div className="flex flex-wrap gap-1">
                       {promotion.categories.map(c => (
-                        <Badge key={c.id} variant="default" className="text-[10px]">
+                        <Badge
+                          key={c.id}
+                          variant="default"
+                          size="sm"
+                          className="text-[10px]"
+                        >
                           {c.name}
                         </Badge>
                       ))}
@@ -279,8 +298,8 @@ export const PromotionDetailsDrawer: React.FC<PromotionDetailsDrawerProps> = ({
               </div>
 
               {/* Channels & Order Constraints */}
-              <div className="p-3.5 rounded-xl bg-pos-bg border border-pos-border space-y-2">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-pos-text-muted block">
+              <div className="p-3.5 rounded-lg bg-pos-surface-subtle border border-pos-border space-y-2">
+                <span className="text-[10px] font-semibold uppercase tracking-wider text-pos-text-secondary block">
                   Eligibility & Constraints
                 </span>
 
@@ -320,8 +339,8 @@ export const PromotionDetailsDrawer: React.FC<PromotionDetailsDrawerProps> = ({
               </div>
 
               {/* Schedule & Happy Hour Window */}
-              <div className="p-3.5 rounded-xl bg-pos-surface border border-pos-border space-y-2">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-pos-text-muted block flex items-center gap-1">
+              <div className="p-3.5 rounded-lg bg-pos-surface border border-pos-border space-y-2 shadow-xs">
+                <span className="text-[10px] font-semibold uppercase tracking-wider text-pos-text-secondary block flex items-center gap-1">
                   <Calendar size={12} /> Campaign Schedule
                 </span>
 
@@ -346,20 +365,20 @@ export const PromotionDetailsDrawer: React.FC<PromotionDetailsDrawerProps> = ({
                       <span className="text-pos-text-muted flex items-center gap-1">
                         <Clock size={11} /> Happy Hour:
                       </span>
-                      <span className="font-mono font-bold text-pos-accent">
+                      <span className="font-mono font-bold text-pos-primary">
                         {promotion.startTime || '00:00'} - {promotion.endTime || '23:59'}
                       </span>
                     </div>
                   )}
 
                   {promotion.daysOfWeek && promotion.daysOfWeek.length > 0 && (
-                    <div className="flex items-center justify-between pt-1 border-t border-pos-border/40">
+                    <div className="flex items-center justify-between pt-1 border-t border-pos-border">
                       <span className="text-pos-text-muted">Active Days:</span>
                       <div className="flex gap-1">
                         {promotion.daysOfWeek.map(d => (
                           <span
                             key={d}
-                            className="px-1.5 py-0.5 rounded bg-pos-bg border border-pos-border font-bold text-[10px]"
+                            className="px-1.5 py-0.5 rounded bg-pos-surface-subtle border border-pos-border font-bold text-[10px]"
                           >
                             {DAY_NAMES[d]}
                           </span>
@@ -371,8 +390,8 @@ export const PromotionDetailsDrawer: React.FC<PromotionDetailsDrawerProps> = ({
               </div>
 
               {/* Redemptions & Frequency Limits */}
-              <div className="p-3.5 rounded-xl bg-pos-bg border border-pos-border space-y-2">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-pos-text-muted block">
+              <div className="p-3.5 rounded-lg bg-pos-surface-subtle border border-pos-border space-y-2">
+                <span className="text-[10px] font-semibold uppercase tracking-wider text-pos-text-secondary block">
                   Usage Statistics & Limits
                 </span>
 
@@ -385,9 +404,9 @@ export const PromotionDetailsDrawer: React.FC<PromotionDetailsDrawerProps> = ({
                 </div>
 
                 {promotion.usageLimit && (
-                  <div className="h-2 w-full bg-pos-surface rounded-full overflow-hidden border border-pos-border/60">
+                  <div className="h-2 w-full bg-pos-surface rounded-full overflow-hidden border border-pos-border">
                     <div
-                      className="h-full bg-pos-accent transition-all rounded-full"
+                      className="h-full bg-pos-primary transition-all rounded-full"
                       style={{
                         width: `${Math.min(
                           100,
@@ -434,13 +453,13 @@ export const PromotionDetailsDrawer: React.FC<PromotionDetailsDrawerProps> = ({
                   {usages.map(u => (
                     <div
                       key={u.id}
-                      className="p-3 rounded-xl bg-pos-bg border border-pos-border space-y-1"
+                      className="p-3 rounded-lg bg-pos-surface border border-pos-border space-y-1 shadow-xs"
                     >
                       <div className="flex items-center justify-between">
                         <span className="font-mono font-bold text-pos-text">
                           Order #{u.order?.orderCode || u.orderId.slice(0, 8)}
                         </span>
-                        <span className="font-mono font-black text-pos-danger">
+                        <span className="font-mono font-bold text-pos-danger">
                           -{formatPrice(u.discountAmount)}
                         </span>
                       </div>
@@ -460,12 +479,12 @@ export const PromotionDetailsDrawer: React.FC<PromotionDetailsDrawerProps> = ({
         </div>
 
         {/* Footer */}
-        <div className="p-4 border-t border-pos-border bg-pos-header flex items-center justify-between shrink-0">
+        <div className="p-4 border-t border-pos-border bg-pos-surface flex items-center justify-between shrink-0">
           <Button
             variant="danger"
             size="sm"
             onClick={() => onDelete(promotion)}
-            className="text-xs font-semibold flex items-center gap-1"
+            className="text-xs font-semibold flex items-center gap-1 shadow-xs"
           >
             <Trash2 size={13} />
             <span>Delete</span>

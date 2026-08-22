@@ -225,13 +225,13 @@ export const PurchaseOrderFormModal: React.FC<PurchaseOrderFormModalProps> = ({
   const isPending = createMutation.isPending || updateMutation.isPending;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 animate-in fade-in duration-150 select-none">
-      <div className="w-full max-w-4xl bg-pos-surface border border-pos-border rounded-2xl shadow-2xl flex flex-col max-h-[92vh] overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 animate-in fade-in duration-150 select-none">
+      <div className="w-full max-w-4xl bg-pos-surface border border-pos-border rounded-xl shadow-modal flex flex-col max-h-[92vh] overflow-hidden">
         {/* Header */}
-        <div className="p-4 sm:p-5 border-b border-pos-border flex items-center justify-between bg-pos-header shrink-0">
+        <div className="p-4 sm:p-5 border-b border-pos-border flex items-center justify-between bg-pos-surface shrink-0">
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-xl bg-pos-accent/15 border border-pos-accent/30 text-pos-accent flex items-center justify-center">
-              <FileSpreadsheet size={20} />
+            <div className="h-9 w-9 rounded-lg bg-pos-primary-soft border border-pos-primary/20 text-pos-primary flex items-center justify-center">
+              <FileSpreadsheet size={18} />
             </div>
             <div>
               <h3 className="text-base font-bold text-pos-text">
@@ -248,16 +248,16 @@ export const PurchaseOrderFormModal: React.FC<PurchaseOrderFormModalProps> = ({
             type="button"
             onClick={onClose}
             aria-label="Close modal"
-            className="p-2 rounded-xl text-pos-text-muted hover:text-pos-text hover:bg-pos-surface-hover transition-colors"
+            className="p-1.5 rounded-lg text-pos-text-muted hover:text-pos-text hover:bg-pos-surface-subtle transition-colors"
           >
-            <X size={20} />
+            <X size={18} />
           </button>
         </div>
 
         {/* Form Body */}
-        <div className="flex-1 overflow-y-auto p-5 space-y-5 custom-scrollbar">
+        <div className="flex-1 overflow-y-auto p-5 space-y-4 custom-scrollbar">
           {errorMessage && (
-            <div className="p-3 rounded-xl bg-pos-danger/10 border border-pos-danger/30 text-pos-danger text-xs flex items-center gap-2">
+            <div className="p-3 rounded-lg bg-pos-danger-soft border border-[#FECACA] text-pos-danger text-xs flex items-center gap-2">
               <AlertCircle size={15} className="shrink-0" />
               <span>{errorMessage}</span>
             </div>
@@ -266,13 +266,13 @@ export const PurchaseOrderFormModal: React.FC<PurchaseOrderFormModalProps> = ({
           {/* Supplier, Location & Dates */}
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-pos-text mb-1.5">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-pos-text-secondary mb-1.5">
                 Supplier / Vendor
               </label>
               <select
                 value={supplierId}
                 onChange={e => setSupplierId(e.target.value)}
-                className="w-full px-3 py-2 rounded-xl bg-pos-bg border border-pos-border text-pos-text text-xs focus:outline-none focus:ring-2 focus:ring-pos-accent font-semibold"
+                className="w-full px-3 py-2 rounded-lg bg-pos-surface border border-pos-border text-pos-text text-xs focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary font-medium shadow-xs"
               >
                 <option value="">-- No Supplier / Direct --</option>
                 {suppliers.map(s => (
@@ -284,13 +284,13 @@ export const PurchaseOrderFormModal: React.FC<PurchaseOrderFormModalProps> = ({
             </div>
 
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-pos-text mb-1.5">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-pos-text-secondary mb-1.5">
                 Receiving Location
               </label>
               <select
                 value={locationId}
                 onChange={e => setLocationId(e.target.value)}
-                className="w-full px-3 py-2 rounded-xl bg-pos-bg border border-pos-border text-pos-text text-xs focus:outline-none focus:ring-2 focus:ring-pos-accent font-semibold"
+                className="w-full px-3 py-2 rounded-lg bg-pos-surface border border-pos-border text-pos-text text-xs focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary font-medium shadow-xs"
               >
                 <option value="">-- Default Kitchen --</option>
                 {locations.map(loc => (
@@ -302,7 +302,7 @@ export const PurchaseOrderFormModal: React.FC<PurchaseOrderFormModalProps> = ({
             </div>
 
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-pos-text mb-1.5">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-pos-text-secondary mb-1.5">
                 Expected Delivery Date
               </label>
               <div className="relative">
@@ -314,13 +314,13 @@ export const PurchaseOrderFormModal: React.FC<PurchaseOrderFormModalProps> = ({
                   type="date"
                   value={expectedDeliveryDate}
                   onChange={e => setExpectedDeliveryDate(e.target.value)}
-                  className="w-full pl-8 pr-2 py-2 rounded-xl bg-pos-bg border border-pos-border text-pos-text text-xs font-mono font-semibold focus:outline-none focus:ring-2 focus:ring-pos-accent"
+                  className="w-full pl-8 pr-2 py-2 rounded-lg bg-pos-surface border border-pos-border text-pos-text text-xs font-mono font-medium focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary shadow-xs"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-pos-text mb-1.5">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-pos-text-secondary mb-1.5">
                 Invoice / Ref Number
               </label>
               <div className="relative">
@@ -333,32 +333,32 @@ export const PurchaseOrderFormModal: React.FC<PurchaseOrderFormModalProps> = ({
                   value={invoiceNumber}
                   onChange={e => setInvoiceNumber(e.target.value)}
                   placeholder="e.g. INV-9942"
-                  className="w-full pl-8 pr-3 py-2 rounded-xl bg-pos-bg border border-pos-border text-pos-text text-xs font-mono focus:outline-none focus:ring-2 focus:ring-pos-accent font-medium"
+                  className="w-full pl-8 pr-3 py-2 rounded-lg bg-pos-surface border border-pos-border text-pos-text text-xs font-mono focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary font-medium shadow-xs"
                 />
               </div>
             </div>
           </div>
 
           {/* Line Items Table */}
-          <div className="space-y-2.5">
+          <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <h4 className="text-xs font-bold uppercase tracking-wider text-pos-text">
+              <h4 className="text-xs font-semibold uppercase tracking-wider text-pos-text-secondary">
                 Purchase Order Line Items ({lineItems.length})
               </h4>
               <button
                 type="button"
                 onClick={handleAddItem}
-                className="text-xs text-pos-accent hover:underline font-bold flex items-center gap-1"
+                className="text-xs text-pos-primary hover:underline font-semibold flex items-center gap-1"
               >
                 <Plus size={13} /> Add Item Row
               </button>
             </div>
 
-            <div className="rounded-xl border border-pos-border overflow-hidden bg-pos-bg">
+            <div className="rounded-lg border border-pos-border overflow-hidden bg-pos-surface">
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs border-collapse">
                   <thead>
-                    <tr className="border-b border-pos-border bg-pos-surface/80 text-pos-text-muted font-bold uppercase text-[10px] tracking-wider">
+                    <tr className="border-b border-pos-border bg-pos-surface-subtle text-pos-text-muted font-semibold uppercase text-[10px] tracking-wider">
                       <th className="py-2.5 px-3 min-w-[180px]">Inventory Item</th>
                       <th className="py-2.5 px-3 w-24">Qty</th>
                       <th className="py-2.5 px-3 w-28">Unit Cost ({currency})</th>
@@ -368,7 +368,7 @@ export const PurchaseOrderFormModal: React.FC<PurchaseOrderFormModalProps> = ({
                       <th className="py-2.5 px-2 w-10 text-center"></th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-pos-border/40">
+                  <tbody className="divide-y divide-pos-border">
                     {lineItems.map((item, index) => {
                       const calc = calculatedItems[index];
                       const selectedInv = inventoryItems.find(
@@ -376,7 +376,10 @@ export const PurchaseOrderFormModal: React.FC<PurchaseOrderFormModalProps> = ({
                       );
 
                       return (
-                        <tr key={item.id} className="hover:bg-pos-surface/40">
+                        <tr
+                          key={item.id}
+                          className="hover:bg-pos-surface-subtle transition-colors"
+                        >
                           {/* Item Select */}
                           <td className="p-2">
                             <select
@@ -388,7 +391,7 @@ export const PurchaseOrderFormModal: React.FC<PurchaseOrderFormModalProps> = ({
                                   e.target.value
                                 )
                               }
-                              className="w-full px-2.5 py-1.5 rounded-lg bg-pos-surface border border-pos-border text-pos-text text-xs focus:outline-none focus:ring-1 focus:ring-pos-accent font-medium"
+                              className="w-full px-2.5 py-1.5 rounded-md bg-pos-surface border border-pos-border text-pos-text text-xs focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary font-medium shadow-xs"
                             >
                               {inventoryItems.map(inv => (
                                 <option key={inv.id} value={inv.id}>
@@ -410,7 +413,7 @@ export const PurchaseOrderFormModal: React.FC<PurchaseOrderFormModalProps> = ({
                                 onChange={e =>
                                   handleItemFieldChange(index, 'quantity', e.target.value)
                                 }
-                                className="w-full px-2 py-1.5 rounded-lg bg-pos-surface border border-pos-border text-pos-text font-mono font-bold text-xs focus:outline-none focus:ring-1 focus:ring-pos-accent text-right pr-6"
+                                className="w-full px-2 py-1.5 rounded-md bg-pos-surface border border-pos-border text-pos-text font-mono font-bold text-xs focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary text-right pr-6 shadow-xs"
                               />
                               <span className="absolute right-2 text-[10px] text-pos-text-muted pointer-events-none">
                                 {selectedInv?.unit}
@@ -429,7 +432,7 @@ export const PurchaseOrderFormModal: React.FC<PurchaseOrderFormModalProps> = ({
                               onChange={e =>
                                 handleItemFieldChange(index, 'unitCost', e.target.value)
                               }
-                              className="w-full px-2 py-1.5 rounded-lg bg-pos-surface border border-pos-border text-pos-text font-mono font-bold text-xs focus:outline-none focus:ring-1 focus:ring-pos-accent text-right"
+                              className="w-full px-2 py-1.5 rounded-md bg-pos-surface border border-pos-border text-pos-text font-mono font-bold text-xs focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary text-right shadow-xs"
                             />
                           </td>
 
@@ -447,7 +450,7 @@ export const PurchaseOrderFormModal: React.FC<PurchaseOrderFormModalProps> = ({
                                   e.target.value
                                 )
                               }
-                              className="w-full px-2 py-1.5 rounded-lg bg-pos-surface border border-pos-border text-pos-text font-mono text-xs focus:outline-none focus:ring-1 focus:ring-pos-accent text-right"
+                              className="w-full px-2 py-1.5 rounded-md bg-pos-surface border border-pos-border text-pos-text font-mono text-xs focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary text-right shadow-xs"
                             />
                           </td>
 
@@ -461,7 +464,7 @@ export const PurchaseOrderFormModal: React.FC<PurchaseOrderFormModalProps> = ({
                               onChange={e =>
                                 handleItemFieldChange(index, 'taxRate', e.target.value)
                               }
-                              className="w-full px-2 py-1.5 rounded-lg bg-pos-surface border border-pos-border text-pos-text font-mono text-xs focus:outline-none focus:ring-1 focus:ring-pos-accent text-right"
+                              className="w-full px-2 py-1.5 rounded-md bg-pos-surface border border-pos-border text-pos-text font-mono text-xs focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary text-right shadow-xs"
                             />
                           </td>
 
@@ -476,7 +479,7 @@ export const PurchaseOrderFormModal: React.FC<PurchaseOrderFormModalProps> = ({
                               type="button"
                               disabled={lineItems.length <= 1}
                               onClick={() => handleRemoveItem(index)}
-                              className="p-1 rounded-lg text-pos-text-muted hover:text-pos-danger disabled:opacity-30 transition-colors"
+                              className="p-1 rounded-md text-pos-text-muted hover:text-pos-danger disabled:opacity-30 transition-colors"
                               aria-label="Remove item"
                             >
                               <Trash2 size={13} />
@@ -494,7 +497,7 @@ export const PurchaseOrderFormModal: React.FC<PurchaseOrderFormModalProps> = ({
           {/* Notes & Summary Breakdown */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-pos-text mb-1.5">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-pos-text-secondary mb-1.5">
                 Purchase Notes / Special Instructions
               </label>
               <textarea
@@ -502,12 +505,12 @@ export const PurchaseOrderFormModal: React.FC<PurchaseOrderFormModalProps> = ({
                 value={notes}
                 onChange={e => setNotes(e.target.value)}
                 placeholder="e.g. Standard delivery at rear entrance before 11 AM..."
-                className="w-full p-3 rounded-xl bg-pos-bg border border-pos-border text-pos-text text-xs focus:outline-none focus:ring-2 focus:ring-pos-accent resize-none font-medium"
+                className="w-full p-2.5 rounded-lg bg-pos-surface border border-pos-border text-pos-text placeholder-pos-text-muted text-xs focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary resize-none font-medium shadow-xs"
               />
             </div>
 
             {/* Financial Summary Tile */}
-            <div className="p-3.5 rounded-2xl bg-pos-bg border border-pos-border space-y-2 text-xs">
+            <div className="p-3.5 rounded-lg bg-pos-surface-subtle border border-pos-border space-y-2 text-xs">
               <div className="flex items-center justify-between text-pos-text-muted">
                 <span>Subtotal (Base Total)</span>
                 <span className="font-mono">{formatPrice(subtotal)}</span>
@@ -524,9 +527,9 @@ export const PurchaseOrderFormModal: React.FC<PurchaseOrderFormModalProps> = ({
                   <span className="font-mono">+{formatPrice(totalTax)}</span>
                 </div>
               )}
-              <div className="pt-2 border-t border-pos-border flex items-center justify-between text-sm font-black text-pos-text">
+              <div className="pt-2 border-t border-pos-border flex items-center justify-between text-sm font-bold text-pos-text">
                 <span>Grand Total</span>
-                <span className="font-mono text-pos-accent text-base">
+                <span className="font-mono text-pos-primary text-base font-bold">
                   {formatPrice(grandTotal)}
                 </span>
               </div>
@@ -535,7 +538,7 @@ export const PurchaseOrderFormModal: React.FC<PurchaseOrderFormModalProps> = ({
         </div>
 
         {/* Footer Actions */}
-        <div className="p-4 border-t border-pos-border bg-pos-header flex items-center justify-end gap-2 shrink-0">
+        <div className="p-4 border-t border-pos-border bg-pos-surface flex items-center justify-end gap-2 shrink-0">
           <Button
             type="button"
             variant="secondary"
@@ -553,7 +556,7 @@ export const PurchaseOrderFormModal: React.FC<PurchaseOrderFormModalProps> = ({
               size="md"
               isLoading={isPending}
               onClick={() => handleSubmit('DRAFT')}
-              className="font-bold"
+              className="font-semibold"
             >
               Save as Draft
             </Button>
@@ -565,7 +568,7 @@ export const PurchaseOrderFormModal: React.FC<PurchaseOrderFormModalProps> = ({
             size="md"
             isLoading={isPending}
             onClick={() => handleSubmit('ORDERED')}
-            className="font-bold shadow-sm"
+            className="font-bold shadow-xs"
           >
             {isEditing ? 'Save PO Changes' : 'Create & Send Order'}
           </Button>

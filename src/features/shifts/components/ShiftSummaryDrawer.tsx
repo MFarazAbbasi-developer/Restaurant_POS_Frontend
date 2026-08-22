@@ -28,13 +28,15 @@ export const ShiftSummaryDrawer: React.FC<ShiftSummaryDrawerProps> = ({
   const variance = summary.cashDrawer.variance;
 
   return (
-    <div className="w-full lg:w-96 flex flex-col bg-pos-surface border border-pos-border rounded-2xl shadow-xl overflow-hidden shrink-0 animate-in slide-in-from-right-4 duration-200">
+    <div className="w-full lg:w-96 flex flex-col bg-pos-surface border border-pos-border rounded-xl shadow-dropdown overflow-hidden shrink-0 animate-in slide-in-from-right-4 duration-150">
       {/* Drawer Header */}
-      <div className="p-4 border-b border-pos-border bg-pos-header flex items-center justify-between shrink-0">
+      <div className="p-3.5 border-b border-pos-border bg-pos-surface flex items-center justify-between shrink-0">
         <div>
           <div className="flex items-center gap-2">
             <h3 className="text-base font-bold text-pos-text">Shift Settlement Report</h3>
-            <Badge variant={isClosed ? 'default' : 'success'}>{summary.status}</Badge>
+            <Badge variant={isClosed ? 'default' : 'success'} size="sm">
+              {summary.status}
+            </Badge>
           </div>
           <p className="text-[11px] text-pos-text-muted mt-0.5 flex items-center gap-1 font-medium">
             <Building size={12} /> {summary.registerName} • {summary.businessDate}
@@ -45,7 +47,7 @@ export const ShiftSummaryDrawer: React.FC<ShiftSummaryDrawerProps> = ({
           type="button"
           onClick={onClose}
           aria-label="Close shift summary"
-          className="p-2 rounded-xl text-pos-text-muted hover:text-pos-text hover:bg-pos-surface-hover transition-colors"
+          className="p-1.5 rounded-lg text-pos-text-muted hover:text-pos-text hover:bg-pos-surface-subtle transition-colors"
         >
           <X size={18} />
         </button>
@@ -54,10 +56,10 @@ export const ShiftSummaryDrawer: React.FC<ShiftSummaryDrawerProps> = ({
       {/* Drawer Scrollable Content */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar">
         {/* Cashier & Shift Timestamps */}
-        <div className="p-3 rounded-xl bg-pos-bg border border-pos-border text-xs space-y-1.5 font-medium">
+        <div className="p-3 rounded-lg bg-pos-surface-subtle border border-pos-border text-xs space-y-1.5 font-medium">
           <div className="flex items-center justify-between">
             <span className="text-pos-text-muted flex items-center gap-1.5">
-              <User size={14} className="text-pos-accent" /> Cashier:
+              <User size={14} className="text-pos-primary" /> Cashier:
             </span>
             <span className="font-bold text-pos-text">{summary.cashier.name}</span>
           </div>
@@ -75,7 +77,7 @@ export const ShiftSummaryDrawer: React.FC<ShiftSummaryDrawerProps> = ({
           </div>
 
           {summary.closedAt && (
-            <div className="flex items-center justify-between border-t border-pos-border/40 pt-1">
+            <div className="flex items-center justify-between border-t border-pos-border pt-1">
               <span className="text-pos-text-muted flex items-center gap-1.5">
                 <Calendar size={14} /> Closed:
               </span>
@@ -90,7 +92,7 @@ export const ShiftSummaryDrawer: React.FC<ShiftSummaryDrawerProps> = ({
         </div>
 
         {/* Top Totals Card */}
-        <div className="p-3.5 rounded-xl bg-pos-header border border-pos-border space-y-1 text-xs">
+        <div className="p-3 rounded-lg bg-pos-surface-subtle border border-pos-border space-y-1 text-xs">
           <div className="flex justify-between text-pos-text-muted">
             <span>Gross Sales ({summary.totals.transactionsCount} txs):</span>
             <span className="font-mono text-pos-text">
@@ -107,11 +109,11 @@ export const ShiftSummaryDrawer: React.FC<ShiftSummaryDrawerProps> = ({
             </div>
           )}
 
-          <div className="flex justify-between items-center text-sm font-bold pt-1.5 border-t border-pos-border/50">
+          <div className="flex justify-between items-center text-sm font-bold pt-1.5 border-t border-pos-border">
             <span className="text-pos-text uppercase tracking-wider text-xs">
               Net Sales:
             </span>
-            <span className="text-base font-black text-pos-accent font-mono">
+            <span className="text-base font-black text-pos-primary font-mono">
               {formatPrice(summary.totals.netSales)}
             </span>
           </div>
@@ -119,17 +121,17 @@ export const ShiftSummaryDrawer: React.FC<ShiftSummaryDrawerProps> = ({
 
         {/* Drawer Math Reconciliation */}
         <div>
-          <h4 className="text-xs font-bold uppercase tracking-wider text-pos-text mb-2">
+          <h4 className="text-xs font-semibold uppercase tracking-wider text-pos-text-secondary mb-2">
             Cash Drawer Ledger
           </h4>
 
-          <div className="p-3.5 rounded-xl bg-pos-bg border border-pos-border space-y-1.5 font-mono text-xs">
+          <div className="p-3 rounded-lg bg-pos-surface border border-pos-border space-y-1.5 font-mono text-xs shadow-xs">
             <div className="flex justify-between text-pos-text-muted">
               <span>(+) Opening Float:</span>
               <span>{formatPrice(summary.cashDrawer.openingCash)}</span>
             </div>
 
-            <div className="flex justify-between text-pos-success">
+            <div className="flex justify-between text-pos-success font-medium">
               <span>(+) Cash Sales:</span>
               <span>+{formatPrice(summary.cashDrawer.cashSales)}</span>
             </div>
@@ -165,13 +167,13 @@ export const ShiftSummaryDrawer: React.FC<ShiftSummaryDrawerProps> = ({
               </div>
             )}
 
-            <div className="flex justify-between items-center font-bold pt-1.5 border-t border-pos-border/40 text-pos-text">
+            <div className="flex justify-between items-center font-bold pt-1.5 border-t border-pos-border text-pos-text">
               <span>Expected Closing Cash:</span>
               <span>{formatPrice(summary.cashDrawer.expectedClosingCash)}</span>
             </div>
 
             {summary.cashDrawer.actualClosingCash !== null && (
-              <div className="flex justify-between items-center font-bold text-pos-accent">
+              <div className="flex justify-between items-center font-bold text-pos-primary">
                 <span>Actual Counted Cash:</span>
                 <span>{formatPrice(summary.cashDrawer.actualClosingCash)}</span>
               </div>
@@ -180,7 +182,7 @@ export const ShiftSummaryDrawer: React.FC<ShiftSummaryDrawerProps> = ({
             {variance !== null && (
               <div
                 className={cn(
-                  'flex justify-between items-center font-bold pt-1 border-t border-pos-border/40',
+                  'flex justify-between items-center font-bold pt-1 border-t border-pos-border',
                   Math.abs(variance) < 0.01
                     ? 'text-pos-success'
                     : variance > 0
@@ -200,7 +202,7 @@ export const ShiftSummaryDrawer: React.FC<ShiftSummaryDrawerProps> = ({
 
         {/* Payment Methods Breakdown */}
         <div>
-          <h4 className="text-xs font-bold uppercase tracking-wider text-pos-text mb-2">
+          <h4 className="text-xs font-semibold uppercase tracking-wider text-pos-text-secondary mb-2">
             Payment Methods Breakdown
           </h4>
 
@@ -208,10 +210,10 @@ export const ShiftSummaryDrawer: React.FC<ShiftSummaryDrawerProps> = ({
             {Object.entries(summary.paymentsByMethod).map(([method, data]) => (
               <div
                 key={method}
-                className="p-2.5 rounded-xl bg-pos-bg border border-pos-border flex items-center justify-between text-xs font-medium"
+                className="p-2.5 rounded-lg bg-pos-surface border border-pos-border flex items-center justify-between text-xs font-medium shadow-xs"
               >
                 <div className="flex items-center gap-2">
-                  <CreditCard size={14} className="text-pos-accent" />
+                  <CreditCard size={14} className="text-pos-primary" />
                   <span className="font-bold text-pos-text">{method}</span>
                   <span className="text-[10px] text-pos-text-muted">
                     ({data.count} orders)
@@ -231,7 +233,7 @@ export const ShiftSummaryDrawer: React.FC<ShiftSummaryDrawerProps> = ({
             variant="secondary"
             size="md"
             onClick={() => window.print()}
-            className="w-full text-xs font-semibold flex items-center justify-center gap-1.5"
+            className="w-full text-xs font-medium flex items-center justify-center gap-1.5"
           >
             <Printer size={15} />
             <span>Print Z-Report Summary</span>

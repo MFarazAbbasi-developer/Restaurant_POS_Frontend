@@ -59,37 +59,37 @@ export const PurchaseOrderDetailsDrawer: React.FC<PurchaseOrderDetailsDrawerProp
     switch (status) {
       case 'DRAFT':
         return (
-          <Badge variant="default" className="text-[10px]">
+          <Badge variant="default" size="sm" className="text-[10px]">
             Draft
           </Badge>
         );
       case 'ORDERED':
         return (
-          <Badge variant="warning" className="text-[10px]">
+          <Badge variant="warning" size="sm" className="text-[10px]">
             Ordered / In Transit
           </Badge>
         );
       case 'PARTIALLY_RECEIVED':
         return (
-          <Badge variant="warning" className="text-[10px]">
+          <Badge variant="warning" size="sm" className="text-[10px]">
             Partially Received
           </Badge>
         );
       case 'RECEIVED':
         return (
-          <Badge variant="success" className="text-[10px]">
+          <Badge variant="success" size="sm" className="text-[10px]">
             Fully Received
           </Badge>
         );
       case 'CANCELLED':
         return (
-          <Badge variant="danger" className="text-[10px]">
+          <Badge variant="danger" size="sm" className="text-[10px]">
             Cancelled
           </Badge>
         );
       default:
         return (
-          <Badge variant="default" className="text-[10px]">
+          <Badge variant="default" size="sm" className="text-[10px]">
             {status}
           </Badge>
         );
@@ -121,7 +121,7 @@ export const PurchaseOrderDetailsDrawer: React.FC<PurchaseOrderDetailsDrawerProp
 
   if (isLoading || !order) {
     return (
-      <div className="fixed inset-0 z-50 overflow-hidden bg-black/60 backdrop-blur-xs flex justify-end">
+      <div className="fixed inset-0 z-50 overflow-hidden bg-black/50 flex justify-end">
         <div className="w-full max-w-xl bg-pos-surface border-l border-pos-border p-12 flex flex-col items-center justify-center gap-3">
           <Spinner size="lg" />
           <span className="text-xs text-pos-text-muted">
@@ -144,17 +144,17 @@ export const PurchaseOrderDetailsDrawer: React.FC<PurchaseOrderDetailsDrawerProp
       : 0;
 
   return (
-    <div className="fixed inset-0 z-50 overflow-hidden bg-black/60 backdrop-blur-xs flex justify-end animate-in fade-in duration-200 select-none">
-      <div className="w-full max-w-2xl bg-pos-surface border-l border-pos-border shadow-2xl flex flex-col h-full overflow-hidden animate-in slide-in-from-right duration-200">
+    <div className="fixed inset-0 z-50 overflow-hidden bg-black/50 flex justify-end animate-in fade-in duration-200 select-none">
+      <div className="w-full max-w-2xl bg-pos-surface border-l border-pos-border shadow-drawer flex flex-col h-full overflow-hidden animate-in slide-in-from-right duration-200">
         {/* Header */}
-        <div className="p-4 sm:p-5 border-b border-pos-border flex items-center justify-between bg-pos-header shrink-0">
+        <div className="p-4 sm:p-5 border-b border-pos-border flex items-center justify-between bg-pos-surface shrink-0">
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-xl bg-pos-accent/15 border border-pos-accent/30 text-pos-accent flex items-center justify-center">
-              <FileSpreadsheet size={20} />
+            <div className="h-9 w-9 rounded-lg bg-pos-primary-soft border border-pos-primary/20 text-pos-primary flex items-center justify-center">
+              <FileSpreadsheet size={18} />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="text-base font-black text-pos-text font-mono">
+                <h3 className="text-base font-bold text-pos-text font-mono">
                   #{order.orderNumber}
                 </h3>
                 {getStatusBadge(order.status)}
@@ -171,7 +171,7 @@ export const PurchaseOrderDetailsDrawer: React.FC<PurchaseOrderDetailsDrawerProp
               <button
                 type="button"
                 onClick={() => onEdit(order)}
-                className="p-2 rounded-xl text-pos-text-muted hover:text-pos-text hover:bg-pos-surface-hover transition-colors"
+                className="p-1.5 rounded-lg text-pos-text-muted hover:text-pos-text hover:bg-pos-surface-subtle transition-colors"
                 title="Edit draft order"
                 aria-label="Edit draft order"
               >
@@ -181,20 +181,20 @@ export const PurchaseOrderDetailsDrawer: React.FC<PurchaseOrderDetailsDrawerProp
             <button
               type="button"
               onClick={onClose}
-              className="p-2 rounded-xl text-pos-text-muted hover:text-pos-text hover:bg-pos-surface-hover transition-colors"
+              className="p-1.5 rounded-lg text-pos-text-muted hover:text-pos-text hover:bg-pos-surface-subtle transition-colors"
               aria-label="Close drawer"
             >
-              <X size={20} />
+              <X size={18} />
             </button>
           </div>
         </div>
 
         {/* Scrollable Body */}
-        <div className="flex-1 overflow-y-auto p-5 space-y-5 custom-scrollbar">
+        <div className="flex-1 overflow-y-auto p-5 space-y-4 custom-scrollbar">
           {/* Action CTAs */}
           {order.status !== 'CANCELLED' && (
-            <div className="p-3.5 rounded-2xl bg-pos-bg border border-pos-border space-y-2">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-pos-text-muted block">
+            <div className="p-3.5 rounded-lg bg-pos-surface-subtle border border-pos-border space-y-2">
+              <span className="text-[10px] font-semibold uppercase tracking-wider text-pos-text-secondary block">
                 Workflow Actions
               </span>
               <div className="flex flex-wrap items-center gap-2">
@@ -230,7 +230,7 @@ export const PurchaseOrderDetailsDrawer: React.FC<PurchaseOrderDetailsDrawerProp
                     variant="secondary"
                     size="sm"
                     onClick={() => onReturn(order)}
-                    className="font-semibold text-xs text-pos-danger hover:bg-pos-danger/10 flex items-center gap-1.5"
+                    className="font-semibold text-xs text-pos-danger hover:bg-pos-danger-soft flex items-center gap-1.5"
                   >
                     <Undo2 size={13} />
                     <span>Return Received Items</span>
@@ -243,7 +243,7 @@ export const PurchaseOrderDetailsDrawer: React.FC<PurchaseOrderDetailsDrawerProp
                     size="sm"
                     isLoading={cancelMutation.isPending}
                     onClick={handleCancelOrder}
-                    className="font-semibold text-xs text-pos-danger hover:bg-pos-danger/10 flex items-center gap-1.5"
+                    className="font-semibold text-xs text-pos-danger hover:bg-pos-danger-soft flex items-center gap-1.5"
                   >
                     <Ban size={13} />
                     <span>Cancel PO</span>
@@ -254,20 +254,20 @@ export const PurchaseOrderDetailsDrawer: React.FC<PurchaseOrderDetailsDrawerProp
           )}
 
           {/* Receiving Progress */}
-          <div className="p-4 rounded-2xl bg-pos-bg border border-pos-border space-y-2">
+          <div className="p-3.5 rounded-lg bg-pos-surface-subtle border border-pos-border space-y-2">
             <div className="flex items-center justify-between text-xs">
-              <span className="font-bold uppercase tracking-wider text-pos-text flex items-center gap-1.5">
-                <CheckCircle2 size={14} className="text-pos-accent" />
+              <span className="font-semibold uppercase tracking-wider text-pos-text-secondary flex items-center gap-1.5">
+                <CheckCircle2 size={14} className="text-pos-primary" />
                 <span>Receiving Progress</span>
               </span>
-              <span className="font-mono font-bold text-pos-accent">
+              <span className="font-mono font-bold text-pos-primary">
                 {totalReceivedQty} / {totalOrderedQty} Units ({percentReceived}%)
               </span>
             </div>
 
             <div className="h-2 w-full bg-pos-surface rounded-full overflow-hidden border border-pos-border">
               <div
-                className="h-full bg-pos-accent transition-all duration-300 rounded-full"
+                className="h-full bg-pos-primary transition-all duration-300 rounded-full"
                 style={{ width: `${percentReceived}%` }}
               />
             </div>
@@ -275,8 +275,8 @@ export const PurchaseOrderDetailsDrawer: React.FC<PurchaseOrderDetailsDrawerProp
 
           {/* Supplier & Destination */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div className="p-3.5 rounded-xl bg-pos-surface border border-pos-border space-y-1.5 text-xs">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-pos-text-muted flex items-center gap-1">
+            <div className="p-3.5 rounded-lg bg-pos-surface border border-pos-border space-y-1.5 text-xs shadow-xs">
+              <span className="text-[10px] font-semibold uppercase tracking-wider text-pos-text-muted flex items-center gap-1">
                 <Truck size={12} /> Supplier Vendor
               </span>
               <span className="font-bold text-pos-text block text-sm">
@@ -288,15 +288,15 @@ export const PurchaseOrderDetailsDrawer: React.FC<PurchaseOrderDetailsDrawerProp
                 </span>
               )}
               {order.supplier?.phone && (
-                <span className="text-[11px] text-pos-accent font-mono block">
+                <span className="text-[11px] text-pos-primary font-mono block">
                   <Phone size={11} className="inline mr-1" />
                   {order.supplier.phone}
                 </span>
               )}
             </div>
 
-            <div className="p-3.5 rounded-xl bg-pos-surface border border-pos-border space-y-1.5 text-xs">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-pos-text-muted flex items-center gap-1">
+            <div className="p-3.5 rounded-lg bg-pos-surface border border-pos-border space-y-1.5 text-xs shadow-xs">
+              <span className="text-[10px] font-semibold uppercase tracking-wider text-pos-text-muted flex items-center gap-1">
                 <MapPin size={12} /> Receiving Destination
               </span>
               <span className="font-bold text-pos-text block text-sm">
@@ -313,14 +313,14 @@ export const PurchaseOrderDetailsDrawer: React.FC<PurchaseOrderDetailsDrawerProp
 
           {/* Line Items Breakdown */}
           <div className="space-y-2">
-            <span className="text-xs font-bold uppercase tracking-wider text-pos-text block">
+            <span className="text-xs font-semibold uppercase tracking-wider text-pos-text-secondary block">
               Line Items ({order.items.length})
             </span>
 
-            <div className="rounded-xl border border-pos-border overflow-hidden bg-pos-bg">
+            <div className="rounded-lg border border-pos-border overflow-hidden bg-pos-surface">
               <table className="w-full text-left text-xs border-collapse">
                 <thead>
-                  <tr className="border-b border-pos-border bg-pos-surface/80 text-pos-text-muted font-bold uppercase text-[10px] tracking-wider">
+                  <tr className="border-b border-pos-border bg-pos-surface-subtle text-pos-text-muted font-semibold uppercase text-[10px] tracking-wider">
                     <th className="py-2.5 px-3">Item</th>
                     <th className="py-2.5 px-3 text-center">Ordered</th>
                     <th className="py-2.5 px-3 text-center">Received</th>
@@ -328,9 +328,12 @@ export const PurchaseOrderDetailsDrawer: React.FC<PurchaseOrderDetailsDrawerProp
                     <th className="py-2.5 px-3 text-right">Total</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-pos-border/40">
+                <tbody className="divide-y divide-pos-border">
                   {order.items.map(it => (
-                    <tr key={it.id} className="hover:bg-pos-surface/40">
+                    <tr
+                      key={it.id}
+                      className="hover:bg-pos-surface-subtle transition-colors"
+                    >
                       <td className="p-3">
                         <span className="font-bold text-pos-text block">
                           {it.inventoryItem.name}
@@ -359,7 +362,7 @@ export const PurchaseOrderDetailsDrawer: React.FC<PurchaseOrderDetailsDrawerProp
           </div>
 
           {/* Financial Breakdown */}
-          <div className="p-4 rounded-2xl bg-pos-bg border border-pos-border space-y-2 text-xs">
+          <div className="p-3.5 rounded-lg bg-pos-surface-subtle border border-pos-border space-y-2 text-xs">
             <div className="flex items-center justify-between text-pos-text-muted">
               <span>Subtotal</span>
               <span className="font-mono">{formatPrice(order.totalAmount)}</span>
@@ -376,9 +379,9 @@ export const PurchaseOrderDetailsDrawer: React.FC<PurchaseOrderDetailsDrawerProp
                 <span className="font-mono">+{formatPrice(order.totalTax)}</span>
               </div>
             )}
-            <div className="pt-2 border-t border-pos-border flex items-center justify-between text-sm font-black text-pos-text">
+            <div className="pt-2 border-t border-pos-border flex items-center justify-between text-sm font-bold text-pos-text">
               <span>Grand Total</span>
-              <span className="font-mono text-pos-accent text-base">
+              <span className="font-mono text-pos-primary text-base font-bold">
                 {formatPrice(order.grandTotal)}
               </span>
             </div>
@@ -387,7 +390,7 @@ export const PurchaseOrderDetailsDrawer: React.FC<PurchaseOrderDetailsDrawerProp
           {/* Returns Section */}
           {order.returns && order.returns.length > 0 && (
             <div className="space-y-2">
-              <span className="text-xs font-bold uppercase tracking-wider text-pos-danger flex items-center gap-1">
+              <span className="text-xs font-semibold uppercase tracking-wider text-pos-danger flex items-center gap-1">
                 <Undo2 size={13} /> Recorded Returns ({order.returns.length})
               </span>
 
@@ -395,7 +398,7 @@ export const PurchaseOrderDetailsDrawer: React.FC<PurchaseOrderDetailsDrawerProp
                 {order.returns.map(ret => (
                   <div
                     key={ret.id}
-                    className="p-3 rounded-xl bg-pos-danger/5 border border-pos-danger/20 text-xs flex items-center justify-between"
+                    className="p-3 rounded-lg bg-pos-danger-soft border border-[#FECACA] text-xs flex items-center justify-between"
                   >
                     <div>
                       <span className="font-mono font-bold text-pos-danger block">
@@ -418,7 +421,7 @@ export const PurchaseOrderDetailsDrawer: React.FC<PurchaseOrderDetailsDrawerProp
         </div>
 
         {/* Footer */}
-        <div className="p-4 border-t border-pos-border bg-pos-header flex items-center justify-end shrink-0">
+        <div className="p-4 border-t border-pos-border bg-pos-surface flex items-center justify-end shrink-0">
           <Button variant="secondary" size="md" onClick={onClose}>
             Close
           </Button>

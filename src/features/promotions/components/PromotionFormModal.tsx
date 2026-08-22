@@ -222,13 +222,13 @@ export const PromotionFormModal: React.FC<PromotionFormModalProps> = ({
   const isPending = createMutation.isPending || updateMutation.isPending;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 animate-in fade-in duration-150 select-none">
-      <div className="w-full max-w-2xl bg-pos-surface border border-pos-border rounded-2xl shadow-2xl flex flex-col max-h-[92vh] overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 animate-in fade-in duration-150 select-none">
+      <div className="w-full max-w-2xl bg-pos-surface border border-pos-border rounded-xl shadow-modal flex flex-col max-h-[92vh] overflow-hidden">
         {/* Header */}
-        <div className="p-4 sm:p-5 border-b border-pos-border flex items-center justify-between bg-pos-header shrink-0">
+        <div className="p-4 sm:p-5 border-b border-pos-border flex items-center justify-between bg-pos-surface shrink-0">
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-xl bg-pos-accent/15 border border-pos-accent/30 text-pos-accent flex items-center justify-center">
-              <Gift size={20} />
+            <div className="h-9 w-9 rounded-lg bg-pos-primary-soft border border-pos-primary/20 text-pos-primary flex items-center justify-center">
+              <Gift size={18} />
             </div>
             <div>
               <h3 className="text-base font-bold text-pos-text">
@@ -246,9 +246,9 @@ export const PromotionFormModal: React.FC<PromotionFormModalProps> = ({
             type="button"
             onClick={onClose}
             aria-label="Close modal"
-            className="p-2 rounded-xl text-pos-text-muted hover:text-pos-text hover:bg-pos-surface-hover transition-colors"
+            className="p-1.5 rounded-lg text-pos-text-muted hover:text-pos-text hover:bg-pos-surface-subtle transition-colors"
           >
-            <X size={20} />
+            <X size={18} />
           </button>
         </div>
 
@@ -258,7 +258,7 @@ export const PromotionFormModal: React.FC<PromotionFormModalProps> = ({
           className="flex-1 overflow-y-auto p-5 space-y-4 custom-scrollbar text-xs"
         >
           {errorMessage && (
-            <div className="p-3 rounded-xl bg-pos-danger/10 border border-pos-danger/30 text-pos-danger flex items-center gap-2">
+            <div className="p-3 rounded-lg bg-pos-danger-soft border border-[#FECACA] text-pos-danger flex items-center gap-2">
               <AlertCircle size={15} className="shrink-0" />
               <span>{errorMessage}</span>
             </div>
@@ -267,7 +267,7 @@ export const PromotionFormModal: React.FC<PromotionFormModalProps> = ({
           {/* Campaign Name & Promo Code */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="block font-bold uppercase tracking-wider text-pos-text mb-1">
+              <label className="block font-semibold uppercase tracking-wider text-pos-text-secondary mb-1.5">
                 Campaign Name <span className="text-pos-danger">*</span>
               </label>
               <input
@@ -276,12 +276,12 @@ export const PromotionFormModal: React.FC<PromotionFormModalProps> = ({
                 value={name}
                 onChange={e => setName(e.target.value)}
                 placeholder="e.g. Weekend Family Feast 20% Off"
-                className="w-full px-3 py-2.5 rounded-xl bg-pos-bg border border-pos-border text-pos-text font-semibold focus:outline-none focus:ring-2 focus:ring-pos-accent"
+                className="w-full px-3 py-2 rounded-lg bg-pos-surface border border-pos-border text-pos-text font-semibold focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary shadow-xs"
               />
             </div>
 
             <div>
-              <label className="block font-bold uppercase tracking-wider text-pos-text mb-1">
+              <label className="block font-semibold uppercase tracking-wider text-pos-text-secondary mb-1.5">
                 Coupon / Promo Code (Optional)
               </label>
               <div className="relative">
@@ -294,7 +294,7 @@ export const PromotionFormModal: React.FC<PromotionFormModalProps> = ({
                   value={code}
                   onChange={e => setCode(e.target.value.toUpperCase())}
                   placeholder="e.g. SUMMER20"
-                  className="w-full pl-8 pr-3 py-2.5 rounded-xl bg-pos-bg border border-pos-border text-pos-text font-mono font-black tracking-wider uppercase focus:outline-none focus:ring-2 focus:ring-pos-accent"
+                  className="w-full pl-8 pr-3 py-2 rounded-lg bg-pos-surface border border-pos-border text-pos-text font-mono font-bold tracking-wider uppercase focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary shadow-xs"
                 />
               </div>
             </div>
@@ -302,7 +302,7 @@ export const PromotionFormModal: React.FC<PromotionFormModalProps> = ({
 
           {/* Description */}
           <div>
-            <label className="block font-bold uppercase tracking-wider text-pos-text mb-1">
+            <label className="block font-semibold uppercase tracking-wider text-pos-text-secondary mb-1.5">
               Campaign Description / Terms
             </label>
             <input
@@ -310,21 +310,21 @@ export const PromotionFormModal: React.FC<PromotionFormModalProps> = ({
               value={description}
               onChange={e => setDescription(e.target.value)}
               placeholder="e.g. 20% off on all Dine-In orders during weekend lunch hours"
-              className="w-full px-3 py-2 rounded-xl bg-pos-bg border border-pos-border text-pos-text font-medium focus:outline-none focus:ring-2 focus:ring-pos-accent"
+              className="w-full px-3 py-2 rounded-lg bg-pos-surface border border-pos-border text-pos-text font-medium focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary shadow-xs"
             />
           </div>
 
           {/* Discount Type & Target Scope */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3 rounded-xl bg-pos-bg border border-pos-border">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3.5 rounded-lg bg-pos-surface-subtle border border-pos-border">
             <div>
-              <label className="block font-bold uppercase tracking-wider text-pos-text mb-1.5 flex items-center gap-1">
-                <Percent size={13} className="text-pos-accent" />
+              <label className="block font-semibold uppercase tracking-wider text-pos-text-secondary mb-1.5 flex items-center gap-1">
+                <Percent size={13} className="text-pos-primary" />
                 <span>Discount Type</span>
               </label>
               <select
                 value={type}
                 onChange={e => setType(e.target.value as PromotionType)}
-                className="w-full px-3 py-2 rounded-xl bg-pos-surface border border-pos-border text-pos-text font-bold focus:outline-none focus:ring-2 focus:ring-pos-accent"
+                className="w-full px-3 py-2 rounded-lg bg-pos-surface border border-pos-border text-pos-text font-bold focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary shadow-xs"
               >
                 <option value="PERCENTAGE">Percentage Discount (%)</option>
                 <option value="FIXED_AMOUNT">Fixed Flat Amount ({currency})</option>
@@ -334,14 +334,14 @@ export const PromotionFormModal: React.FC<PromotionFormModalProps> = ({
             </div>
 
             <div>
-              <label className="block font-bold uppercase tracking-wider text-pos-text mb-1.5 flex items-center gap-1">
-                <Layers size={13} className="text-pos-accent" />
+              <label className="block font-semibold uppercase tracking-wider text-pos-text-secondary mb-1.5 flex items-center gap-1">
+                <Layers size={13} className="text-pos-primary" />
                 <span>Target Scope</span>
               </label>
               <select
                 value={targetType}
                 onChange={e => setTargetType(e.target.value as PromotionTargetType)}
-                className="w-full px-3 py-2 rounded-xl bg-pos-surface border border-pos-border text-pos-text font-bold focus:outline-none focus:ring-2 focus:ring-pos-accent"
+                className="w-full px-3 py-2 rounded-lg bg-pos-surface border border-pos-border text-pos-text font-bold focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary shadow-xs"
               >
                 <option value="ORDER">Entire Order Bill</option>
                 <option value="CATEGORY">Specific Menu Categories</option>
@@ -354,7 +354,7 @@ export const PromotionFormModal: React.FC<PromotionFormModalProps> = ({
           {type === 'PERCENTAGE' && (
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div>
-                <label className="block font-bold uppercase tracking-wider text-pos-text mb-1">
+                <label className="block font-semibold uppercase tracking-wider text-pos-text-secondary mb-1.5">
                   Discount Percentage (%) <span className="text-pos-danger">*</span>
                 </label>
                 <input
@@ -365,12 +365,12 @@ export const PromotionFormModal: React.FC<PromotionFormModalProps> = ({
                   value={discountValue}
                   onChange={e => setDiscountValue(e.target.value)}
                   placeholder="20"
-                  className="w-full px-3 py-2 rounded-xl bg-pos-bg border border-pos-border text-pos-text font-mono font-bold focus:outline-none focus:ring-2 focus:ring-pos-accent"
+                  className="w-full px-3 py-2 rounded-lg bg-pos-surface border border-pos-border text-pos-text font-mono font-bold focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary shadow-xs"
                 />
               </div>
 
               <div>
-                <label className="block font-bold uppercase tracking-wider text-pos-text mb-1">
+                <label className="block font-semibold uppercase tracking-wider text-pos-text-secondary mb-1.5">
                   Max Cap ({currency})
                 </label>
                 <input
@@ -380,12 +380,12 @@ export const PromotionFormModal: React.FC<PromotionFormModalProps> = ({
                   value={maxDiscountAmount}
                   onChange={e => setMaxDiscountAmount(e.target.value)}
                   placeholder="No Limit"
-                  className="w-full px-3 py-2 rounded-xl bg-pos-bg border border-pos-border text-pos-text font-mono font-bold focus:outline-none focus:ring-2 focus:ring-pos-accent"
+                  className="w-full px-3 py-2 rounded-lg bg-pos-surface border border-pos-border text-pos-text font-mono font-bold focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary shadow-xs"
                 />
               </div>
 
               <div>
-                <label className="block font-bold uppercase tracking-wider text-pos-text mb-1">
+                <label className="block font-semibold uppercase tracking-wider text-pos-text-secondary mb-1.5">
                   Min Order ({currency})
                 </label>
                 <input
@@ -395,7 +395,7 @@ export const PromotionFormModal: React.FC<PromotionFormModalProps> = ({
                   value={minOrderAmount}
                   onChange={e => setMinOrderAmount(e.target.value)}
                   placeholder="0.00"
-                  className="w-full px-3 py-2 rounded-xl bg-pos-bg border border-pos-border text-pos-text font-mono font-bold focus:outline-none focus:ring-2 focus:ring-pos-accent"
+                  className="w-full px-3 py-2 rounded-lg bg-pos-surface border border-pos-border text-pos-text font-mono font-bold focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary shadow-xs"
                 />
               </div>
             </div>
@@ -404,7 +404,7 @@ export const PromotionFormModal: React.FC<PromotionFormModalProps> = ({
           {type === 'FIXED_AMOUNT' && (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label className="block font-bold uppercase tracking-wider text-pos-text mb-1">
+                <label className="block font-semibold uppercase tracking-wider text-pos-text-secondary mb-1.5">
                   Flat Discount ({currency}) <span className="text-pos-danger">*</span>
                 </label>
                 <input
@@ -415,12 +415,12 @@ export const PromotionFormModal: React.FC<PromotionFormModalProps> = ({
                   value={discountValue}
                   onChange={e => setDiscountValue(e.target.value)}
                   placeholder="10.00"
-                  className="w-full px-3 py-2 rounded-xl bg-pos-bg border border-pos-border text-pos-text font-mono font-bold focus:outline-none focus:ring-2 focus:ring-pos-accent"
+                  className="w-full px-3 py-2 rounded-lg bg-pos-surface border border-pos-border text-pos-text font-mono font-bold focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary shadow-xs"
                 />
               </div>
 
               <div>
-                <label className="block font-bold uppercase tracking-wider text-pos-text mb-1">
+                <label className="block font-semibold uppercase tracking-wider text-pos-text-secondary mb-1.5">
                   Min Order ({currency})
                 </label>
                 <input
@@ -430,16 +430,16 @@ export const PromotionFormModal: React.FC<PromotionFormModalProps> = ({
                   value={minOrderAmount}
                   onChange={e => setMinOrderAmount(e.target.value)}
                   placeholder="0.00"
-                  className="w-full px-3 py-2 rounded-xl bg-pos-bg border border-pos-border text-pos-text font-mono font-bold focus:outline-none focus:ring-2 focus:ring-pos-accent"
+                  className="w-full px-3 py-2 rounded-lg bg-pos-surface border border-pos-border text-pos-text font-mono font-bold focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary shadow-xs"
                 />
               </div>
             </div>
           )}
 
           {type === 'BUY_X_GET_Y' && (
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 p-3 rounded-xl bg-pos-bg border border-pos-border">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 p-3.5 rounded-lg bg-pos-surface-subtle border border-pos-border">
               <div>
-                <label className="block font-bold uppercase tracking-wider text-pos-text mb-1">
+                <label className="block font-semibold uppercase tracking-wider text-pos-text-secondary mb-1.5">
                   Buy Quantity (X) <span className="text-pos-danger">*</span>
                 </label>
                 <input
@@ -448,12 +448,12 @@ export const PromotionFormModal: React.FC<PromotionFormModalProps> = ({
                   required
                   value={buyQuantity}
                   onChange={e => setBuyQuantity(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-pos-surface border border-pos-border text-pos-text font-mono font-bold"
+                  className="w-full px-3 py-2 rounded-lg bg-pos-surface border border-pos-border text-pos-text font-mono font-bold shadow-xs"
                 />
               </div>
 
               <div>
-                <label className="block font-bold uppercase tracking-wider text-pos-text mb-1">
+                <label className="block font-semibold uppercase tracking-wider text-pos-text-secondary mb-1.5">
                   Get Quantity (Y) <span className="text-pos-danger">*</span>
                 </label>
                 <input
@@ -462,12 +462,12 @@ export const PromotionFormModal: React.FC<PromotionFormModalProps> = ({
                   required
                   value={getQuantity}
                   onChange={e => setGetQuantity(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-pos-surface border border-pos-border text-pos-text font-mono font-bold"
+                  className="w-full px-3 py-2 rounded-lg bg-pos-surface border border-pos-border text-pos-text font-mono font-bold shadow-xs"
                 />
               </div>
 
               <div>
-                <label className="block font-bold uppercase tracking-wider text-pos-text mb-1">
+                <label className="block font-semibold uppercase tracking-wider text-pos-text-secondary mb-1.5">
                   Reward Discount (%)
                 </label>
                 <input
@@ -477,7 +477,7 @@ export const PromotionFormModal: React.FC<PromotionFormModalProps> = ({
                   value={getDiscountPercentage}
                   onChange={e => setGetDiscountPercentage(e.target.value)}
                   placeholder="100% (Free)"
-                  className="w-full px-3 py-2 rounded-xl bg-pos-surface border border-pos-border text-pos-text font-mono font-bold"
+                  className="w-full px-3 py-2 rounded-lg bg-pos-surface border border-pos-border text-pos-text font-mono font-bold shadow-xs"
                 />
               </div>
             </div>
@@ -485,8 +485,8 @@ export const PromotionFormModal: React.FC<PromotionFormModalProps> = ({
 
           {/* Specific Item / Category Multi-Selection */}
           {targetType === 'ITEM' && (
-            <div className="space-y-1.5 p-3 rounded-xl bg-pos-bg border border-pos-border">
-              <span className="font-bold uppercase tracking-wider text-pos-text block flex items-center justify-between">
+            <div className="space-y-1.5 p-3.5 rounded-lg bg-pos-surface-subtle border border-pos-border">
+              <span className="font-semibold uppercase tracking-wider text-pos-text-secondary block flex items-center justify-between">
                 <span>
                   Select Target Menu Items ({selectedMenuItemIds.length} selected)
                 </span>
@@ -499,15 +499,15 @@ export const PromotionFormModal: React.FC<PromotionFormModalProps> = ({
                     className={cn(
                       'flex items-center gap-2 p-2 rounded-lg border text-xs cursor-pointer select-none transition-all',
                       selectedMenuItemIds.includes(item.id)
-                        ? 'bg-pos-accent/15 border-pos-accent text-pos-text font-bold'
-                        : 'bg-pos-surface border-pos-border/60 text-pos-text-muted hover:text-pos-text'
+                        ? 'bg-pos-primary-soft border-pos-primary text-pos-text font-bold'
+                        : 'bg-pos-surface border-pos-border text-pos-text-muted hover:text-pos-text'
                     )}
                   >
                     <input
                       type="checkbox"
                       checked={selectedMenuItemIds.includes(item.id)}
                       onChange={() => toggleMenuItem(item.id)}
-                      className="h-3.5 w-3.5 rounded accent-pos-accent"
+                      className="h-3.5 w-3.5 rounded accent-pos-primary"
                     />
                     <span className="truncate">{item.name}</span>
                   </label>
@@ -517,8 +517,8 @@ export const PromotionFormModal: React.FC<PromotionFormModalProps> = ({
           )}
 
           {targetType === 'CATEGORY' && (
-            <div className="space-y-1.5 p-3 rounded-xl bg-pos-bg border border-pos-border">
-              <span className="font-bold uppercase tracking-wider text-pos-text block flex items-center justify-between">
+            <div className="space-y-1.5 p-3.5 rounded-lg bg-pos-surface-subtle border border-pos-border">
+              <span className="font-semibold uppercase tracking-wider text-pos-text-secondary block flex items-center justify-between">
                 <span>
                   Select Target Categories ({selectedCategoryIds.length} selected)
                 </span>
@@ -531,15 +531,15 @@ export const PromotionFormModal: React.FC<PromotionFormModalProps> = ({
                     className={cn(
                       'flex items-center gap-2 p-2 rounded-lg border text-xs cursor-pointer select-none transition-all',
                       selectedCategoryIds.includes(cat.id)
-                        ? 'bg-pos-accent/15 border-pos-accent text-pos-text font-bold'
-                        : 'bg-pos-surface border-pos-border/60 text-pos-text-muted hover:text-pos-text'
+                        ? 'bg-pos-primary-soft border-pos-primary text-pos-text font-bold'
+                        : 'bg-pos-surface border-pos-border text-pos-text-muted hover:text-pos-text'
                     )}
                   >
                     <input
                       type="checkbox"
                       checked={selectedCategoryIds.includes(cat.id)}
                       onChange={() => toggleCategory(cat.id)}
-                      className="h-3.5 w-3.5 rounded accent-pos-accent"
+                      className="h-3.5 w-3.5 rounded accent-pos-primary"
                     />
                     <span className="truncate">{cat.name}</span>
                   </label>
@@ -549,8 +549,8 @@ export const PromotionFormModal: React.FC<PromotionFormModalProps> = ({
           )}
 
           {/* Applicable Order Types */}
-          <div className="p-3 rounded-xl bg-pos-bg border border-pos-border space-y-1.5">
-            <span className="font-bold uppercase tracking-wider text-pos-text block">
+          <div className="p-3.5 rounded-lg bg-pos-surface-subtle border border-pos-border space-y-1.5">
+            <span className="font-semibold uppercase tracking-wider text-pos-text-secondary block">
               Applicable Dining Channels
             </span>
             <div className="flex flex-wrap items-center gap-2">
@@ -560,7 +560,7 @@ export const PromotionFormModal: React.FC<PromotionFormModalProps> = ({
                   className={cn(
                     'flex items-center gap-1.5 px-3 py-1.5 rounded-lg border cursor-pointer select-none font-bold transition-all text-xs',
                     selectedOrderTypes.includes(ot)
-                      ? 'bg-pos-accent/15 border-pos-accent text-pos-accent'
+                      ? 'bg-pos-primary-soft border-pos-primary text-pos-primary'
                       : 'bg-pos-surface border-pos-border text-pos-text-muted'
                   )}
                 >
@@ -568,7 +568,7 @@ export const PromotionFormModal: React.FC<PromotionFormModalProps> = ({
                     type="checkbox"
                     checked={selectedOrderTypes.includes(ot)}
                     onChange={() => toggleOrderType(ot)}
-                    className="h-3.5 w-3.5 rounded accent-pos-accent"
+                    className="h-3.5 w-3.5 rounded accent-pos-primary"
                   />
                   <span>{ot.replace('_', ' ')}</span>
                 </label>
@@ -577,65 +577,65 @@ export const PromotionFormModal: React.FC<PromotionFormModalProps> = ({
           </div>
 
           {/* Schedule: Date Range, Happy Hours, Days */}
-          <div className="p-3 rounded-xl bg-pos-bg border border-pos-border space-y-3">
-            <span className="font-bold uppercase tracking-wider text-pos-text block flex items-center gap-1">
-              <Calendar size={13} className="text-pos-accent" />
+          <div className="p-3.5 rounded-lg bg-pos-surface-subtle border border-pos-border space-y-3">
+            <span className="font-semibold uppercase tracking-wider text-pos-text-secondary block flex items-center gap-1">
+              <Calendar size={13} className="text-pos-primary" />
               <span>Schedule & Happy Hour Window</span>
             </span>
 
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
               <div>
-                <label className="block text-[10px] text-pos-text-muted mb-1">
+                <label className="block text-[10px] text-pos-text-muted mb-1 font-medium">
                   Start Date
                 </label>
                 <input
                   type="date"
                   value={startDate}
                   onChange={e => setStartDate(e.target.value)}
-                  className="w-full px-2 py-1.5 rounded-lg bg-pos-surface border border-pos-border text-pos-text text-xs"
+                  className="w-full px-2 py-1.5 rounded-md bg-pos-surface border border-pos-border text-pos-text text-xs"
                 />
               </div>
 
               <div>
-                <label className="block text-[10px] text-pos-text-muted mb-1">
+                <label className="block text-[10px] text-pos-text-muted mb-1 font-medium">
                   End Date
                 </label>
                 <input
                   type="date"
                   value={endDate}
                   onChange={e => setEndDate(e.target.value)}
-                  className="w-full px-2 py-1.5 rounded-lg bg-pos-surface border border-pos-border text-pos-text text-xs"
+                  className="w-full px-2 py-1.5 rounded-md bg-pos-surface border border-pos-border text-pos-text text-xs"
                 />
               </div>
 
               <div>
-                <label className="block text-[10px] text-pos-text-muted mb-1">
+                <label className="block text-[10px] text-pos-text-muted mb-1 font-medium">
                   Happy Hour Start
                 </label>
                 <input
                   type="time"
                   value={startTime}
                   onChange={e => setStartTime(e.target.value)}
-                  className="w-full px-2 py-1.5 rounded-lg bg-pos-surface border border-pos-border text-pos-text text-xs"
+                  className="w-full px-2 py-1.5 rounded-md bg-pos-surface border border-pos-border text-pos-text text-xs"
                 />
               </div>
 
               <div>
-                <label className="block text-[10px] text-pos-text-muted mb-1">
+                <label className="block text-[10px] text-pos-text-muted mb-1 font-medium">
                   Happy Hour End
                 </label>
                 <input
                   type="time"
                   value={endTime}
                   onChange={e => setEndTime(e.target.value)}
-                  className="w-full px-2 py-1.5 rounded-lg bg-pos-surface border border-pos-border text-pos-text text-xs"
+                  className="w-full px-2 py-1.5 rounded-md bg-pos-surface border border-pos-border text-pos-text text-xs"
                 />
               </div>
             </div>
 
             {/* Active Days */}
             <div>
-              <label className="block text-[10px] text-pos-text-muted mb-1">
+              <label className="block text-[10px] text-pos-text-muted mb-1 font-medium">
                 Active Days of the Week
               </label>
               <div className="flex items-center gap-1">
@@ -645,9 +645,9 @@ export const PromotionFormModal: React.FC<PromotionFormModalProps> = ({
                     type="button"
                     onClick={() => toggleDay(d.id)}
                     className={cn(
-                      'flex-1 py-1 rounded-lg border font-bold text-[11px] transition-all',
+                      'flex-1 py-1 rounded-md border font-semibold text-[11px] transition-all',
                       selectedDays.includes(d.id)
-                        ? 'bg-pos-accent text-white border-pos-accent'
+                        ? 'bg-pos-primary text-white border-pos-primary shadow-xs'
                         : 'bg-pos-surface text-pos-text-muted border-pos-border hover:text-pos-text'
                     )}
                   >
@@ -660,8 +660,8 @@ export const PromotionFormModal: React.FC<PromotionFormModalProps> = ({
 
           {/* Campaign Flags & Usage Limits */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div className="p-3 rounded-xl bg-pos-bg border border-pos-border space-y-2">
-              <span className="font-bold uppercase tracking-wider text-pos-text block">
+            <div className="p-3.5 rounded-lg bg-pos-surface-subtle border border-pos-border space-y-2">
+              <span className="font-semibold uppercase tracking-wider text-pos-text-secondary block">
                 Automation & Stackability
               </span>
 
@@ -670,11 +670,11 @@ export const PromotionFormModal: React.FC<PromotionFormModalProps> = ({
                   type="checkbox"
                   checked={isAutoApply}
                   onChange={e => setIsAutoApply(e.target.checked)}
-                  className="h-4 w-4 rounded accent-pos-accent"
+                  className="h-4 w-4 rounded accent-pos-primary"
                 />
                 <div>
                   <span className="font-bold text-pos-text block flex items-center gap-1">
-                    <Sparkles size={12} className="text-pos-accent" />
+                    <Sparkles size={12} className="text-pos-primary" />
                     Auto-Apply in Cart
                   </span>
                   <span className="text-[10px] text-pos-text-muted block">
@@ -683,12 +683,12 @@ export const PromotionFormModal: React.FC<PromotionFormModalProps> = ({
                 </div>
               </label>
 
-              <label className="flex items-center gap-2 cursor-pointer select-none pt-1 border-t border-pos-border/40">
+              <label className="flex items-center gap-2 cursor-pointer select-none pt-1 border-t border-pos-border">
                 <input
                   type="checkbox"
                   checked={isStackable}
                   onChange={e => setIsStackable(e.target.checked)}
-                  className="h-4 w-4 rounded accent-pos-accent"
+                  className="h-4 w-4 rounded accent-pos-primary"
                 />
                 <div>
                   <span className="font-bold text-pos-text block">
@@ -700,24 +700,24 @@ export const PromotionFormModal: React.FC<PromotionFormModalProps> = ({
                 </div>
               </label>
 
-              <label className="flex items-center gap-2 cursor-pointer select-none pt-1 border-t border-pos-border/40">
+              <label className="flex items-center gap-2 cursor-pointer select-none pt-1 border-t border-pos-border">
                 <input
                   type="checkbox"
                   checked={isActive}
                   onChange={e => setIsActive(e.target.checked)}
-                  className="h-4 w-4 rounded accent-pos-accent"
+                  className="h-4 w-4 rounded accent-pos-primary"
                 />
                 <span className="font-bold text-pos-text">Active Campaign</span>
               </label>
             </div>
 
-            <div className="p-3 rounded-xl bg-pos-bg border border-pos-border space-y-2">
-              <span className="font-bold uppercase tracking-wider text-pos-text block">
+            <div className="p-3.5 rounded-lg bg-pos-surface-subtle border border-pos-border space-y-2">
+              <span className="font-semibold uppercase tracking-wider text-pos-text-secondary block">
                 Redemption Frequency Limits
               </span>
 
               <div>
-                <label className="block text-[10px] text-pos-text-muted mb-1">
+                <label className="block text-[10px] text-pos-text-muted mb-1 font-medium">
                   Global Total Usage Limit
                 </label>
                 <input
@@ -726,12 +726,12 @@ export const PromotionFormModal: React.FC<PromotionFormModalProps> = ({
                   value={usageLimit}
                   onChange={e => setUsageLimit(e.target.value)}
                   placeholder="Unlimited"
-                  className="w-full px-2.5 py-1.5 rounded-lg bg-pos-surface border border-pos-border text-pos-text font-mono text-xs"
+                  className="w-full px-2.5 py-1.5 rounded-md bg-pos-surface border border-pos-border text-pos-text font-mono text-xs shadow-xs"
                 />
               </div>
 
               <div>
-                <label className="block text-[10px] text-pos-text-muted mb-1">
+                <label className="block text-[10px] text-pos-text-muted mb-1 font-medium">
                   Per-Customer Usage Limit
                 </label>
                 <input
@@ -740,7 +740,7 @@ export const PromotionFormModal: React.FC<PromotionFormModalProps> = ({
                   value={perCustomerLimit}
                   onChange={e => setPerCustomerLimit(e.target.value)}
                   placeholder="Unlimited"
-                  className="w-full px-2.5 py-1.5 rounded-lg bg-pos-surface border border-pos-border text-pos-text font-mono text-xs"
+                  className="w-full px-2.5 py-1.5 rounded-md bg-pos-surface border border-pos-border text-pos-text font-mono text-xs shadow-xs"
                 />
               </div>
             </div>
@@ -763,7 +763,7 @@ export const PromotionFormModal: React.FC<PromotionFormModalProps> = ({
               size="md"
               isLoading={isPending}
               disabled={!name.trim()}
-              className="font-bold shadow-sm"
+              className="font-bold shadow-xs"
             >
               {isEditing ? 'Save Changes' : 'Create Campaign'}
             </Button>

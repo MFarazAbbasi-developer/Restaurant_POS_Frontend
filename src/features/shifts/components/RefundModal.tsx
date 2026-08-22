@@ -90,13 +90,13 @@ export const RefundModal: React.FC<RefundModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 animate-in fade-in duration-150 select-none">
-      <div className="w-full max-w-md bg-pos-surface border border-pos-border rounded-2xl shadow-2xl flex flex-col overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 animate-in fade-in duration-150 select-none">
+      <div className="w-full max-w-md bg-pos-surface border border-pos-border rounded-xl shadow-modal flex flex-col overflow-hidden">
         {/* Header */}
-        <div className="p-4 sm:p-5 border-b border-pos-border flex items-center justify-between bg-pos-header shrink-0">
+        <div className="p-4 sm:p-5 border-b border-pos-border flex items-center justify-between bg-pos-surface shrink-0">
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-xl bg-pos-danger/15 border border-pos-danger/30 text-pos-danger flex items-center justify-center">
-              <RotateCcw size={20} />
+            <div className="h-9 w-9 rounded-lg bg-pos-danger-soft border border-[#FECACA] text-pos-danger flex items-center justify-center">
+              <RotateCcw size={18} />
             </div>
             <div>
               <h3 className="text-base font-bold text-pos-text">
@@ -111,23 +111,23 @@ export const RefundModal: React.FC<RefundModalProps> = ({
             type="button"
             onClick={onClose}
             aria-label="Close refund modal"
-            className="p-2 rounded-xl text-pos-text-muted hover:text-pos-text hover:bg-pos-surface-hover transition-colors"
+            className="p-1.5 rounded-lg text-pos-text-muted hover:text-pos-text hover:bg-pos-surface-subtle transition-colors"
           >
-            <X size={20} />
+            <X size={18} />
           </button>
         </div>
 
         {/* Form Body */}
         <form onSubmit={handleSubmit} className="p-5 space-y-4">
           {errorMessage && (
-            <div className="p-3 rounded-xl bg-pos-danger/10 border border-pos-danger/30 text-pos-danger text-xs flex items-center gap-2">
+            <div className="p-3 rounded-lg bg-pos-danger-soft border border-[#FECACA] text-pos-danger text-xs flex items-center gap-2">
               <AlertCircle size={15} className="shrink-0" />
               <span>{errorMessage}</span>
             </div>
           )}
 
           {/* Payment Summary Info */}
-          <div className="p-3 rounded-xl bg-pos-bg border border-pos-border space-y-1 text-xs font-mono">
+          <div className="p-3 rounded-lg bg-pos-surface-subtle border border-pos-border space-y-1 text-xs font-mono">
             <div className="flex justify-between text-pos-text-muted">
               <span>Original Amount:</span>
               <span className="font-bold text-pos-text">
@@ -140,7 +140,7 @@ export const RefundModal: React.FC<RefundModalProps> = ({
                 <span>-{formatPrice(payment.refundedAmount)}</span>
               </div>
             )}
-            <div className="flex justify-between items-center text-sm font-bold pt-1 border-t border-pos-border/40 text-pos-accent">
+            <div className="flex justify-between items-center text-sm font-bold pt-1 border-t border-pos-border text-pos-primary">
               <span>Max Refundable:</span>
               <span>{formatPrice(maxRefundable)}</span>
             </div>
@@ -148,13 +148,13 @@ export const RefundModal: React.FC<RefundModalProps> = ({
 
           {/* Refund Amount Input */}
           <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-pos-text mb-1.5">
+            <label className="block text-xs font-semibold uppercase tracking-wider text-pos-text-secondary mb-1.5">
               Refund Amount ({currency}) <span className="text-pos-danger">*</span>
             </label>
             <div className="relative">
               <DollarSign
                 size={16}
-                className="absolute left-3.5 top-1/2 -translate-y-1/2 text-pos-text-muted"
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-pos-text-muted"
               />
               <input
                 type="number"
@@ -165,20 +165,20 @@ export const RefundModal: React.FC<RefundModalProps> = ({
                 value={amount}
                 onChange={e => setAmount(e.target.value)}
                 placeholder="0.00"
-                className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-pos-bg border border-pos-border text-pos-text font-mono font-bold text-base focus:outline-none focus:ring-2 focus:ring-pos-accent"
+                className="w-full pl-8 pr-3 py-2 rounded-lg bg-pos-surface border border-pos-border text-pos-text font-mono font-bold text-sm focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary shadow-xs"
               />
             </div>
           </div>
 
           {/* Refund Method Selector */}
           <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-pos-text mb-1.5">
+            <label className="block text-xs font-semibold uppercase tracking-wider text-pos-text-secondary mb-1.5">
               Refund Tender Method
             </label>
             <select
               value={refundMethod}
               onChange={e => setRefundMethod(e.target.value as PaymentMethod)}
-              className="w-full px-3 py-2 rounded-xl bg-pos-bg border border-pos-border text-pos-text text-xs focus:outline-none focus:ring-2 focus:ring-pos-accent font-semibold"
+              className="w-full px-3 py-2 rounded-lg bg-pos-surface border border-pos-border text-pos-text text-xs focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary font-medium shadow-xs"
             >
               <option value="CASH">Cash</option>
               <option value="CARD">Credit / Debit Card</option>
@@ -190,7 +190,7 @@ export const RefundModal: React.FC<RefundModalProps> = ({
 
           {/* Mandatory Reason */}
           <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-pos-text mb-1.5">
+            <label className="block text-xs font-semibold uppercase tracking-wider text-pos-text-secondary mb-1.5">
               Mandatory Refund Reason <span className="text-pos-danger">*</span>
             </label>
             <textarea
@@ -200,13 +200,13 @@ export const RefundModal: React.FC<RefundModalProps> = ({
               value={reason}
               onChange={e => setReason(e.target.value)}
               placeholder="e.g. Customer returned dish, double charge on POS, wrong item..."
-              className="w-full p-3 rounded-xl bg-pos-bg border border-pos-border text-pos-text placeholder-pos-text-muted/60 text-xs focus:outline-none focus:ring-2 focus:ring-pos-accent resize-none font-medium"
+              className="w-full p-2.5 rounded-lg bg-pos-surface border border-pos-border text-pos-text placeholder-pos-text-muted text-xs focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary resize-none font-medium shadow-xs"
             />
           </div>
 
           {/* Reference (Optional) */}
           <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-pos-text mb-1.5">
+            <label className="block text-xs font-semibold uppercase tracking-wider text-pos-text-secondary mb-1.5">
               Reference / Authorization Slip # (Optional)
             </label>
             <input
@@ -214,14 +214,14 @@ export const RefundModal: React.FC<RefundModalProps> = ({
               value={reference}
               onChange={e => setReference(e.target.value)}
               placeholder="e.g. Card slip #REF-9921"
-              className="w-full px-3 py-2 rounded-xl bg-pos-bg border border-pos-border text-pos-text text-xs focus:outline-none focus:ring-2 focus:ring-pos-accent font-medium"
+              className="w-full px-3 py-2 rounded-lg bg-pos-surface border border-pos-border text-pos-text text-xs focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary font-medium shadow-xs"
             />
           </div>
 
           {/* Manager Authorization PIN */}
           {!canRefundDirectly && (
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-pos-text mb-1.5 flex items-center gap-1">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-pos-text-secondary mb-1.5 flex items-center gap-1">
                 <KeyRound size={13} className="text-pos-warning" />
                 <span>Manager Authorization PIN</span>
                 <span className="text-pos-danger">*</span>
@@ -233,7 +233,7 @@ export const RefundModal: React.FC<RefundModalProps> = ({
                 value={managerPin}
                 onChange={e => setManagerPin(e.target.value.replace(/\D/g, ''))}
                 placeholder="4-digit PIN"
-                className="w-full px-3 py-2.5 rounded-xl bg-pos-bg border border-pos-border text-pos-text font-mono tracking-widest text-center text-sm focus:outline-none focus:ring-2 focus:ring-pos-accent"
+                className="w-full px-3 py-2.5 rounded-lg bg-pos-surface border border-pos-border text-pos-text font-mono tracking-widest text-center text-sm focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary shadow-xs"
               />
             </div>
           )}
@@ -255,7 +255,7 @@ export const RefundModal: React.FC<RefundModalProps> = ({
               size="md"
               isLoading={refundMutation.isPending}
               disabled={!amount || !reason.trim()}
-              className="font-bold shadow-sm"
+              className="font-bold shadow-xs"
             >
               Process Refund
             </Button>

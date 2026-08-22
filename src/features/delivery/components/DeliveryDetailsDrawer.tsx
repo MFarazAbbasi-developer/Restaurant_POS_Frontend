@@ -50,14 +50,23 @@ export const DeliveryDetailsDrawer: React.FC<DeliveryDetailsDrawerProps> = ({
   const getStatusBadge = (status: DeliveryOrderRecord['status']) => {
     switch (status) {
       case 'PENDING':
-        return <Badge variant="warning">Pending</Badge>;
+        return (
+          <Badge variant="warning" size="sm">
+            Pending
+          </Badge>
+        );
       case 'PREPARING':
-        return <Badge variant="info">Preparing</Badge>;
+        return (
+          <Badge variant="info" size="sm">
+            Preparing
+          </Badge>
+        );
       case 'READY':
         return (
           <Badge
             variant="default"
-            className="bg-sky-500/20 text-sky-400 border-sky-500/40"
+            size="sm"
+            className="bg-pos-info-soft text-pos-info border border-[#BFDBFE]"
           >
             Ready to Dispatch
           </Badge>
@@ -66,18 +75,31 @@ export const DeliveryDetailsDrawer: React.FC<DeliveryDetailsDrawerProps> = ({
         return (
           <Badge
             variant="default"
-            className="bg-indigo-500/20 text-indigo-400 border-indigo-500/40"
+            size="sm"
+            className="bg-pos-primary-soft text-pos-primary border border-pos-primary/20"
           >
             Out for Delivery
           </Badge>
         );
       case 'DELIVERED':
-        return <Badge variant="success">Delivered</Badge>;
+        return (
+          <Badge variant="success" size="sm">
+            Delivered
+          </Badge>
+        );
       case 'CANCELLED':
       case 'FAILED':
-        return <Badge variant="danger">{status}</Badge>;
+        return (
+          <Badge variant="danger" size="sm">
+            {status}
+          </Badge>
+        );
       default:
-        return <Badge variant="default">{status}</Badge>;
+        return (
+          <Badge variant="default" size="sm">
+            {status}
+          </Badge>
+        );
     }
   };
 
@@ -110,9 +132,9 @@ export const DeliveryDetailsDrawer: React.FC<DeliveryDetailsDrawerProps> = ({
   };
 
   return (
-    <div className="w-full lg:w-96 flex flex-col bg-pos-surface border border-pos-border rounded-2xl shadow-xl overflow-hidden shrink-0 animate-in slide-in-from-right-4 duration-200">
+    <div className="w-full lg:w-96 flex flex-col bg-pos-surface border border-pos-border rounded-xl shadow-dropdown overflow-hidden shrink-0 animate-in slide-in-from-right-4 duration-150">
       {/* Drawer Header */}
-      <div className="p-4 border-b border-pos-border bg-pos-header flex items-center justify-between shrink-0">
+      <div className="p-3.5 border-b border-pos-border bg-pos-surface flex items-center justify-between shrink-0">
         <div>
           <div className="flex items-center gap-2">
             <h3 className="text-base font-black font-mono text-pos-text">
@@ -129,7 +151,7 @@ export const DeliveryDetailsDrawer: React.FC<DeliveryDetailsDrawerProps> = ({
           type="button"
           onClick={onClose}
           aria-label="Close delivery details"
-          className="p-2 rounded-xl text-pos-text-muted hover:text-pos-text hover:bg-pos-surface-hover transition-colors"
+          className="p-1.5 rounded-lg text-pos-text-muted hover:text-pos-text hover:bg-pos-surface-subtle transition-colors"
         >
           <X size={18} />
         </button>
@@ -137,7 +159,7 @@ export const DeliveryDetailsDrawer: React.FC<DeliveryDetailsDrawerProps> = ({
 
       {/* Drawer Error Banner */}
       {errorMessage && (
-        <div className="p-3 bg-pos-danger/10 border-b border-pos-danger/30 text-pos-danger text-xs flex items-center gap-2 shrink-0">
+        <div className="p-3 bg-pos-danger-soft border-b border-[#FECACA] text-pos-danger text-xs flex items-center gap-2 shrink-0">
           <AlertCircle size={15} className="shrink-0" />
           <span className="flex-1">{errorMessage}</span>
           <button type="button" onClick={() => setErrorMessage(null)}>
@@ -149,16 +171,20 @@ export const DeliveryDetailsDrawer: React.FC<DeliveryDetailsDrawerProps> = ({
       {/* Drawer Scrollable Content */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar">
         {/* Customer & Address Details */}
-        <div className="p-3.5 rounded-xl bg-pos-bg border border-pos-border space-y-2 text-xs">
+        <div className="p-3 rounded-lg bg-pos-surface-subtle border border-pos-border space-y-2 text-xs">
           <div className="flex items-center justify-between">
             <span className="font-bold text-pos-text flex items-center gap-1.5 text-sm">
-              <User size={15} className="text-pos-accent" />
+              <User size={15} className="text-pos-primary" />
               {order.customerName}
             </span>
             {order.paymentStatus === 'PAID' ? (
-              <Badge variant="success">Paid ({order.paymentMethod})</Badge>
+              <Badge variant="success" size="sm">
+                Paid ({order.paymentMethod})
+              </Badge>
             ) : (
-              <Badge variant="warning">Cash on Delivery (COD)</Badge>
+              <Badge variant="warning" size="sm">
+                Cash on Delivery (COD)
+              </Badge>
             )}
           </div>
 
@@ -166,9 +192,9 @@ export const DeliveryDetailsDrawer: React.FC<DeliveryDetailsDrawerProps> = ({
             <Phone size={13} /> {order.customerPhone}
           </p>
 
-          <div className="pt-1.5 border-t border-pos-border/40 space-y-1">
+          <div className="pt-1.5 border-t border-pos-border space-y-1">
             <div className="flex items-start gap-1.5 text-[11px] text-pos-text font-medium">
-              <MapPin size={13} className="shrink-0 text-pos-accent mt-0.5" />
+              <MapPin size={13} className="shrink-0 text-pos-primary mt-0.5" />
               <div>
                 <span>{order.deliveryAddress}</span>
                 {order.landmark && (
@@ -180,7 +206,7 @@ export const DeliveryDetailsDrawer: React.FC<DeliveryDetailsDrawerProps> = ({
             </div>
 
             {order.deliveryZoneName && (
-              <p className="text-[11px] text-pos-text-muted pl-4">
+              <p className="text-[11px] text-pos-text-secondary pl-4">
                 Zone:{' '}
                 <span className="font-semibold text-pos-text">
                   {order.deliveryZoneName}
@@ -192,9 +218,9 @@ export const DeliveryDetailsDrawer: React.FC<DeliveryDetailsDrawerProps> = ({
         </div>
 
         {/* Assigned Rider Box */}
-        <div className="p-3 rounded-xl bg-pos-bg border border-pos-border text-xs flex items-center justify-between">
+        <div className="p-3 rounded-lg bg-pos-surface border border-pos-border text-xs flex items-center justify-between shadow-xs">
           <div className="flex items-center gap-2.5">
-            <div className="h-8 w-8 rounded-lg bg-pos-surface border border-pos-border flex items-center justify-center text-pos-accent">
+            <div className="h-8 w-8 rounded-lg bg-pos-primary-soft border border-pos-primary/20 flex items-center justify-center text-pos-primary">
               <Bike size={16} />
             </div>
             <div>
@@ -224,14 +250,14 @@ export const DeliveryDetailsDrawer: React.FC<DeliveryDetailsDrawerProps> = ({
 
         {/* Detailed Items List */}
         <div>
-          <h4 className="text-xs font-bold uppercase tracking-wider text-pos-text mb-2">
+          <h4 className="text-xs font-semibold uppercase tracking-wider text-pos-text-secondary mb-2">
             Order Items ({order.items.length})
           </h4>
           <div className="space-y-2">
             {order.items.map(item => (
               <div
                 key={item.id}
-                className="p-3 rounded-xl bg-pos-bg border border-pos-border text-xs space-y-1.5"
+                className="p-3 rounded-lg bg-pos-surface border border-pos-border text-xs space-y-1.5 shadow-xs"
               >
                 <div className="flex items-start justify-between gap-2">
                   <div>
@@ -239,7 +265,7 @@ export const DeliveryDetailsDrawer: React.FC<DeliveryDetailsDrawerProps> = ({
                       {item.quantity}x {item.name}
                     </span>
                     {item.variantName && (
-                      <span className="text-[11px] text-pos-accent font-semibold ml-1.5">
+                      <span className="text-[11px] text-pos-primary font-semibold ml-1.5">
                         ({item.variantName})
                       </span>
                     )}
@@ -255,7 +281,7 @@ export const DeliveryDetailsDrawer: React.FC<DeliveryDetailsDrawerProps> = ({
                   </p>
                 )}
 
-                <div className="flex justify-between items-center text-[10px] text-pos-text-muted pt-1 border-t border-pos-border/40 font-mono">
+                <div className="flex justify-between items-center text-[10px] text-pos-text-muted pt-1 border-t border-pos-border font-mono">
                   <span>Unit: {formatPrice(item.unitPrice)}</span>
                   <span>Line: {formatPrice(item.subtotal)}</span>
                 </div>
@@ -265,7 +291,7 @@ export const DeliveryDetailsDrawer: React.FC<DeliveryDetailsDrawerProps> = ({
         </div>
 
         {/* Financial Summary */}
-        <div className="p-3.5 rounded-xl bg-pos-header/70 border border-pos-border space-y-1.5 text-xs">
+        <div className="p-3.5 rounded-lg bg-pos-surface-subtle border border-pos-border space-y-1.5 text-xs">
           {order.deliveryCharge > 0 && (
             <div className="flex justify-between text-pos-text-muted">
               <span>Delivery Charge:</span>
@@ -275,9 +301,9 @@ export const DeliveryDetailsDrawer: React.FC<DeliveryDetailsDrawerProps> = ({
             </div>
           )}
 
-          <div className="flex justify-between items-center text-sm font-bold pt-1 border-t border-pos-border/40">
+          <div className="flex justify-between items-center text-sm font-bold pt-1 border-t border-pos-border">
             <span className="text-pos-text">Total Due:</span>
-            <span className="text-lg font-black text-pos-accent font-mono">
+            <span className="text-lg font-black text-pos-primary font-mono">
               {formatPrice(order.totalAmount)}
             </span>
           </div>
@@ -285,7 +311,7 @@ export const DeliveryDetailsDrawer: React.FC<DeliveryDetailsDrawerProps> = ({
 
         {/* Progression Action Bar */}
         <div className="space-y-2 pt-2">
-          <h4 className="text-xs font-bold uppercase tracking-wider text-pos-text">
+          <h4 className="text-xs font-semibold uppercase tracking-wider text-pos-text-secondary">
             Dispatch Progression
           </h4>
 
@@ -295,9 +321,9 @@ export const DeliveryDetailsDrawer: React.FC<DeliveryDetailsDrawerProps> = ({
               size="lg"
               onClick={() => handleUpdateStatus('PREPARING')}
               isLoading={updateStatusMutation.isPending}
-              className="w-full font-bold flex items-center justify-center gap-2"
+              className="w-full font-bold flex items-center justify-center gap-2 bg-pos-info hover:bg-pos-info/90 text-white"
             >
-              <ChefHat size={18} />
+              <ChefHat size={16} />
               <span>Start Kitchen Preparation</span>
             </Button>
           )}
@@ -308,9 +334,9 @@ export const DeliveryDetailsDrawer: React.FC<DeliveryDetailsDrawerProps> = ({
               size="lg"
               onClick={() => handleUpdateStatus('READY')}
               isLoading={updateStatusMutation.isPending}
-              className="w-full font-bold flex items-center justify-center gap-2 bg-sky-500 hover:bg-sky-500/90 text-white"
+              className="w-full font-bold flex items-center justify-center gap-2 bg-pos-info-soft hover:bg-pos-info hover:text-white text-pos-info border border-[#BFDBFE]"
             >
-              <CheckCircle2 size={18} />
+              <CheckCircle2 size={16} />
               <span>Mark Ready for Dispatch</span>
             </Button>
           )}
@@ -321,9 +347,9 @@ export const DeliveryDetailsDrawer: React.FC<DeliveryDetailsDrawerProps> = ({
               size="lg"
               onClick={() => handleUpdateStatus('DISPATCHED')}
               isLoading={updateStatusMutation.isPending}
-              className="w-full font-bold flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-600/90 text-white shadow-md"
+              className="w-full font-bold flex items-center justify-center gap-2"
             >
-              <Send size={18} />
+              <Send size={16} />
               <span>
                 {order.rider ? 'Dispatch with Rider' : 'Assign Rider & Dispatch'}
               </span>
@@ -338,9 +364,9 @@ export const DeliveryDetailsDrawer: React.FC<DeliveryDetailsDrawerProps> = ({
                 handleUpdateStatus('DELIVERED', order.paymentStatus !== 'PAID')
               }
               isLoading={updateStatusMutation.isPending}
-              className="w-full font-black flex items-center justify-center gap-2 bg-pos-success hover:bg-pos-success/90 text-white shadow-md shadow-pos-success/20"
+              className="w-full font-bold flex items-center justify-center gap-2 bg-pos-success hover:bg-pos-success/90 text-white"
             >
-              <PackageCheck size={18} />
+              <PackageCheck size={16} />
               <span>Mark Delivered & Settle</span>
             </Button>
           )}
@@ -353,7 +379,7 @@ export const DeliveryDetailsDrawer: React.FC<DeliveryDetailsDrawerProps> = ({
                 variant="ghost"
                 size="md"
                 onClick={() => setIsCancelModalOpen(true)}
-                className="w-full text-xs text-pos-text-muted hover:text-pos-danger hover:bg-pos-danger/10 font-semibold"
+                className="w-full text-xs text-pos-text-muted hover:text-pos-danger hover:bg-pos-danger-soft font-medium"
               >
                 <AlertTriangle size={14} className="mr-1.5" />
                 Cancel Delivery Order
@@ -364,7 +390,7 @@ export const DeliveryDetailsDrawer: React.FC<DeliveryDetailsDrawerProps> = ({
             variant="secondary"
             size="md"
             onClick={() => window.print()}
-            className="w-full text-xs font-semibold flex items-center justify-center gap-1.5"
+            className="w-full text-xs font-medium flex items-center justify-center gap-1.5"
           >
             <Printer size={14} />
             <span>Print Dispatch Slip</span>

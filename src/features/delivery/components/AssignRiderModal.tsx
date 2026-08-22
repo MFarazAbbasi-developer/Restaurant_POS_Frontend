@@ -46,13 +46,13 @@ export const AssignRiderModal: React.FC<AssignRiderModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 animate-in fade-in duration-150 select-none">
-      <div className="w-full max-w-md bg-pos-surface border border-pos-border rounded-2xl shadow-2xl flex flex-col max-h-[85vh] overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 animate-in fade-in duration-150 select-none">
+      <div className="w-full max-w-md bg-pos-surface border border-pos-border rounded-xl shadow-modal flex flex-col max-h-[85vh] overflow-hidden">
         {/* Header */}
-        <div className="p-4 sm:p-5 border-b border-pos-border flex items-center justify-between bg-pos-header shrink-0">
+        <div className="p-4 sm:p-5 border-b border-pos-border flex items-center justify-between bg-pos-surface shrink-0">
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-xl bg-pos-accent/15 border border-pos-accent/30 text-pos-accent flex items-center justify-center">
-              <Bike size={20} />
+            <div className="h-9 w-9 rounded-lg bg-pos-primary-soft border border-pos-primary/20 text-pos-primary flex items-center justify-center">
+              <Bike size={18} />
             </div>
             <div>
               <h3 className="text-base font-bold text-pos-text">Assign Delivery Rider</h3>
@@ -65,16 +65,16 @@ export const AssignRiderModal: React.FC<AssignRiderModalProps> = ({
             type="button"
             onClick={onClose}
             aria-label="Close rider modal"
-            className="p-2 rounded-xl text-pos-text-muted hover:text-pos-text hover:bg-pos-surface-hover transition-colors"
+            className="p-1.5 rounded-lg text-pos-text-muted hover:text-pos-text hover:bg-pos-surface-subtle transition-colors"
           >
-            <X size={20} />
+            <X size={18} />
           </button>
         </div>
 
         {/* Scrollable Riders List */}
         <div className="flex-1 overflow-y-auto p-4 sm:p-5 space-y-3 custom-scrollbar">
           {errorMessage && (
-            <div className="p-3 rounded-xl bg-pos-danger/10 border border-pos-danger/30 text-pos-danger text-xs flex items-center gap-2">
+            <div className="p-3 rounded-lg bg-pos-danger-soft border border-[#FECACA] text-pos-danger text-xs flex items-center gap-2">
               <AlertCircle size={15} className="shrink-0" />
               <span>{errorMessage}</span>
             </div>
@@ -88,7 +88,7 @@ export const AssignRiderModal: React.FC<AssignRiderModalProps> = ({
           )}
 
           {error && (
-            <div className="p-3 rounded-xl bg-pos-danger/10 border border-pos-danger/30 text-pos-danger text-xs">
+            <div className="p-3 rounded-lg bg-pos-danger-soft border border-[#FECACA] text-pos-danger text-xs">
               Failed to load riders list.
             </div>
           )}
@@ -110,15 +110,15 @@ export const AssignRiderModal: React.FC<AssignRiderModalProps> = ({
                     type="button"
                     onClick={() => setSelectedRiderId(rider.id)}
                     className={cn(
-                      'w-full p-3.5 rounded-xl border text-left transition-all flex items-center justify-between min-h-[58px]',
+                      'w-full p-3 rounded-lg border text-left transition-colors flex items-center justify-between min-h-[54px] shadow-xs',
                       isSelected
-                        ? 'border-pos-accent bg-pos-accent/15 ring-2 ring-pos-accent shadow-sm'
-                        : 'border-pos-border bg-pos-bg hover:border-pos-accent/40 hover:bg-pos-surface'
+                        ? 'border-pos-primary bg-pos-primary-soft ring-1 ring-pos-primary'
+                        : 'border-pos-border bg-pos-surface hover:border-pos-border-strong hover:bg-pos-surface-subtle'
                     )}
                   >
                     <div className="flex items-center gap-3">
-                      <div className="h-9 w-9 rounded-xl bg-pos-surface border border-pos-border flex items-center justify-center text-pos-accent">
-                        <User size={16} />
+                      <div className="h-8 w-8 rounded-lg bg-pos-surface-subtle border border-pos-border flex items-center justify-center text-pos-primary">
+                        <User size={15} />
                       </div>
                       <div>
                         <span className="font-bold text-xs text-pos-text block">
@@ -131,7 +131,7 @@ export const AssignRiderModal: React.FC<AssignRiderModalProps> = ({
                     </div>
 
                     {isSelected && (
-                      <span className="h-5 w-5 rounded-full bg-pos-accent text-white flex items-center justify-center shrink-0">
+                      <span className="h-5 w-5 rounded-full bg-pos-primary text-white flex items-center justify-center shrink-0">
                         <Check size={12} strokeWidth={3} />
                       </span>
                     )}
@@ -143,7 +143,7 @@ export const AssignRiderModal: React.FC<AssignRiderModalProps> = ({
         </div>
 
         {/* Footer */}
-        <div className="p-4 border-t border-pos-border bg-pos-header flex items-center justify-between shrink-0">
+        <div className="p-4 border-t border-pos-border bg-pos-surface flex items-center justify-between shrink-0">
           <Button
             type="button"
             variant="secondary"

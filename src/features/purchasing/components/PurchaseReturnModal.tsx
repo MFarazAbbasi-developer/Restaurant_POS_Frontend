@@ -67,13 +67,13 @@ export const PurchaseReturnModal: React.FC<PurchaseReturnModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 animate-in fade-in duration-150 select-none">
-      <div className="w-full max-w-2xl bg-pos-surface border border-pos-border rounded-2xl shadow-2xl flex flex-col max-h-[90vh] overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 animate-in fade-in duration-150 select-none">
+      <div className="w-full max-w-2xl bg-pos-surface border border-pos-border rounded-xl shadow-modal flex flex-col max-h-[90vh] overflow-hidden">
         {/* Header */}
-        <div className="p-4 sm:p-5 border-b border-pos-border flex items-center justify-between bg-pos-header shrink-0">
+        <div className="p-4 sm:p-5 border-b border-pos-border flex items-center justify-between bg-pos-surface shrink-0">
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-xl bg-pos-danger/15 border border-pos-danger/30 text-pos-danger flex items-center justify-center">
-              <Undo2 size={20} />
+            <div className="h-9 w-9 rounded-lg bg-pos-danger-soft border border-[#FECACA] text-pos-danger flex items-center justify-center">
+              <Undo2 size={18} />
             </div>
             <div>
               <h3 className="text-base font-bold text-pos-text">
@@ -88,9 +88,9 @@ export const PurchaseReturnModal: React.FC<PurchaseReturnModalProps> = ({
             type="button"
             onClick={onClose}
             aria-label="Close modal"
-            className="p-2 rounded-xl text-pos-text-muted hover:text-pos-text hover:bg-pos-surface-hover transition-colors"
+            className="p-1.5 rounded-lg text-pos-text-muted hover:text-pos-text hover:bg-pos-surface-subtle transition-colors"
           >
-            <X size={20} />
+            <X size={18} />
           </button>
         </div>
 
@@ -100,20 +100,20 @@ export const PurchaseReturnModal: React.FC<PurchaseReturnModalProps> = ({
           className="flex-1 overflow-y-auto p-5 space-y-4 custom-scrollbar"
         >
           {errorMessage && (
-            <div className="p-3 rounded-xl bg-pos-danger/10 border border-pos-danger/30 text-pos-danger text-xs flex items-center gap-2">
+            <div className="p-3 rounded-lg bg-pos-danger-soft border border-[#FECACA] text-pos-danger text-xs flex items-center gap-2">
               <AlertCircle size={15} className="shrink-0" />
               <span>{errorMessage}</span>
             </div>
           )}
 
           <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-pos-text mb-1">
+            <label className="block text-xs font-semibold uppercase tracking-wider text-pos-text-secondary mb-1">
               Return Reason <span className="text-pos-danger">*</span>
             </label>
             <select
               value={reason}
               onChange={e => setReason(e.target.value)}
-              className="w-full px-3 py-2 rounded-xl bg-pos-bg border border-pos-border text-pos-text text-xs focus:outline-none focus:ring-2 focus:ring-pos-accent font-semibold"
+              className="w-full px-3 py-2 rounded-lg bg-pos-surface border border-pos-border text-pos-text text-xs focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary font-medium shadow-xs"
             >
               <option value="Damaged / Defective Goods">Damaged / Defective Goods</option>
               <option value="Expired / Near-Expiry Shipment">
@@ -128,20 +128,20 @@ export const PurchaseReturnModal: React.FC<PurchaseReturnModalProps> = ({
 
           {/* Line Items for Return */}
           <div className="space-y-2">
-            <span className="text-xs font-bold uppercase tracking-wider text-pos-text block">
+            <span className="text-xs font-semibold uppercase tracking-wider text-pos-text-secondary block">
               Received Items Available for Return
             </span>
 
-            <div className="rounded-xl border border-pos-border overflow-hidden bg-pos-bg">
+            <div className="rounded-lg border border-pos-border overflow-hidden bg-pos-surface">
               <table className="w-full text-left text-xs border-collapse">
                 <thead>
-                  <tr className="border-b border-pos-border bg-pos-surface/80 text-pos-text-muted font-bold uppercase text-[10px] tracking-wider">
+                  <tr className="border-b border-pos-border bg-pos-surface-subtle text-pos-text-muted font-semibold uppercase text-[10px] tracking-wider">
                     <th className="py-2.5 px-3">Item Name</th>
                     <th className="py-2.5 px-3 text-center w-28">Received Qty</th>
                     <th className="py-2.5 px-3 w-36 text-right">Return Qty</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-pos-border/40">
+                <tbody className="divide-y divide-pos-border">
                   {order.items.map(it => {
                     const received = it.quantityReceived || 0;
                     const canReturn = received > 0;
@@ -151,8 +151,8 @@ export const PurchaseReturnModal: React.FC<PurchaseReturnModalProps> = ({
                         key={it.id}
                         className={
                           !canReturn
-                            ? 'opacity-40 bg-pos-surface/20'
-                            : 'hover:bg-pos-surface/40'
+                            ? 'opacity-40 bg-pos-surface-subtle/50'
+                            : 'hover:bg-pos-surface-subtle transition-colors'
                         }
                       >
                         <td className="p-3">
@@ -177,7 +177,7 @@ export const PurchaseReturnModal: React.FC<PurchaseReturnModalProps> = ({
                             disabled={!canReturn}
                             value={returnQtys[it.id] || '0'}
                             onChange={e => handleQtyChange(it.id, e.target.value)}
-                            className="w-28 px-2.5 py-1.5 rounded-lg bg-pos-surface border border-pos-border text-pos-text font-mono font-bold text-xs focus:outline-none focus:ring-2 focus:ring-pos-danger text-right disabled:opacity-40"
+                            className="w-28 px-2.5 py-1.5 rounded-md bg-pos-surface border border-pos-border text-pos-text font-mono font-bold text-xs focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary text-right disabled:opacity-40 shadow-xs"
                           />
                         </td>
                       </tr>
@@ -189,7 +189,7 @@ export const PurchaseReturnModal: React.FC<PurchaseReturnModalProps> = ({
           </div>
 
           <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-pos-text mb-1">
+            <label className="block text-xs font-semibold uppercase tracking-wider text-pos-text-secondary mb-1">
               Return Notes (Optional)
             </label>
             <textarea
@@ -197,7 +197,7 @@ export const PurchaseReturnModal: React.FC<PurchaseReturnModalProps> = ({
               value={notes}
               onChange={e => setNotes(e.target.value)}
               placeholder="e.g. Return credit note requested from vendor..."
-              className="w-full p-2.5 rounded-xl bg-pos-bg border border-pos-border text-pos-text text-xs focus:outline-none focus:ring-2 focus:ring-pos-accent resize-none font-medium"
+              className="w-full p-2.5 rounded-lg bg-pos-surface border border-pos-border text-pos-text placeholder-pos-text-muted text-xs focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary resize-none font-medium shadow-xs"
             />
           </div>
 
@@ -217,7 +217,7 @@ export const PurchaseReturnModal: React.FC<PurchaseReturnModalProps> = ({
               variant="danger"
               size="md"
               isLoading={returnMutation.isPending}
-              className="font-bold shadow-sm"
+              className="font-bold shadow-xs"
             >
               <Undo2 size={15} className="mr-1.5" />
               Confirm Return

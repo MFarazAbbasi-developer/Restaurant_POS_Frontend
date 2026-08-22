@@ -159,13 +159,13 @@ export const ReservationFormModal: React.FC<ReservationFormModalProps> = ({
   const isPending = createMutation.isPending || updateMutation.isPending;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 animate-in fade-in duration-150 select-none">
-      <div className="w-full max-w-lg bg-pos-surface border border-pos-border rounded-2xl shadow-2xl flex flex-col max-h-[90vh] overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 animate-in fade-in duration-150 select-none">
+      <div className="w-full max-w-lg bg-pos-surface border border-pos-border rounded-xl shadow-modal flex flex-col max-h-[90vh] overflow-hidden">
         {/* Header */}
-        <div className="p-4 sm:p-5 border-b border-pos-border flex items-center justify-between bg-pos-header shrink-0">
+        <div className="p-4 sm:p-5 border-b border-pos-border flex items-center justify-between bg-pos-surface shrink-0">
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-xl bg-pos-accent/15 border border-pos-accent/30 text-pos-accent flex items-center justify-center">
-              <CalendarCheck size={20} />
+            <div className="h-9 w-9 rounded-lg bg-pos-primary-soft border border-pos-primary/20 text-pos-primary flex items-center justify-center">
+              <CalendarCheck size={18} />
             </div>
             <div>
               <h3 className="text-base font-bold text-pos-text">
@@ -182,9 +182,9 @@ export const ReservationFormModal: React.FC<ReservationFormModalProps> = ({
             type="button"
             onClick={onClose}
             aria-label="Close modal"
-            className="p-2 rounded-xl text-pos-text-muted hover:text-pos-text hover:bg-pos-surface-hover transition-colors"
+            className="p-1.5 rounded-lg text-pos-text-muted hover:text-pos-text hover:bg-pos-surface-subtle transition-colors"
           >
-            <X size={20} />
+            <X size={18} />
           </button>
         </div>
 
@@ -194,7 +194,7 @@ export const ReservationFormModal: React.FC<ReservationFormModalProps> = ({
           className="flex-1 overflow-y-auto p-5 space-y-4 custom-scrollbar"
         >
           {errorMessage && (
-            <div className="p-3 rounded-xl bg-pos-danger/10 border border-pos-danger/30 text-pos-danger text-xs flex items-center gap-2">
+            <div className="p-3 rounded-lg bg-pos-danger-soft border border-[#FECACA] text-pos-danger text-xs flex items-center gap-2">
               <AlertCircle size={15} className="shrink-0" />
               <span>{errorMessage}</span>
             </div>
@@ -203,12 +203,12 @@ export const ReservationFormModal: React.FC<ReservationFormModalProps> = ({
           {/* Guest Name & Phone */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-pos-text mb-1.5">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-pos-text-secondary mb-1.5">
                 Guest Name <span className="text-pos-danger">*</span>
               </label>
               <div className="relative">
                 <User
-                  size={15}
+                  size={14}
                   className="absolute left-3 top-1/2 -translate-y-1/2 text-pos-text-muted"
                 />
                 <input
@@ -217,18 +217,18 @@ export const ReservationFormModal: React.FC<ReservationFormModalProps> = ({
                   value={customerName}
                   onChange={e => setCustomerName(e.target.value)}
                   placeholder="e.g. Sara Ahmed"
-                  className="w-full pl-8 pr-3 py-2.5 rounded-xl bg-pos-bg border border-pos-border text-pos-text text-sm font-medium focus:outline-none focus:ring-2 focus:ring-pos-accent"
+                  className="w-full pl-8 pr-3 py-2 rounded-lg bg-pos-surface border border-pos-border text-pos-text text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary shadow-xs"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-pos-text mb-1.5">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-pos-text-secondary mb-1.5">
                 Contact Phone <span className="text-pos-danger">*</span>
               </label>
               <div className="relative">
                 <Phone
-                  size={15}
+                  size={14}
                   className="absolute left-3 top-1/2 -translate-y-1/2 text-pos-text-muted"
                 />
                 <input
@@ -237,7 +237,7 @@ export const ReservationFormModal: React.FC<ReservationFormModalProps> = ({
                   value={customerPhone}
                   onChange={e => setCustomerPhone(e.target.value)}
                   placeholder="03001234567"
-                  className="w-full pl-8 pr-3 py-2.5 rounded-xl bg-pos-bg border border-pos-border text-pos-text font-mono font-bold text-sm focus:outline-none focus:ring-2 focus:ring-pos-accent"
+                  className="w-full pl-8 pr-3 py-2 rounded-lg bg-pos-surface border border-pos-border text-pos-text font-mono font-bold text-xs focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary shadow-xs"
                 />
               </div>
             </div>
@@ -246,12 +246,12 @@ export const ReservationFormModal: React.FC<ReservationFormModalProps> = ({
           {/* Email & Party Size */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-pos-text mb-1.5">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-pos-text-secondary mb-1.5">
                 Email Address (Optional)
               </label>
               <div className="relative">
                 <Mail
-                  size={15}
+                  size={14}
                   className="absolute left-3 top-1/2 -translate-y-1/2 text-pos-text-muted"
                 />
                 <input
@@ -259,18 +259,18 @@ export const ReservationFormModal: React.FC<ReservationFormModalProps> = ({
                   value={customerEmail}
                   onChange={e => setCustomerEmail(e.target.value)}
                   placeholder="sara@example.com"
-                  className="w-full pl-8 pr-3 py-2 rounded-xl bg-pos-bg border border-pos-border text-pos-text text-xs focus:outline-none focus:ring-2 focus:ring-pos-accent"
+                  className="w-full pl-8 pr-3 py-2 rounded-lg bg-pos-surface border border-pos-border text-pos-text text-xs focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary shadow-xs font-medium"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-pos-text mb-1.5">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-pos-text-secondary mb-1.5">
                 Party Size (Guests) <span className="text-pos-danger">*</span>
               </label>
               <div className="relative">
                 <Users
-                  size={15}
+                  size={14}
                   className="absolute left-3 top-1/2 -translate-y-1/2 text-pos-text-muted"
                 />
                 <input
@@ -280,7 +280,7 @@ export const ReservationFormModal: React.FC<ReservationFormModalProps> = ({
                   required
                   value={guestCount}
                   onChange={e => setGuestCount(e.target.value)}
-                  className="w-full pl-8 pr-3 py-2 rounded-xl bg-pos-bg border border-pos-border text-pos-text font-mono font-bold text-sm focus:outline-none focus:ring-2 focus:ring-pos-accent"
+                  className="w-full pl-8 pr-3 py-2 rounded-lg bg-pos-surface border border-pos-border text-pos-text font-mono font-bold text-xs focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary shadow-xs"
                 />
               </div>
             </div>
@@ -289,7 +289,7 @@ export const ReservationFormModal: React.FC<ReservationFormModalProps> = ({
           {/* Date, Time & Duration */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-pos-text mb-1.5">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-pos-text-secondary mb-1.5">
                 Date <span className="text-pos-danger">*</span>
               </label>
               <div className="relative">
@@ -302,13 +302,13 @@ export const ReservationFormModal: React.FC<ReservationFormModalProps> = ({
                   required
                   value={reservationDate}
                   onChange={e => setReservationDate(e.target.value)}
-                  className="w-full pl-8 pr-2 py-2 rounded-xl bg-pos-bg border border-pos-border text-pos-text text-xs font-mono font-semibold focus:outline-none focus:ring-2 focus:ring-pos-accent"
+                  className="w-full pl-8 pr-2 py-2 rounded-lg bg-pos-surface border border-pos-border text-pos-text text-xs font-mono font-semibold focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary shadow-xs"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-pos-text mb-1.5">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-pos-text-secondary mb-1.5">
                 Start Time <span className="text-pos-danger">*</span>
               </label>
               <div className="relative">
@@ -321,19 +321,19 @@ export const ReservationFormModal: React.FC<ReservationFormModalProps> = ({
                   required
                   value={startTime}
                   onChange={e => setStartTime(e.target.value)}
-                  className="w-full pl-8 pr-2 py-2 rounded-xl bg-pos-bg border border-pos-border text-pos-text text-xs font-mono font-semibold focus:outline-none focus:ring-2 focus:ring-pos-accent"
+                  className="w-full pl-8 pr-2 py-2 rounded-lg bg-pos-surface border border-pos-border text-pos-text text-xs font-mono font-semibold focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary shadow-xs"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-pos-text mb-1.5">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-pos-text-secondary mb-1.5">
                 Duration (Mins)
               </label>
               <select
                 value={durationMinutes}
                 onChange={e => setDurationMinutes(e.target.value)}
-                className="w-full px-3 py-2 rounded-xl bg-pos-bg border border-pos-border text-pos-text text-xs font-mono font-semibold focus:outline-none focus:ring-2 focus:ring-pos-accent"
+                className="w-full px-3 py-2 rounded-lg bg-pos-surface border border-pos-border text-pos-text text-xs font-mono font-semibold focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary shadow-xs"
               >
                 <option value="45">45 mins</option>
                 <option value="60">60 mins (1 hr)</option>
@@ -347,11 +347,11 @@ export const ReservationFormModal: React.FC<ReservationFormModalProps> = ({
           {/* Table Selection with Live Availability */}
           <div>
             <div className="flex items-center justify-between mb-1.5">
-              <label className="block text-xs font-bold uppercase tracking-wider text-pos-text">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-pos-text-secondary">
                 Assign Floor Table (Optional)
               </label>
               {isCheckingAvailability ? (
-                <span className="text-[10px] text-pos-text-muted animate-pulse">
+                <span className="text-[10px] text-pos-text-muted animate-pulse font-medium">
                   Checking floor availability...
                 </span>
               ) : availableTables.length > 0 ? (
@@ -364,7 +364,7 @@ export const ReservationFormModal: React.FC<ReservationFormModalProps> = ({
             <select
               value={tableId}
               onChange={e => setTableId(e.target.value)}
-              className="w-full px-3 py-2.5 rounded-xl bg-pos-bg border border-pos-border text-pos-text text-xs focus:outline-none focus:ring-2 focus:ring-pos-accent font-semibold"
+              className="w-full px-3 py-2 rounded-lg bg-pos-surface border border-pos-border text-pos-text text-xs focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary font-medium shadow-xs"
             >
               <option value="">-- Assign Table Later (Walk-in Hold) --</option>
               <optgroup label="Available Tables (Fits Party Size)">
@@ -388,17 +388,17 @@ export const ReservationFormModal: React.FC<ReservationFormModalProps> = ({
 
           {/* Special Requests */}
           <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-pos-text mb-1.5">
+            <label className="block text-xs font-semibold uppercase tracking-wider text-pos-text-secondary mb-1.5">
               Special Requests / Occasion (Optional)
             </label>
             <div className="relative">
-              <FileText size={15} className="absolute left-3 top-3 text-pos-text-muted" />
+              <FileText size={14} className="absolute left-3 top-3 text-pos-text-muted" />
               <textarea
                 rows={2}
                 value={specialRequests}
                 onChange={e => setSpecialRequests(e.target.value)}
                 placeholder="e.g. Birthday celebration, window seat requested, high chair needed..."
-                className="w-full pl-8 pr-3 py-2 rounded-xl bg-pos-bg border border-pos-border text-pos-text placeholder-pos-text-muted/60 text-xs focus:outline-none focus:ring-2 focus:ring-pos-accent resize-none font-medium"
+                className="w-full pl-8 pr-3 py-2 rounded-lg bg-pos-surface border border-pos-border text-pos-text placeholder-pos-text-muted text-xs focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary resize-none font-medium shadow-xs"
               />
             </div>
           </div>
@@ -420,7 +420,7 @@ export const ReservationFormModal: React.FC<ReservationFormModalProps> = ({
               size="md"
               isLoading={isPending}
               disabled={!customerName.trim() || !customerPhone.trim()}
-              className="font-bold shadow-sm"
+              className="font-bold shadow-xs"
             >
               {isEditing ? 'Save Changes' : 'Confirm Reservation'}
             </Button>

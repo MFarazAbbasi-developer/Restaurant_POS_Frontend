@@ -92,13 +92,13 @@ export const RecipeManagerModal: React.FC<RecipeManagerModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 animate-in fade-in duration-150 select-none">
-      <div className="w-full max-w-lg bg-pos-surface border border-pos-border rounded-2xl shadow-2xl flex flex-col max-h-[90vh] overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 animate-in fade-in duration-150 select-none">
+      <div className="w-full max-w-lg bg-pos-surface border border-pos-border rounded-xl shadow-modal flex flex-col max-h-[90vh] overflow-hidden">
         {/* Header */}
-        <div className="p-4 sm:p-5 border-b border-pos-border flex items-center justify-between bg-pos-header shrink-0">
+        <div className="p-4 sm:p-5 border-b border-pos-border flex items-center justify-between bg-pos-surface shrink-0">
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-xl bg-pos-accent/15 border border-pos-accent/30 text-pos-accent flex items-center justify-center">
-              <ChefHat size={20} />
+            <div className="h-9 w-9 rounded-lg bg-pos-primary-soft border border-pos-primary/20 text-pos-primary flex items-center justify-center">
+              <ChefHat size={18} />
             </div>
             <div>
               <h3 className="text-base font-bold text-pos-text">
@@ -113,16 +113,16 @@ export const RecipeManagerModal: React.FC<RecipeManagerModalProps> = ({
             type="button"
             onClick={onClose}
             aria-label="Close modal"
-            className="p-2 rounded-xl text-pos-text-muted hover:text-pos-text hover:bg-pos-surface-hover transition-colors"
+            className="p-1.5 rounded-lg text-pos-text-muted hover:text-pos-text hover:bg-pos-surface-subtle transition-colors"
           >
-            <X size={20} />
+            <X size={18} />
           </button>
         </div>
 
         {/* Modal Scrollable Body */}
-        <div className="flex-1 overflow-y-auto p-5 space-y-5 custom-scrollbar">
+        <div className="flex-1 overflow-y-auto p-5 space-y-4 custom-scrollbar">
           {errorMessage && (
-            <div className="p-3 rounded-xl bg-pos-danger/10 border border-pos-danger/30 text-pos-danger text-xs flex items-center gap-2">
+            <div className="p-3 rounded-lg bg-pos-danger-soft border border-[#FECACA] text-pos-danger text-xs flex items-center gap-2">
               <AlertCircle size={15} className="shrink-0" />
               <span>{errorMessage}</span>
             </div>
@@ -131,22 +131,22 @@ export const RecipeManagerModal: React.FC<RecipeManagerModalProps> = ({
           {/* Add Ingredient Form */}
           <form
             onSubmit={handleAddIngredient}
-            className="p-4 rounded-xl bg-pos-bg border border-pos-border space-y-3"
+            className="p-4 rounded-lg bg-pos-surface-subtle border border-pos-border space-y-3"
           >
-            <h4 className="text-xs font-bold uppercase tracking-wider text-pos-text flex items-center gap-1.5">
-              <Plus size={14} className="text-pos-accent" />
+            <h4 className="text-xs font-semibold uppercase tracking-wider text-pos-text-secondary flex items-center gap-1.5">
+              <Plus size={14} className="text-pos-primary" />
               <span>Add Raw Material Ingredient</span>
             </h4>
 
             <div>
-              <label className="block text-[11px] font-semibold text-pos-text-muted mb-1">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-pos-text-secondary mb-1">
                 Select Ingredient
               </label>
               <select
                 value={selectedInventoryItemId}
                 onChange={e => setSelectedInventoryItemId(e.target.value)}
                 required
-                className="w-full px-3 py-2 rounded-xl bg-pos-surface border border-pos-border text-pos-text text-xs focus:outline-none focus:ring-2 focus:ring-pos-accent font-semibold"
+                className="w-full px-3 py-2 rounded-lg bg-pos-surface border border-pos-border text-pos-text text-xs focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary font-medium shadow-xs"
               >
                 {allItems.map(i => (
                   <option key={i.id} value={i.id}>
@@ -158,7 +158,7 @@ export const RecipeManagerModal: React.FC<RecipeManagerModalProps> = ({
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-[11px] font-semibold text-pos-text-muted mb-1">
+                <label className="block text-xs font-semibold uppercase tracking-wider text-pos-text-secondary mb-1">
                   Qty per Portion ({selectedInventoryItem?.unit || 'Units'})
                 </label>
                 <input
@@ -169,12 +169,12 @@ export const RecipeManagerModal: React.FC<RecipeManagerModalProps> = ({
                   value={quantity}
                   onChange={e => setQuantity(e.target.value)}
                   placeholder="0.25"
-                  className="w-full px-3 py-2 rounded-xl bg-pos-surface border border-pos-border text-pos-text font-mono font-bold text-xs focus:outline-none focus:ring-2 focus:ring-pos-accent"
+                  className="w-full px-3 py-2 rounded-lg bg-pos-surface border border-pos-border text-pos-text font-mono font-bold text-xs focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary shadow-xs"
                 />
               </div>
 
               <div>
-                <label className="block text-[11px] font-semibold text-pos-text-muted mb-1">
+                <label className="block text-xs font-semibold uppercase tracking-wider text-pos-text-secondary mb-1">
                   Waste / Loss Margin (%)
                 </label>
                 <div className="relative">
@@ -190,7 +190,7 @@ export const RecipeManagerModal: React.FC<RecipeManagerModalProps> = ({
                     value={wastePercentage}
                     onChange={e => setWastePercentage(e.target.value)}
                     placeholder="0"
-                    className="w-full pl-8 pr-3 py-2 rounded-xl bg-pos-surface border border-pos-border text-pos-text font-mono font-bold text-xs focus:outline-none focus:ring-2 focus:ring-pos-accent"
+                    className="w-full pl-8 pr-3 py-2 rounded-lg bg-pos-surface border border-pos-border text-pos-text font-mono font-bold text-xs focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary shadow-xs"
                   />
                 </div>
               </div>
@@ -203,7 +203,7 @@ export const RecipeManagerModal: React.FC<RecipeManagerModalProps> = ({
                 size="sm"
                 isLoading={upsertMutation.isPending}
                 disabled={!selectedInventoryItemId || !quantity}
-                className="font-bold text-xs"
+                className="font-bold text-xs shadow-xs"
               >
                 <Plus size={14} className="mr-1" />
                 Add to Recipe
@@ -213,7 +213,7 @@ export const RecipeManagerModal: React.FC<RecipeManagerModalProps> = ({
 
           {/* Current Recipe Ingredients List */}
           <div>
-            <h4 className="text-xs font-bold uppercase tracking-wider text-pos-text mb-2.5 flex items-center justify-between">
+            <h4 className="text-xs font-semibold uppercase tracking-wider text-pos-text-secondary mb-2.5 flex items-center justify-between">
               <span>Configured Recipe Ingredients</span>
               <span className="text-[11px] text-pos-text-muted font-normal">
                 {recipes.length} ingredients
@@ -231,7 +231,7 @@ export const RecipeManagerModal: React.FC<RecipeManagerModalProps> = ({
                   return (
                     <div
                       key={rec.id}
-                      className="p-3 rounded-xl bg-pos-surface border border-pos-border flex items-center justify-between text-xs"
+                      className="p-3 rounded-lg bg-pos-surface border border-pos-border flex items-center justify-between text-xs shadow-xs"
                     >
                       <div>
                         <span className="font-bold text-pos-text block">
@@ -246,7 +246,7 @@ export const RecipeManagerModal: React.FC<RecipeManagerModalProps> = ({
                       </div>
 
                       <div className="flex items-center gap-3">
-                        <span className="font-mono font-bold text-xs text-pos-accent">
+                        <span className="font-mono font-bold text-xs text-pos-primary">
                           {rec.quantity} {ing?.unit}
                         </span>
 
@@ -254,7 +254,7 @@ export const RecipeManagerModal: React.FC<RecipeManagerModalProps> = ({
                           type="button"
                           onClick={() => handleDeleteIngredient(rec.id)}
                           disabled={deleteMutation.isPending}
-                          className="p-1.5 rounded-lg text-pos-text-muted hover:text-pos-danger hover:bg-pos-danger/10 transition-colors"
+                          className="p-1.5 rounded-lg text-pos-text-muted hover:text-pos-danger hover:bg-pos-danger-soft transition-colors"
                           aria-label="Remove ingredient"
                         >
                           <Trash2 size={15} />
@@ -265,7 +265,7 @@ export const RecipeManagerModal: React.FC<RecipeManagerModalProps> = ({
                 })}
               </div>
             ) : (
-              <div className="p-8 text-center bg-pos-bg border border-pos-border rounded-xl text-xs text-pos-text-muted">
+              <div className="p-8 text-center bg-pos-surface-subtle border border-pos-border rounded-lg text-xs text-pos-text-muted">
                 No raw material ingredients linked to this dish yet. Add ingredients above
                 to automatically deduct stock on sale.
               </div>
@@ -274,7 +274,7 @@ export const RecipeManagerModal: React.FC<RecipeManagerModalProps> = ({
         </div>
 
         {/* Footer */}
-        <div className="p-4 border-t border-pos-border bg-pos-header flex items-center justify-end shrink-0">
+        <div className="p-4 border-t border-pos-border bg-pos-surface flex items-center justify-end shrink-0">
           <Button variant="secondary" size="md" onClick={onClose}>
             Done
           </Button>

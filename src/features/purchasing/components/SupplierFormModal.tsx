@@ -88,13 +88,13 @@ export const SupplierFormModal: React.FC<SupplierFormModalProps> = ({
   const isPending = createMutation.isPending || updateMutation.isPending;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 animate-in fade-in duration-150 select-none">
-      <div className="w-full max-w-lg bg-pos-surface border border-pos-border rounded-2xl shadow-2xl flex flex-col max-h-[90vh] overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 animate-in fade-in duration-150 select-none">
+      <div className="w-full max-w-lg bg-pos-surface border border-pos-border rounded-xl shadow-modal flex flex-col max-h-[90vh] overflow-hidden">
         {/* Header */}
-        <div className="p-4 sm:p-5 border-b border-pos-border flex items-center justify-between bg-pos-header shrink-0">
+        <div className="p-4 sm:p-5 border-b border-pos-border flex items-center justify-between bg-pos-surface shrink-0">
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-xl bg-pos-accent/15 border border-pos-accent/30 text-pos-accent flex items-center justify-center">
-              <Truck size={20} />
+            <div className="h-9 w-9 rounded-lg bg-pos-primary-soft border border-pos-primary/20 text-pos-primary flex items-center justify-center">
+              <Truck size={18} />
             </div>
             <div>
               <h3 className="text-base font-bold text-pos-text">
@@ -111,9 +111,9 @@ export const SupplierFormModal: React.FC<SupplierFormModalProps> = ({
             type="button"
             onClick={onClose}
             aria-label="Close modal"
-            className="p-2 rounded-xl text-pos-text-muted hover:text-pos-text hover:bg-pos-surface-hover transition-colors"
+            className="p-1.5 rounded-lg text-pos-text-muted hover:text-pos-text hover:bg-pos-surface-subtle transition-colors"
           >
-            <X size={20} />
+            <X size={18} />
           </button>
         </div>
 
@@ -123,7 +123,7 @@ export const SupplierFormModal: React.FC<SupplierFormModalProps> = ({
           className="flex-1 overflow-y-auto p-5 space-y-4 custom-scrollbar"
         >
           {errorMessage && (
-            <div className="p-3 rounded-xl bg-pos-danger/10 border border-pos-danger/30 text-pos-danger text-xs flex items-center gap-2">
+            <div className="p-3 rounded-lg bg-pos-danger-soft border border-[#FECACA] text-pos-danger text-xs flex items-center gap-2">
               <AlertCircle size={15} className="shrink-0" />
               <span>{errorMessage}</span>
             </div>
@@ -131,7 +131,7 @@ export const SupplierFormModal: React.FC<SupplierFormModalProps> = ({
 
           {/* Supplier Name */}
           <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-pos-text mb-1.5">
+            <label className="block text-xs font-semibold uppercase tracking-wider text-pos-text-secondary mb-1.5">
               Company / Vendor Name <span className="text-pos-danger">*</span>
             </label>
             <input
@@ -140,14 +140,14 @@ export const SupplierFormModal: React.FC<SupplierFormModalProps> = ({
               value={name}
               onChange={e => setName(e.target.value)}
               placeholder="e.g. Metro Wholesale Foods"
-              className="w-full px-3.5 py-2.5 rounded-xl bg-pos-bg border border-pos-border text-pos-text text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-pos-accent"
+              className="w-full px-3 py-2 rounded-lg bg-pos-surface border border-pos-border text-pos-text text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary shadow-xs"
             />
           </div>
 
           {/* Contact Person & Phone */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-pos-text mb-1.5">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-pos-text-secondary mb-1.5">
                 Contact Person
               </label>
               <div className="relative">
@@ -160,13 +160,13 @@ export const SupplierFormModal: React.FC<SupplierFormModalProps> = ({
                   value={contactPerson}
                   onChange={e => setContactPerson(e.target.value)}
                   placeholder="e.g. Tariq Mehmood"
-                  className="w-full pl-8 pr-3 py-2 rounded-xl bg-pos-bg border border-pos-border text-pos-text text-xs focus:outline-none focus:ring-2 focus:ring-pos-accent font-medium"
+                  className="w-full pl-8 pr-3 py-2 rounded-lg bg-pos-surface border border-pos-border text-pos-text text-xs focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary font-medium shadow-xs"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-pos-text mb-1.5">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-pos-text-secondary mb-1.5">
                 Phone Number
               </label>
               <div className="relative">
@@ -179,7 +179,7 @@ export const SupplierFormModal: React.FC<SupplierFormModalProps> = ({
                   value={phone}
                   onChange={e => setPhone(e.target.value)}
                   placeholder="03001234567"
-                  className="w-full pl-8 pr-3 py-2 rounded-xl bg-pos-bg border border-pos-border text-pos-text font-mono font-bold text-xs focus:outline-none focus:ring-2 focus:ring-pos-accent"
+                  className="w-full pl-8 pr-3 py-2 rounded-lg bg-pos-surface border border-pos-border text-pos-text font-mono font-bold text-xs focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary shadow-xs"
                 />
               </div>
             </div>
@@ -188,7 +188,7 @@ export const SupplierFormModal: React.FC<SupplierFormModalProps> = ({
           {/* Email & Tax Number */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-pos-text mb-1.5">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-pos-text-secondary mb-1.5">
                 Email Address
               </label>
               <div className="relative">
@@ -201,13 +201,13 @@ export const SupplierFormModal: React.FC<SupplierFormModalProps> = ({
                   value={email}
                   onChange={e => setEmail(e.target.value)}
                   placeholder="orders@metrowholesale.pk"
-                  className="w-full pl-8 pr-3 py-2 rounded-xl bg-pos-bg border border-pos-border text-pos-text text-xs focus:outline-none focus:ring-2 focus:ring-pos-accent"
+                  className="w-full pl-8 pr-3 py-2 rounded-lg bg-pos-surface border border-pos-border text-pos-text text-xs focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary shadow-xs"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-pos-text mb-1.5">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-pos-text-secondary mb-1.5">
                 NTN / Tax Number
               </label>
               <div className="relative">
@@ -220,7 +220,7 @@ export const SupplierFormModal: React.FC<SupplierFormModalProps> = ({
                   value={taxNumber}
                   onChange={e => setTaxNumber(e.target.value)}
                   placeholder="e.g. 1234567-8"
-                  className="w-full pl-8 pr-3 py-2 rounded-xl bg-pos-bg border border-pos-border text-pos-text font-mono text-xs focus:outline-none focus:ring-2 focus:ring-pos-accent"
+                  className="w-full pl-8 pr-3 py-2 rounded-lg bg-pos-surface border border-pos-border text-pos-text font-mono text-xs focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary shadow-xs"
                 />
               </div>
             </div>
@@ -228,7 +228,7 @@ export const SupplierFormModal: React.FC<SupplierFormModalProps> = ({
 
           {/* Physical Address */}
           <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-pos-text mb-1.5">
+            <label className="block text-xs font-semibold uppercase tracking-wider text-pos-text-secondary mb-1.5">
               Warehouse / Business Address
             </label>
             <div className="relative">
@@ -238,20 +238,20 @@ export const SupplierFormModal: React.FC<SupplierFormModalProps> = ({
                 value={address}
                 onChange={e => setAddress(e.target.value)}
                 placeholder="e.g. Plot 14, Industrial Area, Sector I-9"
-                className="w-full pl-8 pr-3 py-2 rounded-xl bg-pos-bg border border-pos-border text-pos-text text-xs focus:outline-none focus:ring-2 focus:ring-pos-accent resize-none font-medium"
+                className="w-full pl-8 pr-3 py-2 rounded-lg bg-pos-surface border border-pos-border text-pos-text placeholder-pos-text-muted text-xs focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary resize-none font-medium shadow-xs"
               />
             </div>
           </div>
 
           {/* Active Status Toggle */}
-          <label className="flex items-center gap-2 p-2.5 rounded-xl bg-pos-bg border border-pos-border cursor-pointer select-none text-xs">
+          <label className="flex items-center gap-2 p-2.5 rounded-lg bg-pos-surface-subtle border border-pos-border cursor-pointer select-none text-xs">
             <input
               type="checkbox"
               checked={isActive}
               onChange={e => setIsActive(e.target.checked)}
-              className="h-4 w-4 rounded accent-pos-accent"
+              className="h-4 w-4 rounded accent-pos-primary"
             />
-            <span className="font-bold text-pos-text">
+            <span className="font-semibold text-pos-text">
               Active Supplier (Eligible for PO creation)
             </span>
           </label>
@@ -273,7 +273,7 @@ export const SupplierFormModal: React.FC<SupplierFormModalProps> = ({
               size="md"
               isLoading={isPending}
               disabled={!name.trim()}
-              className="font-bold shadow-sm"
+              className="font-bold shadow-xs"
             >
               {isEditing ? 'Save Supplier' : 'Register Supplier'}
             </Button>

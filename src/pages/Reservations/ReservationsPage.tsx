@@ -98,43 +98,43 @@ export const ReservationsPage: React.FC = () => {
     switch (status) {
       case 'CONFIRMED':
         return (
-          <Badge variant="success" className="text-[10px]">
+          <Badge variant="success" size="sm" className="text-[10px]">
             Confirmed
           </Badge>
         );
       case 'SEATED':
         return (
-          <Badge variant="default" className="text-[10px] bg-pos-accent text-white">
+          <Badge variant="primary" size="sm" className="text-[10px]">
             Seated
           </Badge>
         );
       case 'PENDING':
         return (
-          <Badge variant="warning" className="text-[10px]">
+          <Badge variant="warning" size="sm" className="text-[10px]">
             Pending Hold
           </Badge>
         );
       case 'COMPLETED':
         return (
-          <Badge variant="success" className="text-[10px]">
+          <Badge variant="success" size="sm" className="text-[10px]">
             Completed
           </Badge>
         );
       case 'CANCELLED':
         return (
-          <Badge variant="danger" className="text-[10px]">
+          <Badge variant="danger" size="sm" className="text-[10px]">
             Cancelled
           </Badge>
         );
       case 'NO_SHOW':
         return (
-          <Badge variant="danger" className="text-[10px]">
+          <Badge variant="danger" size="sm" className="text-[10px]">
             No-Show
           </Badge>
         );
       default:
         return (
-          <Badge variant="default" className="text-[10px]">
+          <Badge variant="default" size="sm" className="text-[10px]">
             {status}
           </Badge>
         );
@@ -146,17 +146,17 @@ export const ReservationsPage: React.FC = () => {
       {/* =========================================================================
           TOP HEADER BAR: Metrics & Quick Action CTAs
       ========================================================================= */}
-      <div className="p-3.5 border-b border-pos-border bg-pos-header/90 rounded-t-2xl flex flex-wrap items-center justify-between gap-3 shrink-0 shadow-xs">
+      <div className="p-3 sm:p-3.5 border-b border-pos-border bg-pos-surface rounded-t-lg flex flex-wrap items-center justify-between gap-2.5 shrink-0 shadow-xs">
         <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-xl bg-pos-accent/15 border border-pos-accent/30 text-pos-accent flex items-center justify-center">
-            <CalendarCheck size={20} />
+          <div className="h-9 w-9 rounded-lg bg-pos-primary-soft border border-pos-primary/20 text-pos-primary flex items-center justify-center">
+            <CalendarCheck size={18} />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h2 className="text-base font-black text-pos-text">
+              <h2 className="text-sm sm:text-base font-bold text-pos-text">
                 Reservations & Table Bookings
               </h2>
-              <Badge variant="default" className="text-[10px] font-mono">
+              <Badge variant="default" size="sm" className="text-[10px] font-mono">
                 {todayCount} Bookings
               </Badge>
             </div>
@@ -173,7 +173,7 @@ export const ReservationsPage: React.FC = () => {
             size="sm"
             onClick={() => refetch()}
             disabled={isRefetching}
-            className="min-h-[36px] px-3 font-semibold flex items-center gap-1.5"
+            className="min-h-[36px] px-3 font-medium flex items-center gap-1.5"
           >
             <RotateCw size={14} className={isRefetching ? 'animate-spin' : ''} />
             <span className="hidden sm:inline">Refresh</span>
@@ -183,7 +183,7 @@ export const ReservationsPage: React.FC = () => {
             variant="primary"
             size="sm"
             onClick={() => setFormModal({ open: true, reservation: null })}
-            className="min-h-[36px] text-xs font-bold flex items-center gap-1.5 shadow-sm"
+            className="min-h-[36px] text-xs font-bold flex items-center gap-1.5 shadow-xs"
           >
             <Plus size={16} />
             <span>+ New Reservation</span>
@@ -195,8 +195,8 @@ export const ReservationsPage: React.FC = () => {
           SUMMARY METRICS TILES
       ========================================================================= */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 p-3 border-b border-pos-border bg-pos-surface shrink-0">
-        <div className="p-2.5 rounded-xl bg-pos-bg border border-pos-border/60">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-pos-text-muted block">
+        <div className="p-2.5 rounded-lg bg-pos-surface-subtle border border-pos-border">
+          <span className="text-[10px] font-semibold uppercase tracking-wider text-pos-text-secondary block">
             Bookings in View
           </span>
           <span className="text-base font-mono font-bold text-pos-text mt-0.5 block">
@@ -204,8 +204,8 @@ export const ReservationsPage: React.FC = () => {
           </span>
         </div>
 
-        <div className="p-2.5 rounded-xl bg-pos-bg border border-pos-border/60">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-pos-success block">
+        <div className="p-2.5 rounded-lg bg-pos-surface-subtle border border-pos-border">
+          <span className="text-[10px] font-semibold uppercase tracking-wider text-pos-success block">
             Confirmed Bookings
           </span>
           <span className="text-base font-mono font-bold text-pos-success mt-0.5 block">
@@ -213,17 +213,17 @@ export const ReservationsPage: React.FC = () => {
           </span>
         </div>
 
-        <div className="p-2.5 rounded-xl bg-pos-bg border border-pos-border/60">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-pos-accent block">
+        <div className="p-2.5 rounded-lg bg-pos-surface-subtle border border-pos-border">
+          <span className="text-[10px] font-semibold uppercase tracking-wider text-pos-primary block">
             Currently Seated
           </span>
-          <span className="text-base font-mono font-bold text-pos-accent mt-0.5 block">
+          <span className="text-base font-mono font-bold text-pos-primary mt-0.5 block">
             {seatedCount}
           </span>
         </div>
 
-        <div className="p-2.5 rounded-xl bg-pos-bg border border-pos-border/60">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-pos-text block">
+        <div className="p-2.5 rounded-lg bg-pos-surface-subtle border border-pos-border">
+          <span className="text-[10px] font-semibold uppercase tracking-wider text-pos-text-secondary block">
             Total Expected Guests
           </span>
           <span className="text-base font-mono font-bold text-pos-text mt-0.5 block">
@@ -238,15 +238,15 @@ export const ReservationsPage: React.FC = () => {
       <div className="p-3 border-b border-pos-border bg-pos-surface flex flex-wrap items-center justify-between gap-3 shrink-0">
         {/* Date Presets & Custom Date Picker */}
         <div className="flex items-center gap-1.5">
-          <div className="p-1 rounded-xl bg-pos-bg border border-pos-border flex items-center gap-1 text-xs">
+          <div className="p-1 rounded-md bg-pos-surface-subtle border border-pos-border flex items-center gap-1 text-xs">
             <button
               type="button"
               onClick={() => handleDateModeChange('TODAY')}
               className={cn(
-                'px-2.5 py-1 rounded-lg font-bold transition-all',
+                'px-2.5 py-1 rounded-md font-semibold transition-colors',
                 dateFilterMode === 'TODAY'
-                  ? 'bg-pos-accent text-white shadow-xs'
-                  : 'text-pos-text-muted hover:text-pos-text'
+                  ? 'bg-pos-primary text-white shadow-xs'
+                  : 'text-pos-text-secondary hover:text-pos-text'
               )}
             >
               Today
@@ -255,10 +255,10 @@ export const ReservationsPage: React.FC = () => {
               type="button"
               onClick={() => handleDateModeChange('TOMORROW')}
               className={cn(
-                'px-2.5 py-1 rounded-lg font-bold transition-all',
+                'px-2.5 py-1 rounded-md font-semibold transition-colors',
                 dateFilterMode === 'TOMORROW'
-                  ? 'bg-pos-accent text-white shadow-xs'
-                  : 'text-pos-text-muted hover:text-pos-text'
+                  ? 'bg-pos-primary text-white shadow-xs'
+                  : 'text-pos-text-secondary hover:text-pos-text'
               )}
             >
               Tomorrow
@@ -267,10 +267,10 @@ export const ReservationsPage: React.FC = () => {
               type="button"
               onClick={() => handleDateModeChange('ALL')}
               className={cn(
-                'px-2.5 py-1 rounded-lg font-bold transition-all',
+                'px-2.5 py-1 rounded-md font-semibold transition-colors',
                 dateFilterMode === 'ALL'
-                  ? 'bg-pos-accent text-white shadow-xs'
-                  : 'text-pos-text-muted hover:text-pos-text'
+                  ? 'bg-pos-primary text-white shadow-xs'
+                  : 'text-pos-text-secondary hover:text-pos-text'
               )}
             >
               All Dates
@@ -284,7 +284,7 @@ export const ReservationsPage: React.FC = () => {
               setSelectedDate(e.target.value);
               setDateFilterMode('CUSTOM');
             }}
-            className="px-2.5 py-1.5 rounded-xl bg-pos-bg border border-pos-border text-xs text-pos-text font-mono font-semibold focus:outline-none focus:ring-2 focus:ring-pos-accent"
+            className="px-2.5 py-1.5 rounded-md bg-pos-surface border border-pos-border text-xs text-pos-text font-mono font-medium focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary"
           />
         </div>
 
@@ -294,7 +294,7 @@ export const ReservationsPage: React.FC = () => {
           <select
             value={selectedStatus}
             onChange={e => setSelectedStatus(e.target.value as ReservationStatus | 'ALL')}
-            className="px-2.5 py-1.5 rounded-xl bg-pos-bg border border-pos-border text-xs text-pos-text font-semibold focus:outline-none focus:ring-2 focus:ring-pos-accent"
+            className="px-2.5 py-1.5 rounded-md bg-pos-surface border border-pos-border text-xs text-pos-text font-medium focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary"
           >
             <option value="ALL">All Statuses</option>
             <option value="CONFIRMED">Confirmed</option>
@@ -316,7 +316,7 @@ export const ReservationsPage: React.FC = () => {
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
               placeholder="Search guest or code..."
-              className="pl-8 pr-3 py-1.5 rounded-xl bg-pos-bg border border-pos-border text-xs text-pos-text placeholder-pos-text-muted/60 focus:outline-none focus:ring-2 focus:ring-pos-accent w-44 sm:w-56 font-medium"
+              className="pl-8 pr-3 py-1.5 rounded-md bg-pos-surface border border-pos-border text-xs text-pos-text placeholder-pos-text-muted focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary w-44 sm:w-56 font-medium"
             />
           </div>
         </div>
@@ -325,7 +325,7 @@ export const ReservationsPage: React.FC = () => {
       {/* =========================================================================
           RESERVATIONS CONTENT AREA
       ========================================================================= */}
-      <div className="flex-1 overflow-y-auto p-4 custom-scrollbar bg-pos-surface/40 border-x border-b border-pos-border rounded-b-2xl">
+      <div className="flex-1 overflow-y-auto p-4 custom-scrollbar bg-pos-bg border-x border-b border-pos-border rounded-b-lg">
         {isLoading ? (
           <div className="py-24 flex flex-col items-center justify-center gap-3 text-pos-text-muted text-xs">
             <Spinner size="lg" />
@@ -335,7 +335,7 @@ export const ReservationsPage: React.FC = () => {
           <div className="py-24 text-center text-xs text-pos-text-muted flex flex-col items-center gap-3">
             <CalendarCheck size={40} className="text-pos-text-muted/40" />
             <p className="font-bold text-base text-pos-text">No Reservations Found</p>
-            <p className="text-xs max-w-sm">
+            <p className="text-xs max-w-sm text-pos-text-secondary">
               {searchQuery || selectedStatus !== 'ALL'
                 ? 'No bookings match your active status or search filter.'
                 : 'No table reservations scheduled for the selected date.'}
@@ -344,7 +344,7 @@ export const ReservationsPage: React.FC = () => {
               variant="primary"
               size="sm"
               onClick={() => setFormModal({ open: true, reservation: null })}
-              className="font-bold mt-2"
+              className="font-bold mt-2 shadow-xs"
             >
               + Create Reservation
             </Button>
@@ -364,13 +364,13 @@ export const ReservationsPage: React.FC = () => {
               return (
                 <div
                   key={res.id}
-                  className="p-4 rounded-2xl bg-pos-surface border border-pos-border shadow-xs hover:border-pos-accent/40 transition-all flex flex-col justify-between"
+                  className="p-3.5 rounded-lg bg-pos-surface border border-pos-border shadow-xs hover:border-pos-primary/40 transition-colors flex flex-col justify-between"
                 >
                   <div>
                     {/* Top Row: Time & Status */}
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-1.5 font-mono text-xs font-bold text-pos-text">
-                        <Clock size={13} className="text-pos-accent" />
+                        <Clock size={13} className="text-pos-primary" />
                         <span>
                           {startTimeStr} - {endTimeStr}
                         </span>
@@ -381,11 +381,11 @@ export const ReservationsPage: React.FC = () => {
 
                     {/* Guest Name & Code */}
                     <div className="mb-2.5">
-                      <h4 className="font-black text-pos-text text-sm">
+                      <h4 className="font-bold text-pos-text text-sm">
                         {res.customerName}
                       </h4>
                       <div className="flex items-center gap-3 text-xs text-pos-text-muted font-mono mt-0.5">
-                        <span className="flex items-center gap-1 text-pos-accent font-bold">
+                        <span className="flex items-center gap-1 text-pos-primary font-bold">
                           <Phone size={11} /> {res.customerPhone}
                         </span>
                         <span>#{res.reservationCode}</span>
@@ -393,9 +393,9 @@ export const ReservationsPage: React.FC = () => {
                     </div>
 
                     {/* Party & Table Details */}
-                    <div className="grid grid-cols-2 gap-2 p-2.5 rounded-xl bg-pos-bg border border-pos-border/60 text-xs mb-2.5">
+                    <div className="grid grid-cols-2 gap-2 p-2.5 rounded-md bg-pos-surface-subtle border border-pos-border text-xs mb-2.5">
                       <div>
-                        <span className="text-[10px] text-pos-text-muted flex items-center gap-1">
+                        <span className="text-[10px] text-pos-text-muted flex items-center gap-1 font-medium">
                           <Users size={11} /> Party Size
                         </span>
                         <span className="font-bold text-pos-text block mt-0.5 font-mono">
@@ -404,7 +404,7 @@ export const ReservationsPage: React.FC = () => {
                       </div>
 
                       <div>
-                        <span className="text-[10px] text-pos-text-muted flex items-center gap-1">
+                        <span className="text-[10px] text-pos-text-muted flex items-center gap-1 font-medium">
                           <Grid size={11} /> Table
                         </span>
                         <span className="font-bold text-pos-text block mt-0.5">
@@ -415,14 +415,14 @@ export const ReservationsPage: React.FC = () => {
 
                     {/* Special Requests */}
                     {res.specialRequests && (
-                      <p className="text-[11px] text-pos-text-muted line-clamp-1 italic mb-2">
+                      <p className="text-[11px] text-pos-text-secondary line-clamp-1 italic mb-2">
                         "{res.specialRequests}"
                       </p>
                     )}
                   </div>
 
                   {/* Action Bar */}
-                  <div className="pt-3 border-t border-pos-border/60 flex items-center justify-between gap-1.5">
+                  <div className="pt-3 border-t border-pos-border flex items-center justify-between gap-1.5">
                     <div className="flex items-center gap-1">
                       {res.status === 'CONFIRMED' && (
                         <button
@@ -433,7 +433,7 @@ export const ReservationsPage: React.FC = () => {
                               payload: { status: 'SEATED' },
                             })
                           }
-                          className="px-2.5 py-1 rounded-lg bg-pos-accent text-white font-bold text-[11px] hover:bg-pos-accent/90 transition-colors flex items-center gap-1"
+                          className="px-2.5 py-1 rounded-md bg-pos-primary text-white font-semibold text-[11px] hover:bg-pos-primary-hover transition-colors flex items-center gap-1 shadow-xs"
                         >
                           <Sparkles size={12} />
                           <span>Seat</span>
@@ -444,7 +444,7 @@ export const ReservationsPage: React.FC = () => {
                         <button
                           type="button"
                           onClick={() => setAssignModalReservation(res)}
-                          className="px-2 py-1 rounded-lg bg-pos-bg border border-pos-border text-pos-text hover:text-pos-accent font-semibold text-[11px] transition-colors"
+                          className="px-2 py-1 rounded-md bg-pos-surface border border-pos-border text-pos-text hover:text-pos-primary font-semibold text-[11px] transition-colors"
                         >
                           {res.table ? 'Reassign' : 'Assign'}
                         </button>
@@ -466,7 +466,7 @@ export const ReservationsPage: React.FC = () => {
                         <button
                           type="button"
                           onClick={() => setCancelModalReservation(res)}
-                          className="p-1.5 rounded-lg text-pos-text-muted hover:text-pos-danger hover:bg-pos-danger/10 transition-colors"
+                          className="p-1.5 rounded-md text-pos-text-muted hover:text-pos-danger hover:bg-pos-danger-soft transition-colors"
                           title="Cancel booking"
                           aria-label="Cancel booking"
                         >
@@ -532,3 +532,5 @@ export const ReservationsPage: React.FC = () => {
     </div>
   );
 };
+
+export default ReservationsPage;

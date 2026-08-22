@@ -89,23 +89,23 @@ export const CashAdjustmentModal: React.FC<CashAdjustmentModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 animate-in fade-in duration-150 select-none">
-      <div className="w-full max-w-md bg-pos-surface border border-pos-border rounded-2xl shadow-2xl flex flex-col overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 animate-in fade-in duration-150 select-none">
+      <div className="w-full max-w-md bg-pos-surface border border-pos-border rounded-xl shadow-modal flex flex-col overflow-hidden">
         {/* Header */}
-        <div className="p-4 sm:p-5 border-b border-pos-border flex items-center justify-between bg-pos-header shrink-0">
+        <div className="p-4 sm:p-5 border-b border-pos-border flex items-center justify-between bg-pos-surface shrink-0">
           <div className="flex items-center gap-3">
             <div
               className={cn(
-                'h-10 w-10 rounded-xl border flex items-center justify-center',
+                'h-9 w-9 rounded-lg border flex items-center justify-center',
                 type === 'PAY_IN'
-                  ? 'bg-pos-success/15 border-pos-success/30 text-pos-success'
-                  : 'bg-pos-danger/15 border-pos-danger/30 text-pos-danger'
+                  ? 'bg-pos-success-soft border-[#BBF7D0] text-pos-success'
+                  : 'bg-pos-danger-soft border-[#FECACA] text-pos-danger'
               )}
             >
               {type === 'PAY_IN' ? (
-                <ArrowDownLeft size={20} />
+                <ArrowDownLeft size={18} />
               ) : (
-                <ArrowUpRight size={20} />
+                <ArrowUpRight size={18} />
               )}
             </div>
             <div>
@@ -121,69 +121,69 @@ export const CashAdjustmentModal: React.FC<CashAdjustmentModalProps> = ({
             type="button"
             onClick={onClose}
             aria-label="Close adjustment modal"
-            className="p-2 rounded-xl text-pos-text-muted hover:text-pos-text hover:bg-pos-surface-hover transition-colors"
+            className="p-1.5 rounded-lg text-pos-text-muted hover:text-pos-text hover:bg-pos-surface-subtle transition-colors"
           >
-            <X size={20} />
+            <X size={18} />
           </button>
         </div>
 
         {/* Form Body */}
         <form onSubmit={handleSubmit} className="p-5 space-y-4">
           {errorMessage && (
-            <div className="p-3 rounded-xl bg-pos-danger/10 border border-pos-danger/30 text-pos-danger text-xs flex items-center gap-2">
+            <div className="p-3 rounded-lg bg-pos-danger-soft border border-[#FECACA] text-pos-danger text-xs flex items-center gap-2">
               <AlertCircle size={15} className="shrink-0" />
               <span>{errorMessage}</span>
             </div>
           )}
 
           {/* Type Switcher Tabs */}
-          <div className="grid grid-cols-2 gap-2 p-1 rounded-xl bg-pos-bg border border-pos-border">
+          <div className="grid grid-cols-2 gap-2 p-1 rounded-lg bg-pos-surface-subtle border border-pos-border">
             <button
               type="button"
               onClick={() => setType('PAY_IN')}
               className={cn(
-                'py-2 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5',
+                'py-1.5 rounded-md text-xs font-bold transition-colors flex items-center justify-center gap-1.5',
                 type === 'PAY_IN'
-                  ? 'bg-pos-success text-white shadow-sm'
-                  : 'text-pos-text-muted hover:text-pos-text'
+                  ? 'bg-pos-success text-white shadow-xs'
+                  : 'text-pos-text-secondary hover:text-pos-text'
               )}
             >
               <ArrowDownLeft size={14} />
-              <span>Pay In (Cash Added)</span>
+              <span>Pay In (Add)</span>
             </button>
 
             <button
               type="button"
               onClick={() => setType('PAY_OUT')}
               className={cn(
-                'py-2 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5',
+                'py-1.5 rounded-md text-xs font-bold transition-colors flex items-center justify-center gap-1.5',
                 type === 'PAY_OUT'
-                  ? 'bg-pos-danger text-white shadow-sm'
-                  : 'text-pos-text-muted hover:text-pos-text'
+                  ? 'bg-pos-danger text-white shadow-xs'
+                  : 'text-pos-text-secondary hover:text-pos-text'
               )}
             >
               <ArrowUpRight size={14} />
-              <span>Pay Out (Cash Taken)</span>
+              <span>Pay Out (Take)</span>
             </button>
           </div>
 
           {/* Current Drawer Info */}
-          <div className="p-3 rounded-xl bg-pos-bg border border-pos-border flex items-center justify-between text-xs">
-            <span className="text-pos-text-muted font-medium">Drawer Balance:</span>
-            <span className="font-mono font-bold text-base text-pos-accent">
+          <div className="p-3 rounded-lg bg-pos-surface-subtle border border-pos-border flex items-center justify-between text-xs">
+            <span className="text-pos-text-secondary font-medium">Drawer Balance:</span>
+            <span className="font-mono font-bold text-sm text-pos-primary">
               {formatPrice(shift.currentDrawerCash)}
             </span>
           </div>
 
           {/* Amount Input */}
           <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-pos-text mb-1.5">
+            <label className="block text-xs font-semibold uppercase tracking-wider text-pos-text-secondary mb-1.5">
               Adjustment Amount ({currency}) <span className="text-pos-danger">*</span>
             </label>
             <div className="relative">
               <DollarSign
                 size={16}
-                className="absolute left-3.5 top-1/2 -translate-y-1/2 text-pos-text-muted"
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-pos-text-muted"
               />
               <input
                 type="number"
@@ -193,14 +193,14 @@ export const CashAdjustmentModal: React.FC<CashAdjustmentModalProps> = ({
                 value={amount}
                 onChange={e => setAmount(e.target.value)}
                 placeholder="0.00"
-                className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-pos-bg border border-pos-border text-pos-text font-mono font-bold text-base focus:outline-none focus:ring-2 focus:ring-pos-accent"
+                className="w-full pl-8 pr-3 py-2 rounded-lg bg-pos-surface border border-pos-border text-pos-text font-mono font-bold text-sm focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary shadow-xs"
               />
             </div>
           </div>
 
           {/* Reason Input */}
           <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-pos-text mb-1.5">
+            <label className="block text-xs font-semibold uppercase tracking-wider text-pos-text-secondary mb-1.5">
               Reason / Expense Description <span className="text-pos-danger">*</span>
             </label>
             <input
@@ -214,14 +214,14 @@ export const CashAdjustmentModal: React.FC<CashAdjustmentModalProps> = ({
                   ? 'e.g. Additional coin rolls / change fund'
                   : 'e.g. Milk emergency purchase / supplier cash pay'
               }
-              className="w-full px-3 py-2.5 rounded-xl bg-pos-bg border border-pos-border text-pos-text text-xs focus:outline-none focus:ring-2 focus:ring-pos-accent font-medium"
+              className="w-full px-3 py-2 rounded-lg bg-pos-surface border border-pos-border text-pos-text text-xs focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary font-medium shadow-xs"
             />
           </div>
 
           {/* Manager PIN Verification if required */}
           {!canAdjustDirectly && (
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-pos-text mb-1.5 flex items-center gap-1">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-pos-text-secondary mb-1.5 flex items-center gap-1">
                 <KeyRound size={13} className="text-pos-warning" />
                 <span>Manager Authorization PIN</span>
                 <span className="text-pos-danger">*</span>
@@ -233,7 +233,7 @@ export const CashAdjustmentModal: React.FC<CashAdjustmentModalProps> = ({
                 value={managerPin}
                 onChange={e => setManagerPin(e.target.value.replace(/\D/g, ''))}
                 placeholder="4-digit PIN"
-                className="w-full px-3 py-2.5 rounded-xl bg-pos-bg border border-pos-border text-pos-text font-mono tracking-widest text-center text-sm focus:outline-none focus:ring-2 focus:ring-pos-accent"
+                className="w-full px-3 py-2 rounded-lg bg-pos-surface border border-pos-border text-pos-text font-mono tracking-widest text-center text-sm focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary shadow-xs"
               />
             </div>
           )}
@@ -255,7 +255,7 @@ export const CashAdjustmentModal: React.FC<CashAdjustmentModalProps> = ({
               size="md"
               isLoading={adjustmentMutation.isPending}
               disabled={!amount || !reason.trim()}
-              className="font-bold shadow-sm"
+              className="font-bold shadow-xs"
             >
               Record {type === 'PAY_IN' ? 'Pay In' : 'Pay Out'}
             </Button>

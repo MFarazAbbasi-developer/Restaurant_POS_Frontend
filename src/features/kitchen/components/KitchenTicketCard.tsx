@@ -17,6 +17,7 @@ import {
   AlertTriangle,
   FileText,
   Flame,
+  Layers,
 } from 'lucide-react';
 import { cn } from '@/utils/cn';
 
@@ -34,45 +35,51 @@ export const KitchenTicketCard: React.FC<KitchenTicketCardProps> = ({
   const recallOrderMutation = useRecallKitchenOrderMutation();
 
   // Channel badge helper
-  const getChannelBadge = () => {
+  const renderChannelBadge = () => {
     switch (ticket.orderType) {
       case 'DINE_IN':
         return (
-          <span className="text-[11px] font-bold text-pos-accent bg-pos-accent/10 px-2 py-0.5 rounded-lg flex items-center gap-1 border border-pos-accent/20">
+          <span className="text-[11px] font-semibold text-pos-primary bg-pos-primary-soft px-2 py-0.5 rounded flex items-center gap-1 border border-pos-primary/20">
             <UtensilsCrossed size={12} />
             <span>Table {ticket.tableName || 'Dine-In'}</span>
-            {ticket.zoneName && <span className="opacity-70">({ticket.zoneName})</span>}
+            {ticket.zoneName && (
+              <span className="text-pos-text-muted font-normal">({ticket.zoneName})</span>
+            )}
           </span>
         );
       case 'TAKEAWAY':
         return (
-          <span className="text-[11px] font-bold text-pos-warning bg-pos-warning/10 px-2 py-0.5 rounded-lg flex items-center gap-1 border border-pos-warning/20">
+          <span className="text-[11px] font-semibold text-pos-warning bg-pos-warning-soft px-2 py-0.5 rounded flex items-center gap-1 border border-[#FED7AA]">
             <Package size={12} />
             <span>Takeaway {ticket.tokenNumber ? `#${ticket.tokenNumber}` : ''}</span>
           </span>
         );
       case 'DELIVERY':
         return (
-          <span className="text-[11px] font-bold text-sky-400 bg-sky-500/10 px-2 py-0.5 rounded-lg flex items-center gap-1 border border-sky-500/20">
+          <span className="text-[11px] font-semibold text-pos-info bg-pos-info-soft px-2 py-0.5 rounded flex items-center gap-1 border border-[#BFDBFE]">
             <Truck size={12} />
             <span>Delivery</span>
           </span>
         );
       default:
-        return <Badge variant="default">{ticket.orderType}</Badge>;
+        return (
+          <Badge variant="default" size="sm">
+            {ticket.orderType}
+          </Badge>
+        );
     }
   };
 
-  // Urgency theme styling
-  const getUrgencyStyles = () => {
+  // Urgency theme styling based on elapsed waiting time
+  const getUrgencyCardStyles = () => {
     switch (ticket.urgencyTier) {
       case 'CRITICAL':
-        return 'border-pos-danger/80 bg-pos-danger/5 ring-1 ring-pos-danger/50 shadow-lg shadow-pos-danger/10';
+        return 'border-[#FECACA] bg-pos-danger-soft/30 ring-1 ring-pos-danger/50 shadow-sm';
       case 'WARNING':
-        return 'border-pos-warning/70 bg-pos-warning/5 ring-1 ring-pos-warning/30 shadow-md';
+        return 'border-[#FED7AA] bg-pos-warning-soft/30 shadow-xs';
       case 'NORMAL':
       default:
-        return 'border-pos-border bg-pos-surface hover:border-pos-accent/40';
+        return 'border-pos-border bg-pos-surface shadow-xs';
     }
   };
 
@@ -110,7 +117,7 @@ export const KitchenTicketCard: React.FC<KitchenTicketCardProps> = ({
     }
   };
 
-  // Individual item bump action
+  // Individual item bump action (tap to advance item status)
   const handleBumpItem = async (item: KitchenTicketItem, e: React.MouseEvent) => {
     e.stopPropagation();
     let nextStatus: 'PREPARING' | 'READY' | 'SERVED' | null = null;
@@ -139,24 +146,24 @@ export const KitchenTicketCard: React.FC<KitchenTicketCardProps> = ({
   return (
     <div
       className={cn(
-        'flex flex-col rounded-2xl border transition-all duration-150 overflow-hidden select-none min-h-[360px] max-h-[580px]',
-        getUrgencyStyles()
+        'flex flex-col rounded-lg border transition-all duration-150 overflow-hidden select-none min-h-[350px] max-h-[580px]',
+        getUrgencyCardStyles()
       )}
     >
       {/* Ticket Header */}
       <div
         className={cn(
-          'p-3.5 border-b border-pos-border/80 flex items-start justify-between gap-2 shrink-0',
+          'p-3 border-b border-pos-border flex items-start justify-between gap-2 shrink-0',
           ticket.urgencyTier === 'CRITICAL'
-            ? 'bg-pos-danger/15'
+            ? 'bg-pos-danger-soft/80 border-[#FECACA]'
             : ticket.urgencyTier === 'WARNING'
-              ? 'bg-pos-warning/10'
-              : 'bg-pos-header'
+              ? 'bg-pos-warning-soft/70 border-[#FED7AA]'
+              : 'bg-pos-surface'
         )}
       >
         <div>
           <div className="flex items-center gap-2">
-            <span className="px-2 py-0.5 rounded-lg bg-pos-accent text-white font-black text-xs sm:text-sm font-mono tracking-wider shadow-sm">
+            <span className="px-2 py-0.5 rounded bg-pos-primary text-white font-black text-xs font-mono tracking-wider shadow-xs">
               #{ticket.dailySequence || ticket.orderCode.slice(-4)}
             </span>
             <span className="font-mono text-xs font-bold text-pos-text">
@@ -165,9 +172,9 @@ export const KitchenTicketCard: React.FC<KitchenTicketCardProps> = ({
           </div>
 
           <div className="mt-1.5 flex items-center gap-2 flex-wrap">
-            {getChannelBadge()}
+            {renderChannelBadge()}
             {ticket.customerName && (
-              <span className="text-[11px] text-pos-text-muted font-medium truncate max-w-[130px]">
+              <span className="text-[11px] text-pos-text-muted font-medium truncate max-w-[120px]">
                 {ticket.customerName}
               </span>
             )}
@@ -175,21 +182,21 @@ export const KitchenTicketCard: React.FC<KitchenTicketCardProps> = ({
         </div>
 
         {/* Live Elapsed Prep Timer Pill */}
-        <div className="flex flex-col items-end gap-1">
+        <div className="flex flex-col items-end gap-1 shrink-0">
           <div
             className={cn(
-              'px-2.5 py-1 rounded-xl text-xs font-black font-mono flex items-center gap-1.5 shadow-sm',
+              'px-2 py-0.5 rounded text-xs font-bold font-mono flex items-center gap-1 shadow-xs',
               ticket.urgencyTier === 'CRITICAL'
-                ? 'bg-pos-danger text-white animate-pulse'
+                ? 'bg-pos-danger text-white'
                 : ticket.urgencyTier === 'WARNING'
-                  ? 'bg-pos-warning/20 text-pos-warning border border-pos-warning/40'
-                  : 'bg-pos-surface text-pos-text border border-pos-border'
+                  ? 'bg-pos-warning-soft text-pos-warning border border-[#FED7AA]'
+                  : 'bg-pos-surface border border-pos-border text-pos-text'
             )}
           >
             {ticket.urgencyTier === 'CRITICAL' ? (
-              <Flame size={13} className="shrink-0 animate-bounce" />
+              <Flame size={12} className="shrink-0 animate-bounce" />
             ) : (
-              <Clock size={13} className="shrink-0" />
+              <Clock size={12} className="shrink-0 text-pos-text-muted" />
             )}
             <span>
               {String(ticket.elapsedMinutes).padStart(2, '0')}:
@@ -197,14 +204,14 @@ export const KitchenTicketCard: React.FC<KitchenTicketCardProps> = ({
             </span>
           </div>
 
-          <span className="text-[10px] font-bold text-pos-text-muted uppercase tracking-wider">
-            {ticket.itemsSummary.ready}/{ticket.itemsSummary.total} Ready
+          <span className="text-[10px] font-semibold text-pos-text-muted">
+            {ticket.itemsSummary.ready}/{ticket.itemsSummary.total} Items Ready
           </span>
         </div>
       </div>
 
       {/* Ticket Items Scroll Area */}
-      <div className="flex-1 overflow-y-auto p-3.5 space-y-2.5 custom-scrollbar bg-pos-bg/40">
+      <div className="flex-1 overflow-y-auto p-3 space-y-2 custom-scrollbar bg-pos-bg/60">
         {ticket.items.map(item => {
           const isItemDone = item.kitchenStatus === 'SERVED';
           const isItemReady = item.kitchenStatus === 'READY';
@@ -215,14 +222,14 @@ export const KitchenTicketCard: React.FC<KitchenTicketCardProps> = ({
               key={item.id}
               onClick={e => handleBumpItem(item, e)}
               className={cn(
-                'p-3 rounded-xl border transition-all cursor-pointer text-xs space-y-1.5 relative group',
+                'p-2.5 rounded-lg border transition-colors cursor-pointer text-xs space-y-1.5 relative shadow-xs',
                 isItemDone
-                  ? 'bg-pos-surface/40 border-pos-border/40 opacity-50'
+                  ? 'bg-pos-surface-subtle/50 border-pos-border/60 opacity-50'
                   : isItemReady
-                    ? 'bg-pos-success/10 border-pos-success/40 text-pos-text'
+                    ? 'bg-pos-success-soft border-[#BBF7D0] text-pos-text'
                     : isItemPrep
-                      ? 'bg-pos-info/10 border-pos-info/40 text-pos-text'
-                      : 'bg-pos-surface border-pos-border hover:border-pos-accent/40 text-pos-text'
+                      ? 'bg-pos-info-soft border-[#BFDBFE] text-pos-text'
+                      : 'bg-pos-surface border-pos-border hover:border-pos-border-strong text-pos-text'
               )}
             >
               {/* Item Header & Qty */}
@@ -230,12 +237,12 @@ export const KitchenTicketCard: React.FC<KitchenTicketCardProps> = ({
                 <div className="flex items-start gap-2 min-w-0">
                   <span
                     className={cn(
-                      'px-2 py-0.5 rounded-lg font-black text-xs font-mono shrink-0 shadow-xs',
+                      'px-1.5 py-0.5 rounded font-black text-xs font-mono shrink-0 shadow-xs',
                       isItemReady
                         ? 'bg-pos-success text-white'
                         : isItemPrep
                           ? 'bg-pos-info text-white'
-                          : 'bg-pos-accent text-white'
+                          : 'bg-pos-primary text-white'
                     )}
                   >
                     {item.quantity}x
@@ -244,14 +251,14 @@ export const KitchenTicketCard: React.FC<KitchenTicketCardProps> = ({
                   <div className="min-w-0">
                     <span
                       className={cn(
-                        'font-bold text-sm leading-tight block truncate',
+                        'font-bold text-xs leading-snug block truncate',
                         isItemDone ? 'line-through text-pos-text-muted' : 'text-pos-text'
                       )}
                     >
                       {item.itemName}
                     </span>
                     {item.variantName && (
-                      <span className="text-[11px] text-pos-accent font-semibold block">
+                      <span className="text-[10px] text-pos-primary font-semibold block">
                         Portion: {item.variantName}
                       </span>
                     )}
@@ -261,22 +268,22 @@ export const KitchenTicketCard: React.FC<KitchenTicketCardProps> = ({
                 {/* Status Indicator Pill */}
                 <div className="shrink-0">
                   {item.kitchenStatus === 'PENDING' && (
-                    <span className="text-[10px] font-bold text-pos-text-muted bg-pos-bg px-2 py-0.5 rounded border border-pos-border/60">
+                    <span className="text-[10px] font-medium text-pos-text-muted bg-pos-surface px-1.5 py-0.5 rounded border border-pos-border">
                       Pending
                     </span>
                   )}
                   {item.kitchenStatus === 'PREPARING' && (
-                    <span className="text-[10px] font-bold text-pos-info bg-pos-info/15 px-2 py-0.5 rounded border border-pos-info/30 flex items-center gap-1">
+                    <span className="text-[10px] font-semibold text-pos-info bg-pos-info-soft px-1.5 py-0.5 rounded border border-[#BFDBFE] flex items-center gap-1">
                       <ChefHat size={10} /> Cooking
                     </span>
                   )}
                   {item.kitchenStatus === 'READY' && (
-                    <span className="text-[10px] font-bold text-pos-success bg-pos-success/15 px-2 py-0.5 rounded border border-pos-success/30 flex items-center gap-1">
+                    <span className="text-[10px] font-semibold text-pos-success bg-pos-success-soft px-1.5 py-0.5 rounded border border-[#BBF7D0] flex items-center gap-1">
                       <CheckCircle2 size={10} /> Ready
                     </span>
                   )}
                   {item.kitchenStatus === 'SERVED' && (
-                    <span className="text-[10px] font-bold text-pos-text-muted bg-pos-bg px-2 py-0.5 rounded">
+                    <span className="text-[10px] font-medium text-pos-text-muted bg-pos-surface px-1.5 py-0.5 rounded">
                       Served
                     </span>
                   )}
@@ -285,11 +292,11 @@ export const KitchenTicketCard: React.FC<KitchenTicketCardProps> = ({
 
               {/* Modifiers List */}
               {item.modifiers && item.modifiers.length > 0 && (
-                <div className="pl-7 flex flex-wrap gap-1">
+                <div className="pl-6 flex flex-wrap gap-1">
                   {item.modifiers.map((mod, idx) => (
                     <span
                       key={idx}
-                      className="text-[10px] font-medium bg-pos-bg px-1.5 py-0.5 rounded text-pos-text-muted border border-pos-border/60"
+                      className="text-[10px] font-medium bg-pos-surface-subtle px-1.5 py-0.5 rounded text-pos-text-secondary border border-pos-border"
                     >
                       +{mod.modifierOptionName}
                     </span>
@@ -299,19 +306,28 @@ export const KitchenTicketCard: React.FC<KitchenTicketCardProps> = ({
 
               {/* Special Cooking Instructions Box */}
               {item.specialInstructions && (
-                <div className="pl-7">
-                  <p className="text-[11px] font-semibold text-pos-warning bg-pos-warning/10 border border-pos-warning/30 px-2 py-1 rounded-lg flex items-center gap-1">
+                <div className="pl-6">
+                  <p className="text-[10px] font-semibold text-pos-warning bg-pos-warning-soft border border-[#FED7AA] px-1.5 py-0.5 rounded flex items-center gap-1">
                     <AlertTriangle size={11} className="shrink-0" />
                     <span>{item.specialInstructions}</span>
                   </p>
                 </div>
               )}
 
-              {/* Kitchen Notes */}
-              {item.kitchenNotes && (
-                <p className="pl-7 text-[10px] text-pos-text-muted italic flex items-center gap-1">
-                  <FileText size={10} /> {item.kitchenNotes}
-                </p>
+              {/* Station Tag & Kitchen Notes */}
+              {(item.stationName || item.kitchenNotes) && (
+                <div className="pl-6 flex items-center gap-2 text-[10px] text-pos-text-muted">
+                  {item.stationName && (
+                    <span className="flex items-center gap-1 font-medium bg-pos-surface px-1 rounded border border-pos-border">
+                      <Layers size={9} /> {item.stationName}
+                    </span>
+                  )}
+                  {item.kitchenNotes && (
+                    <span className="italic flex items-center gap-0.5">
+                      <FileText size={9} /> {item.kitchenNotes}
+                    </span>
+                  )}
+                </div>
               )}
             </div>
           );
@@ -319,9 +335,9 @@ export const KitchenTicketCard: React.FC<KitchenTicketCardProps> = ({
 
         {/* Global Ticket Notes */}
         {ticket.notes && (
-          <div className="p-2.5 rounded-xl bg-pos-warning/10 border border-pos-warning/30 text-pos-warning text-xs space-y-1">
-            <span className="font-bold flex items-center gap-1 text-[11px] uppercase tracking-wider">
-              <AlertTriangle size={12} /> Ticket Note
+          <div className="p-2.5 rounded-lg bg-pos-warning-soft border border-[#FED7AA] text-pos-warning text-xs space-y-1">
+            <span className="font-bold flex items-center gap-1 text-[10px] uppercase tracking-wider">
+              <AlertTriangle size={11} /> Ticket Note
             </span>
             <p className="text-[11px] font-medium">{ticket.notes}</p>
           </div>
@@ -329,16 +345,16 @@ export const KitchenTicketCard: React.FC<KitchenTicketCardProps> = ({
       </div>
 
       {/* Ticket Footer: Primary Bump Bar */}
-      <div className="p-3 border-t border-pos-border bg-pos-header flex items-center gap-2 shrink-0">
+      <div className="p-2.5 border-t border-pos-border bg-pos-surface flex items-center gap-2 shrink-0">
         {/* Full Bump Action Button */}
         {(ticket.status === 'PENDING' || ticket.status === 'CONFIRMED') && (
           <button
             type="button"
             onClick={handleBumpTicket}
             disabled={isPendingMutation}
-            className="flex-1 py-3 px-4 rounded-xl bg-pos-info hover:bg-pos-info/90 text-white font-black text-sm transition-all flex items-center justify-center gap-2 active:scale-98 shadow-sm"
+            className="flex-1 py-2.5 px-3 rounded-md bg-pos-info hover:bg-pos-info/90 text-white font-bold text-xs transition-colors flex items-center justify-center gap-1.5 min-h-[40px] shadow-xs"
           >
-            <ChefHat size={18} />
+            <ChefHat size={16} />
             <span>START PREP ALL</span>
           </button>
         )}
@@ -348,9 +364,9 @@ export const KitchenTicketCard: React.FC<KitchenTicketCardProps> = ({
             type="button"
             onClick={handleBumpTicket}
             disabled={isPendingMutation}
-            className="flex-1 py-3 px-4 rounded-xl bg-pos-success hover:bg-pos-success/90 text-white font-black text-sm transition-all flex items-center justify-center gap-2 active:scale-98 shadow-md shadow-pos-success/20"
+            className="flex-1 py-2.5 px-3 rounded-md bg-pos-success hover:bg-pos-success/90 text-white font-bold text-xs transition-colors flex items-center justify-center gap-1.5 min-h-[40px] shadow-xs"
           >
-            <CheckCircle2 size={18} />
+            <CheckCircle2 size={16} />
             <span>BUMP / MARK ALL READY</span>
           </button>
         )}
@@ -360,9 +376,9 @@ export const KitchenTicketCard: React.FC<KitchenTicketCardProps> = ({
             type="button"
             onClick={handleBumpTicket}
             disabled={isPendingMutation}
-            className="flex-1 py-3 px-4 rounded-xl bg-pos-accent hover:bg-pos-accent/90 text-white font-black text-sm transition-all flex items-center justify-center gap-2 active:scale-98 shadow-md"
+            className="flex-1 py-2.5 px-3 rounded-md bg-pos-primary hover:bg-pos-primary-hover text-white font-bold text-xs transition-colors flex items-center justify-center gap-1.5 min-h-[40px] shadow-xs"
           >
-            <UtensilsCrossed size={18} />
+            <UtensilsCrossed size={16} />
             <span>SERVE / EXPEDITE</span>
           </button>
         )}
@@ -374,9 +390,9 @@ export const KitchenTicketCard: React.FC<KitchenTicketCardProps> = ({
             onClick={handleRecallTicket}
             disabled={isPendingMutation}
             title="Recall ticket back to preparing"
-            className="p-3 rounded-xl bg-pos-bg hover:bg-pos-surface-hover text-pos-text-muted hover:text-pos-warning border border-pos-border transition-all flex items-center justify-center"
+            className="h-[40px] px-2.5 rounded-md bg-pos-surface hover:bg-pos-surface-subtle text-pos-text-muted hover:text-pos-warning border border-pos-border transition-colors flex items-center justify-center"
           >
-            <RotateCcw size={18} />
+            <RotateCcw size={16} />
           </button>
         )}
 
@@ -384,10 +400,10 @@ export const KitchenTicketCard: React.FC<KitchenTicketCardProps> = ({
         <button
           type="button"
           onClick={onOpenDetails}
-          className="p-3 rounded-xl bg-pos-bg hover:bg-pos-surface-hover text-pos-text-muted hover:text-pos-text border border-pos-border transition-all flex items-center justify-center"
+          className="h-[40px] px-2.5 rounded-md bg-pos-surface hover:bg-pos-surface-subtle text-pos-text-muted hover:text-pos-text border border-pos-border transition-colors flex items-center justify-center"
           title="View full ticket details"
         >
-          <FileText size={18} />
+          <FileText size={16} />
         </button>
       </div>
     </div>

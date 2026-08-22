@@ -44,14 +44,23 @@ export const DeliveryCard: React.FC<DeliveryCardProps> = ({
   const getStatusBadge = (status: DeliveryOrderRecord['status']) => {
     switch (status) {
       case 'PENDING':
-        return <Badge variant="warning">Pending</Badge>;
+        return (
+          <Badge variant="warning" size="sm">
+            Pending
+          </Badge>
+        );
       case 'PREPARING':
-        return <Badge variant="info">Preparing</Badge>;
+        return (
+          <Badge variant="info" size="sm">
+            Preparing
+          </Badge>
+        );
       case 'READY':
         return (
           <Badge
             variant="default"
-            className="bg-sky-500/20 text-sky-400 border-sky-500/40"
+            size="sm"
+            className="bg-pos-info-soft text-pos-info border border-[#BFDBFE]"
           >
             Ready to Dispatch
           </Badge>
@@ -60,18 +69,31 @@ export const DeliveryCard: React.FC<DeliveryCardProps> = ({
         return (
           <Badge
             variant="default"
-            className="bg-indigo-500/20 text-indigo-400 border-indigo-500/40"
+            size="sm"
+            className="bg-pos-primary-soft text-pos-primary border border-pos-primary/20"
           >
             Out for Delivery
           </Badge>
         );
       case 'DELIVERED':
-        return <Badge variant="success">Delivered</Badge>;
+        return (
+          <Badge variant="success" size="sm">
+            Delivered
+          </Badge>
+        );
       case 'CANCELLED':
       case 'FAILED':
-        return <Badge variant="danger">{status}</Badge>;
+        return (
+          <Badge variant="danger" size="sm">
+            {status}
+          </Badge>
+        );
       default:
-        return <Badge variant="default">{status}</Badge>;
+        return (
+          <Badge variant="default" size="sm">
+            {status}
+          </Badge>
+        );
     }
   };
 
@@ -113,10 +135,10 @@ export const DeliveryCard: React.FC<DeliveryCardProps> = ({
     <div
       onClick={onClick}
       className={cn(
-        'p-4 rounded-2xl border text-left transition-all relative flex flex-col justify-between min-h-[210px] shadow-sm select-none cursor-pointer group',
+        'p-3.5 rounded-lg border text-left transition-colors relative flex flex-col justify-between min-h-[210px] shadow-xs select-none cursor-pointer group',
         isSelected
-          ? 'border-pos-accent bg-pos-accent/15 ring-2 ring-pos-accent shadow-md'
-          : 'border-pos-border bg-pos-surface hover:border-pos-accent/40 hover:bg-pos-surface-hover active:scale-[0.99]'
+          ? 'border-pos-primary bg-pos-primary-soft/50 ring-1 ring-pos-primary shadow-sm'
+          : 'border-pos-border bg-pos-surface hover:border-pos-border-strong hover:bg-pos-surface-subtle'
       )}
     >
       {/* Header: Order Code, Aggregator & Status */}
@@ -127,7 +149,7 @@ export const DeliveryCard: React.FC<DeliveryCardProps> = ({
               #{order.orderCode}
             </span>
             {order.isAggregator && (
-              <span className="text-[10px] font-bold bg-pos-surface border border-pos-border px-1.5 py-0.5 rounded text-pos-accent flex items-center gap-1">
+              <span className="text-[10px] font-semibold bg-pos-surface-subtle border border-pos-border px-1.5 py-0.5 rounded text-pos-primary flex items-center gap-1">
                 <Building size={10} /> {order.aggregatorName || 'Aggregator'}
               </span>
             )}
@@ -140,11 +162,11 @@ export const DeliveryCard: React.FC<DeliveryCardProps> = ({
         <div className="flex flex-col items-end gap-1">
           {getStatusBadge(order.status)}
           {order.paymentStatus === 'PAID' ? (
-            <span className="text-[10px] font-bold text-pos-success bg-pos-success/10 px-1.5 py-0.5 rounded border border-pos-success/30 flex items-center gap-0.5">
+            <span className="text-[10px] font-semibold text-pos-success bg-pos-success-soft px-1.5 py-0.5 rounded border border-[#BBF7D0] flex items-center gap-0.5">
               <CreditCard size={10} /> Paid
             </span>
           ) : (
-            <span className="text-[10px] font-bold text-pos-warning bg-pos-warning/10 px-1.5 py-0.5 rounded border border-pos-warning/30">
+            <span className="text-[10px] font-semibold text-pos-warning bg-pos-warning-soft px-1.5 py-0.5 rounded border border-[#FED7AA]">
               COD ({formatPrice(order.totalAmount)})
             </span>
           )}
@@ -155,7 +177,7 @@ export const DeliveryCard: React.FC<DeliveryCardProps> = ({
       <div className="py-2 space-y-1.5">
         <div className="flex items-center justify-between text-xs">
           <span className="font-bold text-pos-text flex items-center gap-1.5 truncate max-w-[170px]">
-            <User size={13} className="text-pos-accent shrink-0" />
+            <User size={13} className="text-pos-primary shrink-0" />
             {order.customerName}
           </span>
           <span className="text-[11px] text-pos-text-muted font-mono">
@@ -164,18 +186,20 @@ export const DeliveryCard: React.FC<DeliveryCardProps> = ({
         </div>
 
         {/* Delivery Address */}
-        <p className="text-[11px] text-pos-text-muted line-clamp-2 flex items-start gap-1 font-medium">
-          <MapPin size={12} className="shrink-0 text-pos-text-muted/70 mt-0.5" />
+        <p className="text-[11px] text-pos-text-secondary line-clamp-2 flex items-start gap-1 font-medium">
+          <MapPin size={12} className="shrink-0 text-pos-text-muted mt-0.5" />
           <span>
             {order.deliveryAddress}
-            {order.landmark && <span className="italic ml-1">({order.landmark})</span>}
+            {order.landmark && (
+              <span className="italic ml-1 text-pos-text-muted">({order.landmark})</span>
+            )}
           </span>
         </p>
 
         {/* Zone & Rider Info Pill */}
         <div className="flex items-center justify-between text-[11px] pt-1">
           {order.deliveryZoneName ? (
-            <span className="text-pos-text-muted font-medium bg-pos-bg px-2 py-0.5 rounded border border-pos-border/60">
+            <span className="text-pos-text-secondary font-medium bg-pos-surface-subtle px-1.5 py-0.5 rounded border border-pos-border text-[10px]">
               Zone: {order.deliveryZoneName}
             </span>
           ) : (
@@ -183,7 +207,7 @@ export const DeliveryCard: React.FC<DeliveryCardProps> = ({
           )}
 
           {order.rider ? (
-            <span className="text-pos-accent font-semibold flex items-center gap-1 bg-pos-accent/10 px-2 py-0.5 rounded">
+            <span className="text-pos-primary font-semibold flex items-center gap-1 bg-pos-primary-soft px-2 py-0.5 rounded text-[11px] border border-pos-primary/20">
               <Bike size={11} /> {order.rider.name}
             </span>
           ) : (
@@ -202,31 +226,31 @@ export const DeliveryCard: React.FC<DeliveryCardProps> = ({
       </div>
 
       {/* Items Preview */}
-      <div className="bg-pos-bg/80 border border-pos-border/60 rounded-xl p-2 text-[11px] space-y-1 text-pos-text-muted mb-2">
+      <div className="bg-pos-surface-subtle border border-pos-border rounded-md p-2 text-[11px] space-y-1 text-pos-text-muted mb-2">
         {order.items.slice(0, 2).map((item, idx) => (
           <div key={idx} className="flex justify-between items-center truncate">
             <span className="text-pos-text font-medium truncate">
               {item.quantity}x {item.name}
             </span>
-            <span className="font-mono text-[10px] shrink-0 ml-1">
+            <span className="font-mono text-[10px] shrink-0 ml-1 text-pos-text-secondary">
               {formatPrice(item.subtotal)}
             </span>
           </div>
         ))}
         {order.items.length > 2 && (
-          <div className="text-[10px] text-pos-accent font-semibold pt-0.5">
+          <div className="text-[10px] text-pos-primary font-semibold pt-0.5">
             +{order.items.length - 2} more item(s) ({totalItemsCount} total)
           </div>
         )}
       </div>
 
       {/* Footer: Price Total & Lifecycle Bump Button */}
-      <div className="pt-2 border-t border-pos-border/40 flex items-center justify-between gap-2">
+      <div className="pt-2 border-t border-pos-border flex items-center justify-between gap-2">
         <div>
           <span className="text-[10px] uppercase font-bold text-pos-text-muted block">
             Total
           </span>
-          <span className="text-base font-black font-mono text-pos-accent leading-none">
+          <span className="text-base font-black font-mono text-pos-primary leading-none">
             {formatPrice(order.totalAmount)}
           </span>
         </div>
@@ -237,9 +261,9 @@ export const DeliveryCard: React.FC<DeliveryCardProps> = ({
             type="button"
             onClick={handleBumpStatus}
             disabled={updateStatusMutation.isPending}
-            className="px-3 py-1.5 rounded-xl bg-pos-info/15 text-pos-info hover:bg-pos-info hover:text-white border border-pos-info/30 text-xs font-bold transition-all flex items-center gap-1.5 active:scale-95 shadow-xs"
+            className="px-2.5 py-1.5 rounded-md bg-pos-info-soft text-pos-info hover:bg-pos-info hover:text-white border border-[#BFDBFE] text-xs font-bold transition-colors flex items-center gap-1.5 shadow-xs"
           >
-            <ChefHat size={14} />
+            <ChefHat size={13} />
             <span>Start Prep</span>
           </button>
         )}
@@ -249,9 +273,9 @@ export const DeliveryCard: React.FC<DeliveryCardProps> = ({
             type="button"
             onClick={handleBumpStatus}
             disabled={updateStatusMutation.isPending}
-            className="px-3 py-1.5 rounded-xl bg-sky-500/15 text-sky-400 hover:bg-sky-500 hover:text-white border border-sky-500/30 text-xs font-bold transition-all flex items-center gap-1.5 active:scale-95 shadow-xs"
+            className="px-2.5 py-1.5 rounded-md bg-pos-info-soft text-pos-info hover:bg-pos-info hover:text-white border border-[#BFDBFE] text-xs font-bold transition-colors flex items-center gap-1.5 shadow-xs"
           >
-            <CheckCircle2 size={14} />
+            <CheckCircle2 size={13} />
             <span>Mark Ready</span>
           </button>
         )}
@@ -261,10 +285,10 @@ export const DeliveryCard: React.FC<DeliveryCardProps> = ({
             type="button"
             onClick={handleBumpStatus}
             disabled={updateStatusMutation.isPending}
-            className="px-3 py-1.5 rounded-xl bg-indigo-500/20 text-indigo-400 hover:bg-indigo-500 hover:text-white border border-indigo-500/40 text-xs font-bold transition-all flex items-center gap-1.5 active:scale-95 shadow-sm"
+            className="px-2.5 py-1.5 rounded-md bg-pos-primary text-white hover:bg-pos-primary-hover text-xs font-bold transition-colors flex items-center gap-1.5 shadow-xs"
           >
-            <Send size={14} />
-            <span>{order.rider ? 'Dispatch Rider' : 'Assign & Dispatch'}</span>
+            <Send size={13} />
+            <span>{order.rider ? 'Dispatch' : 'Assign & Dispatch'}</span>
           </button>
         )}
 
@@ -273,9 +297,9 @@ export const DeliveryCard: React.FC<DeliveryCardProps> = ({
             type="button"
             onClick={handleBumpStatus}
             disabled={updateStatusMutation.isPending}
-            className="px-3 py-1.5 rounded-xl bg-pos-success text-white hover:bg-pos-success/90 text-xs font-bold transition-all flex items-center gap-1.5 active:scale-95 shadow-sm"
+            className="px-2.5 py-1.5 rounded-md bg-pos-success text-white hover:bg-pos-success/90 text-xs font-bold transition-colors flex items-center gap-1.5 shadow-xs"
           >
-            <PackageCheck size={14} />
+            <PackageCheck size={13} />
             <span>Delivered</span>
           </button>
         )}

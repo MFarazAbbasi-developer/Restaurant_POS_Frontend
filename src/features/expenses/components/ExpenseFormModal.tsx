@@ -17,7 +17,6 @@ import {
   Tag,
   CreditCard,
   Building2,
-  FileText,
   AlertCircle,
   Hash,
   Link2,
@@ -116,13 +115,13 @@ export const ExpenseFormModal: React.FC<ExpenseFormModalProps> = ({
   const isPending = createMutation.isPending || updateMutation.isPending;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 animate-in fade-in duration-150 select-none">
-      <div className="w-full max-w-lg bg-pos-surface border border-pos-border rounded-2xl shadow-2xl flex flex-col max-h-[90vh] overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 animate-in fade-in duration-150 select-none">
+      <div className="w-full max-w-lg bg-pos-surface border border-pos-border rounded-xl shadow-modal flex flex-col max-h-[90vh] overflow-hidden">
         {/* Header */}
-        <div className="p-4 sm:p-5 border-b border-pos-border flex items-center justify-between bg-pos-header shrink-0">
+        <div className="p-4 sm:p-5 border-b border-pos-border flex items-center justify-between bg-pos-surface shrink-0">
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-xl bg-pos-accent/15 border border-pos-accent/30 text-pos-accent flex items-center justify-center">
-              <Receipt size={20} />
+            <div className="h-9 w-9 rounded-lg bg-pos-primary-soft border border-pos-primary/20 text-pos-primary flex items-center justify-center">
+              <Receipt size={18} />
             </div>
             <div>
               <h3 className="text-base font-bold text-pos-text">
@@ -141,9 +140,9 @@ export const ExpenseFormModal: React.FC<ExpenseFormModalProps> = ({
             type="button"
             onClick={onClose}
             aria-label="Close modal"
-            className="p-2 rounded-xl text-pos-text-muted hover:text-pos-text hover:bg-pos-surface-hover transition-colors"
+            className="p-1.5 rounded-lg text-pos-text-muted hover:text-pos-text hover:bg-pos-surface-subtle transition-colors"
           >
-            <X size={20} />
+            <X size={18} />
           </button>
         </div>
 
@@ -153,7 +152,7 @@ export const ExpenseFormModal: React.FC<ExpenseFormModalProps> = ({
           className="flex-1 overflow-y-auto p-5 space-y-4 custom-scrollbar"
         >
           {errorMessage && (
-            <div className="p-3 rounded-xl bg-pos-danger/10 border border-pos-danger/30 text-pos-danger text-xs flex items-center gap-2">
+            <div className="p-3 rounded-lg bg-pos-danger-soft border border-[#FECACA] text-pos-danger text-xs flex items-center gap-2">
               <AlertCircle size={15} className="shrink-0" />
               <span>{errorMessage}</span>
             </div>
@@ -162,11 +161,11 @@ export const ExpenseFormModal: React.FC<ExpenseFormModalProps> = ({
           {/* Amount & Category */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-pos-text mb-1.5">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-pos-text-secondary mb-1.5">
                 Amount ({currency}) <span className="text-pos-danger">*</span>
               </label>
               <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 font-bold text-pos-text-muted text-sm">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 font-bold text-pos-text-muted text-xs">
                   {currency}
                 </span>
                 <input
@@ -178,13 +177,13 @@ export const ExpenseFormModal: React.FC<ExpenseFormModalProps> = ({
                   value={amount}
                   onChange={e => setAmount(e.target.value)}
                   placeholder="0.00"
-                  className="w-full pl-12 pr-3 py-2.5 rounded-xl bg-pos-bg border border-pos-border text-pos-text font-mono font-black text-base focus:outline-none focus:ring-2 focus:ring-pos-accent disabled:opacity-60"
+                  className="w-full pl-11 pr-3 py-2 rounded-lg bg-pos-surface border border-pos-border text-pos-text font-mono font-bold text-sm focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary disabled:opacity-60 shadow-xs"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-pos-text mb-1.5">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-pos-text-secondary mb-1.5">
                 Expense Category <span className="text-pos-danger">*</span>
               </label>
               <div className="relative">
@@ -195,7 +194,7 @@ export const ExpenseFormModal: React.FC<ExpenseFormModalProps> = ({
                 <select
                   value={categoryId}
                   onChange={e => setCategoryId(e.target.value)}
-                  className="w-full pl-8 pr-3 py-2.5 rounded-xl bg-pos-bg border border-pos-border text-pos-text text-xs focus:outline-none focus:ring-2 focus:ring-pos-accent font-semibold"
+                  className="w-full pl-8 pr-3 py-2 rounded-lg bg-pos-surface border border-pos-border text-pos-text text-xs focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary font-medium shadow-xs"
                 >
                   {categories.map(c => (
                     <option key={c.id} value={c.id}>
@@ -209,7 +208,7 @@ export const ExpenseFormModal: React.FC<ExpenseFormModalProps> = ({
 
           {/* Description */}
           <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-pos-text mb-1.5">
+            <label className="block text-xs font-semibold uppercase tracking-wider text-pos-text-secondary mb-1.5">
               Expense Description / Purpose <span className="text-pos-danger">*</span>
             </label>
             <input
@@ -218,14 +217,14 @@ export const ExpenseFormModal: React.FC<ExpenseFormModalProps> = ({
               value={description}
               onChange={e => setDescription(e.target.value)}
               placeholder="e.g. Milk & Dairy emergency restock, Cleaning Supplies"
-              className="w-full px-3 py-2.5 rounded-xl bg-pos-bg border border-pos-border text-pos-text text-xs font-medium focus:outline-none focus:ring-2 focus:ring-pos-accent"
+              className="w-full px-3 py-2 rounded-lg bg-pos-surface border border-pos-border text-pos-text text-xs font-medium focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary shadow-xs"
             />
           </div>
 
           {/* Payment Method & Supplier */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-pos-text mb-1.5">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-pos-text-secondary mb-1.5">
                 Payment Method
               </label>
               <div className="relative">
@@ -243,7 +242,7 @@ export const ExpenseFormModal: React.FC<ExpenseFormModalProps> = ({
                       setLinkShift(true);
                     }
                   }}
-                  className="w-full pl-8 pr-3 py-2.5 rounded-xl bg-pos-bg border border-pos-border text-pos-text text-xs focus:outline-none focus:ring-2 focus:ring-pos-accent font-semibold disabled:opacity-60"
+                  className="w-full pl-8 pr-3 py-2 rounded-lg bg-pos-surface border border-pos-border text-pos-text text-xs focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary font-medium disabled:opacity-60 shadow-xs"
                 >
                   <option value="CASH">Cash Drawer / Petty Cash</option>
                   <option value="CARD">Debit / Credit Card</option>
@@ -257,7 +256,7 @@ export const ExpenseFormModal: React.FC<ExpenseFormModalProps> = ({
             </div>
 
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-pos-text mb-1.5">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-pos-text-secondary mb-1.5">
                 Vendor / Supplier (Optional)
               </label>
               <div className="relative">
@@ -268,7 +267,7 @@ export const ExpenseFormModal: React.FC<ExpenseFormModalProps> = ({
                 <select
                   value={supplierId}
                   onChange={e => setSupplierId(e.target.value)}
-                  className="w-full pl-8 pr-3 py-2.5 rounded-xl bg-pos-bg border border-pos-border text-pos-text text-xs focus:outline-none focus:ring-2 focus:ring-pos-accent font-medium"
+                  className="w-full pl-8 pr-3 py-2 rounded-lg bg-pos-surface border border-pos-border text-pos-text text-xs focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary font-medium shadow-xs"
                 >
                   <option value="">-- Direct / Walk-in Purchase --</option>
                   {suppliers.map(s => (
@@ -283,16 +282,16 @@ export const ExpenseFormModal: React.FC<ExpenseFormModalProps> = ({
 
           {/* Shift Drawer Linkage Banner */}
           {!isEditing && currentShift && paymentMethod === 'CASH' && (
-            <label className="flex items-start gap-2.5 p-3 rounded-xl bg-pos-bg border border-pos-accent/30 cursor-pointer select-none text-xs">
+            <label className="flex items-start gap-2.5 p-3 rounded-lg bg-pos-primary-soft/40 border border-pos-primary/30 cursor-pointer select-none text-xs">
               <input
                 type="checkbox"
                 checked={linkShift}
                 onChange={e => setLinkShift(e.target.checked)}
-                className="h-4 w-4 rounded accent-pos-accent mt-0.5"
+                className="h-4 w-4 rounded accent-pos-primary mt-0.5"
               />
               <div>
                 <span className="font-bold text-pos-text block flex items-center gap-1">
-                  <Link2 size={13} className="text-pos-accent" />
+                  <Link2 size={13} className="text-pos-primary" />
                   Deduct from Active Cashier Shift ({currentShift.registerName})
                 </span>
                 <span className="text-[11px] text-pos-text-muted">
@@ -306,7 +305,7 @@ export const ExpenseFormModal: React.FC<ExpenseFormModalProps> = ({
           {/* Voucher Reference & Notes */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-pos-text mb-1.5">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-pos-text-secondary mb-1.5">
                 Invoice / Voucher Ref #
               </label>
               <div className="relative">
@@ -319,28 +318,22 @@ export const ExpenseFormModal: React.FC<ExpenseFormModalProps> = ({
                   value={reference}
                   onChange={e => setReference(e.target.value)}
                   placeholder="e.g. VOUCH-1082"
-                  className="w-full pl-8 pr-3 py-2 rounded-xl bg-pos-bg border border-pos-border text-pos-text text-xs font-mono focus:outline-none focus:ring-2 focus:ring-pos-accent"
+                  className="w-full pl-8 pr-3 py-2 rounded-lg bg-pos-surface border border-pos-border text-pos-text text-xs font-mono focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary shadow-xs"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-pos-text mb-1.5">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-pos-text-secondary mb-1.5">
                 Internal Remarks / Notes
               </label>
-              <div className="relative">
-                <FileText
-                  size={14}
-                  className="absolute left-3 top-3 text-pos-text-muted"
-                />
-                <input
-                  type="text"
-                  value={notes}
-                  onChange={e => setNotes(e.target.value)}
-                  placeholder="e.g. Approved by Manager on duty"
-                  className="w-full pl-8 pr-3 py-2 rounded-xl bg-pos-bg border border-pos-border text-pos-text text-xs focus:outline-none focus:ring-2 focus:ring-pos-accent"
-                />
-              </div>
+              <input
+                type="text"
+                value={notes}
+                onChange={e => setNotes(e.target.value)}
+                placeholder="e.g. Approved by Manager on duty"
+                className="w-full px-3 py-2 rounded-lg bg-pos-surface border border-pos-border text-pos-text text-xs focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary shadow-xs"
+              />
             </div>
           </div>
 
@@ -361,7 +354,7 @@ export const ExpenseFormModal: React.FC<ExpenseFormModalProps> = ({
               size="md"
               isLoading={isPending}
               disabled={!description.trim() || !amount}
-              className="font-bold shadow-sm"
+              className="font-bold shadow-xs"
             >
               {isEditing ? 'Save Changes' : 'Record Expense'}
             </Button>

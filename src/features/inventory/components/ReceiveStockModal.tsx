@@ -138,13 +138,13 @@ export const ReceiveStockModal: React.FC<ReceiveStockModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 animate-in fade-in duration-150 select-none">
-      <div className="w-full max-w-2xl bg-pos-surface border border-pos-border rounded-2xl shadow-2xl flex flex-col max-h-[90vh] overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 animate-in fade-in duration-150 select-none">
+      <div className="w-full max-w-2xl bg-pos-surface border border-pos-border rounded-xl shadow-modal flex flex-col max-h-[90vh] overflow-hidden">
         {/* Header */}
-        <div className="p-4 sm:p-5 border-b border-pos-border flex items-center justify-between bg-pos-header shrink-0">
+        <div className="p-4 sm:p-5 border-b border-pos-border flex items-center justify-between bg-pos-surface shrink-0">
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-xl bg-pos-success/15 border border-pos-success/30 text-pos-success flex items-center justify-center">
-              <Truck size={20} />
+            <div className="h-9 w-9 rounded-lg bg-pos-success-soft border border-[#BBF7D0] text-pos-success flex items-center justify-center">
+              <Truck size={18} />
             </div>
             <div>
               <h3 className="text-base font-bold text-pos-text">
@@ -159,9 +159,9 @@ export const ReceiveStockModal: React.FC<ReceiveStockModalProps> = ({
             type="button"
             onClick={onClose}
             aria-label="Close modal"
-            className="p-2 rounded-xl text-pos-text-muted hover:text-pos-text hover:bg-pos-surface-hover transition-colors"
+            className="p-1.5 rounded-lg text-pos-text-muted hover:text-pos-text hover:bg-pos-surface-subtle transition-colors"
           >
-            <X size={20} />
+            <X size={18} />
           </button>
         </div>
 
@@ -171,7 +171,7 @@ export const ReceiveStockModal: React.FC<ReceiveStockModalProps> = ({
           className="flex-1 overflow-y-auto p-5 space-y-4 custom-scrollbar"
         >
           {errorMessage && (
-            <div className="p-3 rounded-xl bg-pos-danger/10 border border-pos-danger/30 text-pos-danger text-xs flex items-center gap-2">
+            <div className="p-3 rounded-lg bg-pos-danger-soft border border-[#FECACA] text-pos-danger text-xs flex items-center gap-2">
               <AlertCircle size={15} className="shrink-0" />
               <span>{errorMessage}</span>
             </div>
@@ -180,13 +180,13 @@ export const ReceiveStockModal: React.FC<ReceiveStockModalProps> = ({
           {/* Supplier, Invoice, Location */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-pos-text mb-1.5">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-pos-text-secondary mb-1.5">
                 Supplier
               </label>
               <select
                 value={supplierId}
                 onChange={e => setSupplierId(e.target.value)}
-                className="w-full px-3 py-2 rounded-xl bg-pos-bg border border-pos-border text-pos-text text-xs focus:outline-none focus:ring-2 focus:ring-pos-accent font-medium"
+                className="w-full px-3 py-2 rounded-lg bg-pos-surface border border-pos-border text-pos-text text-xs focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary font-medium shadow-xs"
               >
                 <option value="">-- Direct / Walk-in --</option>
                 {suppliers.map(s => (
@@ -198,7 +198,7 @@ export const ReceiveStockModal: React.FC<ReceiveStockModalProps> = ({
             </div>
 
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-pos-text mb-1.5">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-pos-text-secondary mb-1.5">
                 Invoice / Delivery #
               </label>
               <div className="relative">
@@ -211,19 +211,19 @@ export const ReceiveStockModal: React.FC<ReceiveStockModalProps> = ({
                   value={invoiceNumber}
                   onChange={e => setInvoiceNumber(e.target.value)}
                   placeholder="e.g. INV-9842"
-                  className="w-full pl-8 pr-3 py-2 rounded-xl bg-pos-bg border border-pos-border text-pos-text font-mono font-bold text-xs focus:outline-none focus:ring-2 focus:ring-pos-accent"
+                  className="w-full pl-8 pr-3 py-2 rounded-lg bg-pos-surface border border-pos-border text-pos-text font-mono font-bold text-xs focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary shadow-xs"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-pos-text mb-1.5">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-pos-text-secondary mb-1.5">
                 Destination Storage
               </label>
               <select
                 value={locationId}
                 onChange={e => setLocationId(e.target.value)}
-                className="w-full px-3 py-2 rounded-xl bg-pos-bg border border-pos-border text-pos-text text-xs focus:outline-none focus:ring-2 focus:ring-pos-accent font-medium"
+                className="w-full px-3 py-2 rounded-lg bg-pos-surface border border-pos-border text-pos-text text-xs focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary font-medium shadow-xs"
               >
                 <option value="">-- Default Location --</option>
                 {locations.map(loc => (
@@ -238,13 +238,13 @@ export const ReceiveStockModal: React.FC<ReceiveStockModalProps> = ({
           {/* Received Items Lines */}
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <label className="block text-xs font-bold uppercase tracking-wider text-pos-text">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-pos-text-secondary">
                 Received Line Items <span className="text-pos-danger">*</span>
               </label>
               <button
                 type="button"
                 onClick={handleAddLine}
-                className="text-xs text-pos-accent hover:underline font-bold flex items-center gap-1"
+                className="text-xs text-pos-primary hover:underline font-semibold flex items-center gap-1"
               >
                 <Plus size={14} /> + Add Item Line
               </button>
@@ -259,7 +259,7 @@ export const ReceiveStockModal: React.FC<ReceiveStockModalProps> = ({
                 return (
                   <div
                     key={idx}
-                    className="p-3 rounded-xl bg-pos-bg border border-pos-border grid grid-cols-12 gap-2 items-center"
+                    className="p-3 rounded-lg bg-pos-surface-subtle border border-pos-border grid grid-cols-12 gap-2 items-center"
                   >
                     {/* Item Select */}
                     <div className="col-span-5">
@@ -268,7 +268,7 @@ export const ReceiveStockModal: React.FC<ReceiveStockModalProps> = ({
                         onChange={e =>
                           handleLineChange(idx, 'inventoryItemId', e.target.value)
                         }
-                        className="w-full px-2.5 py-1.5 rounded-lg bg-pos-surface border border-pos-border text-pos-text text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-pos-accent"
+                        className="w-full px-2.5 py-1.5 rounded-md bg-pos-surface border border-pos-border text-pos-text text-xs font-medium focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary shadow-xs"
                       >
                         {allItems.map(i => (
                           <option key={i.id} value={i.id}>
@@ -288,7 +288,7 @@ export const ReceiveStockModal: React.FC<ReceiveStockModalProps> = ({
                         value={line.quantity}
                         onChange={e => handleLineChange(idx, 'quantity', e.target.value)}
                         placeholder="Qty"
-                        className="w-full px-2 py-1.5 rounded-lg bg-pos-surface border border-pos-border text-pos-text font-mono text-xs focus:outline-none focus:ring-2 focus:ring-pos-accent"
+                        className="w-full px-2 py-1.5 rounded-md bg-pos-surface border border-pos-border text-pos-text font-mono text-xs focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary shadow-xs"
                       />
                     </div>
 
@@ -302,7 +302,7 @@ export const ReceiveStockModal: React.FC<ReceiveStockModalProps> = ({
                         value={line.unitCost}
                         onChange={e => handleLineChange(idx, 'unitCost', e.target.value)}
                         placeholder="Cost"
-                        className="w-full px-2 py-1.5 rounded-lg bg-pos-surface border border-pos-border text-pos-text font-mono text-xs focus:outline-none focus:ring-2 focus:ring-pos-accent"
+                        className="w-full px-2 py-1.5 rounded-md bg-pos-surface border border-pos-border text-pos-text font-mono text-xs focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary shadow-xs"
                       />
                     </div>
 
@@ -329,8 +329,8 @@ export const ReceiveStockModal: React.FC<ReceiveStockModalProps> = ({
           </div>
 
           {/* Grand Total Summary */}
-          <div className="p-3.5 rounded-xl bg-pos-surface border border-pos-border flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-pos-text">
+          <div className="p-3.5 rounded-lg bg-pos-surface border border-pos-border flex items-center justify-between shadow-xs">
+            <span className="text-xs font-semibold uppercase tracking-wider text-pos-text-secondary">
               Total Purchase Cost
             </span>
             <span className="font-mono font-black text-lg text-pos-success">
@@ -340,7 +340,7 @@ export const ReceiveStockModal: React.FC<ReceiveStockModalProps> = ({
 
           {/* Notes */}
           <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-pos-text mb-1.5">
+            <label className="block text-xs font-semibold uppercase tracking-wider text-pos-text-secondary mb-1.5">
               Receiving Notes (Optional)
             </label>
             <textarea
@@ -348,7 +348,7 @@ export const ReceiveStockModal: React.FC<ReceiveStockModalProps> = ({
               value={notes}
               onChange={e => setNotes(e.target.value)}
               placeholder="e.g. Delivered by refrigerated truck, quality inspected..."
-              className="w-full p-3 rounded-xl bg-pos-bg border border-pos-border text-pos-text placeholder-pos-text-muted/60 text-xs focus:outline-none focus:ring-2 focus:ring-pos-accent resize-none font-medium"
+              className="w-full p-2.5 rounded-lg bg-pos-surface border border-pos-border text-pos-text placeholder-pos-text-muted text-xs focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary resize-none font-medium shadow-xs"
             />
           </div>
 
@@ -369,7 +369,7 @@ export const ReceiveStockModal: React.FC<ReceiveStockModalProps> = ({
               size="md"
               isLoading={createPurchaseMutation.isPending}
               disabled={lines.length === 0}
-              className="font-bold shadow-sm"
+              className="font-bold shadow-xs"
             >
               Receive & Update Stock
             </Button>

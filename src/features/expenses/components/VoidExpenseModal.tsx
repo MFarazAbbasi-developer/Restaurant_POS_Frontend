@@ -57,13 +57,13 @@ export const VoidExpenseModal: React.FC<VoidExpenseModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 animate-in fade-in duration-150 select-none">
-      <div className="w-full max-w-md bg-pos-surface border border-pos-border rounded-2xl shadow-2xl flex flex-col overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 animate-in fade-in duration-150 select-none">
+      <div className="w-full max-w-md bg-pos-surface border border-pos-border rounded-xl shadow-modal flex flex-col overflow-hidden">
         {/* Header */}
-        <div className="p-4 sm:p-5 border-b border-pos-border flex items-center justify-between bg-pos-header shrink-0">
+        <div className="p-4 sm:p-5 border-b border-pos-border flex items-center justify-between bg-pos-surface shrink-0">
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-xl bg-pos-danger/15 border border-pos-danger/30 text-pos-danger flex items-center justify-center">
-              <AlertTriangle size={20} />
+            <div className="h-9 w-9 rounded-lg bg-pos-danger-soft border border-[#FECACA] text-pos-danger flex items-center justify-center">
+              <AlertTriangle size={18} />
             </div>
             <div>
               <h3 className="text-base font-bold text-pos-text">Void Expense Record</h3>
@@ -76,22 +76,22 @@ export const VoidExpenseModal: React.FC<VoidExpenseModalProps> = ({
             type="button"
             onClick={onClose}
             aria-label="Close modal"
-            className="p-2 rounded-xl text-pos-text-muted hover:text-pos-text hover:bg-pos-surface-hover transition-colors"
+            className="p-1.5 rounded-lg text-pos-text-muted hover:text-pos-text hover:bg-pos-surface-subtle transition-colors"
           >
-            <X size={20} />
+            <X size={18} />
           </button>
         </div>
 
         {/* Form Body */}
         <form onSubmit={handleVoid} className="p-5 space-y-4">
           {errorMessage && (
-            <div className="p-3 rounded-xl bg-pos-danger/10 border border-pos-danger/30 text-pos-danger text-xs flex items-center gap-2">
+            <div className="p-3 rounded-lg bg-pos-danger-soft border border-[#FECACA] text-pos-danger text-xs flex items-center gap-2">
               <AlertCircle size={15} className="shrink-0" />
               <span>{errorMessage}</span>
             </div>
           )}
 
-          <div className="p-3 rounded-xl bg-pos-bg border border-pos-border/60 text-xs space-y-1">
+          <div className="p-3 rounded-lg bg-pos-surface-subtle border border-pos-border text-xs space-y-1">
             <span className="font-bold text-pos-text block">{expense.description}</span>
             <span className="text-[11px] text-pos-text-muted block">
               Category: {expense.category.name} • Method: {expense.paymentMethod}
@@ -99,13 +99,13 @@ export const VoidExpenseModal: React.FC<VoidExpenseModalProps> = ({
             </span>
           </div>
 
-          <p className="text-xs text-pos-text font-medium leading-relaxed">
+          <p className="text-xs text-pos-text-secondary font-medium leading-relaxed">
             Voiding will mark this expense as cancelled and reverse any associated
             cash-drawer deduction in the active shift register.
           </p>
 
           <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-pos-text mb-1.5">
+            <label className="block text-xs font-semibold uppercase tracking-wider text-pos-text-secondary mb-1.5">
               Reason for Voiding <span className="text-pos-danger">*</span>
             </label>
             <textarea
@@ -114,12 +114,12 @@ export const VoidExpenseModal: React.FC<VoidExpenseModalProps> = ({
               value={reason}
               onChange={e => setReason(e.target.value)}
               placeholder="e.g. Duplicate entry, Incorrect amount, Cancelled purchase..."
-              className="w-full p-2.5 rounded-xl bg-pos-bg border border-pos-border text-pos-text text-xs focus:outline-none focus:ring-2 focus:ring-pos-danger resize-none font-medium"
+              className="w-full p-2.5 rounded-lg bg-pos-surface border border-pos-border text-pos-text text-xs focus:outline-none focus:ring-2 focus:ring-pos-danger/20 focus:border-pos-danger resize-none font-medium shadow-xs"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-pos-text mb-1.5">
+            <label className="block text-xs font-semibold uppercase tracking-wider text-pos-text-secondary mb-1.5">
               Manager PIN (If authorization required)
             </label>
             <div className="relative">
@@ -133,7 +133,7 @@ export const VoidExpenseModal: React.FC<VoidExpenseModalProps> = ({
                 value={managerPin}
                 onChange={e => setManagerPin(e.target.value)}
                 placeholder="••••"
-                className="w-full pl-8 pr-3 py-2 rounded-xl bg-pos-bg border border-pos-border text-pos-text font-mono text-center tracking-widest text-sm focus:outline-none focus:ring-2 focus:ring-pos-accent font-bold"
+                className="w-full pl-8 pr-3 py-2 rounded-lg bg-pos-surface border border-pos-border text-pos-text font-mono text-center tracking-widest text-sm focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary font-bold shadow-xs"
               />
             </div>
           </div>
@@ -154,7 +154,7 @@ export const VoidExpenseModal: React.FC<VoidExpenseModalProps> = ({
               size="md"
               isLoading={voidMutation.isPending}
               disabled={!reason.trim()}
-              className="font-bold shadow-sm"
+              className="font-bold shadow-xs"
             >
               Void Expense
             </Button>

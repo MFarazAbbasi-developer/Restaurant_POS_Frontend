@@ -79,25 +79,26 @@ export const CustomerDetailsDrawer: React.FC<CustomerDetailsDrawerProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 overflow-hidden bg-black/60 backdrop-blur-xs flex justify-end animate-in fade-in duration-200 select-none">
-      <div className="w-full max-w-lg bg-pos-surface border-l border-pos-border shadow-2xl flex flex-col h-full overflow-hidden animate-in slide-in-from-right duration-200">
+    <div className="fixed inset-0 z-50 overflow-hidden bg-black/50 backdrop-blur-xs flex justify-end animate-in fade-in duration-200 select-none">
+      <div className="w-full max-w-lg bg-pos-surface border-l border-pos-border shadow-modal flex flex-col h-full overflow-hidden animate-in slide-in-from-right duration-200">
         {/* Header */}
-        <div className="p-4 sm:p-5 border-b border-pos-border flex items-center justify-between bg-pos-header shrink-0">
+        <div className="p-4 sm:p-5 border-b border-pos-border flex items-center justify-between bg-pos-surface shrink-0">
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-xl bg-pos-accent/15 border border-pos-accent/30 text-pos-accent flex items-center justify-center">
-              <User size={20} />
+            <div className="h-9 w-9 rounded-lg bg-pos-primary-soft border border-pos-primary/20 text-pos-primary flex items-center justify-center">
+              <User size={18} />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="text-base font-black text-pos-text">{customer.name}</h3>
+                <h3 className="text-base font-bold text-pos-text">{customer.name}</h3>
                 <Badge
                   variant={customer.isActive ? 'success' : 'default'}
+                  size="sm"
                   className="text-[10px]"
                 >
                   {customer.isActive ? 'Active' : 'Inactive'}
                 </Badge>
               </div>
-              <p className="text-xs text-pos-text-muted font-mono mt-0.5">
+              <p className="text-xs text-pos-text-muted font-mono mt-0.5 font-medium">
                 {customer.phone}
               </p>
             </div>
@@ -107,30 +108,30 @@ export const CustomerDetailsDrawer: React.FC<CustomerDetailsDrawerProps> = ({
             <button
               type="button"
               onClick={() => onEdit(customer)}
-              className="p-2 rounded-xl text-pos-text-muted hover:text-pos-text hover:bg-pos-surface-hover transition-colors"
+              className="p-1.5 rounded-lg text-pos-text-muted hover:text-pos-text hover:bg-pos-surface-subtle transition-colors"
               title="Edit profile"
               aria-label="Edit profile"
             >
-              <Edit2 size={16} />
+              <Edit2 size={15} />
             </button>
             <button
               type="button"
               onClick={onClose}
-              className="p-2 rounded-xl text-pos-text-muted hover:text-pos-text hover:bg-pos-surface-hover transition-colors"
+              className="p-1.5 rounded-lg text-pos-text-muted hover:text-pos-text hover:bg-pos-surface-subtle transition-colors"
               aria-label="Close drawer"
             >
-              <X size={20} />
+              <X size={18} />
             </button>
           </div>
         </div>
 
         {/* Scrollable Body */}
-        <div className="flex-1 overflow-y-auto p-5 space-y-5 custom-scrollbar">
+        <div className="flex-1 overflow-y-auto p-5 space-y-4 custom-scrollbar">
           {/* Quick Action Banner */}
-          <div className="p-3.5 rounded-2xl bg-pos-bg border border-pos-border flex items-center justify-between">
+          <div className="p-3 rounded-lg bg-pos-surface-subtle border border-pos-border flex items-center justify-between">
             <div className="flex items-center gap-2 text-xs">
-              <ShoppingBag size={16} className="text-pos-accent" />
-              <span className="font-bold text-pos-text">Create POS Order</span>
+              <ShoppingBag size={15} className="text-pos-primary" />
+              <span className="font-semibold text-pos-text">Create POS Order</span>
             </div>
             <Button
               variant="primary"
@@ -143,19 +144,19 @@ export const CustomerDetailsDrawer: React.FC<CustomerDetailsDrawerProps> = ({
           </div>
 
           {/* Loyalty Program Card */}
-          <div className="p-4 rounded-2xl bg-pos-bg border border-pos-border space-y-3">
+          <div className="p-3.5 rounded-lg bg-pos-surface-subtle border border-pos-border space-y-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <div className="p-1.5 rounded-lg bg-pos-accent/15 text-pos-accent">
-                  <Award size={16} />
+                <div className="p-1.5 rounded-md bg-pos-primary-soft text-pos-primary">
+                  <Award size={15} />
                 </div>
-                <h4 className="text-xs font-bold uppercase tracking-wider text-pos-text">
+                <h4 className="text-xs font-semibold uppercase tracking-wider text-pos-text-secondary">
                   Loyalty Rewards Profile
                 </h4>
               </div>
 
               {loyaltyAccount?.tier && (
-                <Badge variant="default" className="text-[10px]">
+                <Badge variant="default" size="sm" className="text-[10px]">
                   {loyaltyAccount.tier.name}
                 </Badge>
               )}
@@ -167,15 +168,15 @@ export const CustomerDetailsDrawer: React.FC<CustomerDetailsDrawerProps> = ({
               </div>
             ) : loyaltyAccount ? (
               <div className="grid grid-cols-3 gap-2 text-center">
-                <div className="p-2.5 rounded-xl bg-pos-surface border border-pos-border">
+                <div className="p-2.5 rounded-md bg-pos-surface border border-pos-border">
                   <span className="text-[10px] text-pos-text-muted block">
                     Available Points
                   </span>
-                  <span className="text-sm font-mono font-bold text-pos-accent mt-0.5 block">
+                  <span className="text-sm font-mono font-bold text-pos-primary mt-0.5 block">
                     {loyaltyAccount.currentPoints} pts
                   </span>
                 </div>
-                <div className="p-2.5 rounded-xl bg-pos-surface border border-pos-border">
+                <div className="p-2.5 rounded-md bg-pos-surface border border-pos-border">
                   <span className="text-[10px] text-pos-text-muted block">
                     Lifetime Points
                   </span>
@@ -183,7 +184,7 @@ export const CustomerDetailsDrawer: React.FC<CustomerDetailsDrawerProps> = ({
                     {loyaltyAccount.lifetimePoints}
                   </span>
                 </div>
-                <div className="p-2.5 rounded-xl bg-pos-surface border border-pos-border">
+                <div className="p-2.5 rounded-md bg-pos-surface border border-pos-border">
                   <span className="text-[10px] text-pos-text-muted block">
                     Lifetime Spend
                   </span>
@@ -193,9 +194,9 @@ export const CustomerDetailsDrawer: React.FC<CustomerDetailsDrawerProps> = ({
                 </div>
               </div>
             ) : (
-              <div className="p-3 rounded-xl bg-pos-surface border border-pos-border flex items-center justify-between text-xs">
+              <div className="p-3 rounded-md bg-pos-surface border border-pos-border flex items-center justify-between text-xs">
                 <div>
-                  <span className="font-bold text-pos-text block">
+                  <span className="font-semibold text-pos-text block">
                     Not Enrolled in Loyalty
                   </span>
                   <span className="text-[11px] text-pos-text-muted">
@@ -209,7 +210,7 @@ export const CustomerDetailsDrawer: React.FC<CustomerDetailsDrawerProps> = ({
                   onClick={handleEnrollLoyalty}
                   className="text-xs font-semibold flex items-center gap-1"
                 >
-                  <Sparkles size={13} className="text-pos-accent" />
+                  <Sparkles size={13} className="text-pos-primary" />
                   <span>Enroll</span>
                 </Button>
               </div>
@@ -218,8 +219,8 @@ export const CustomerDetailsDrawer: React.FC<CustomerDetailsDrawerProps> = ({
 
           {/* Customer Notes */}
           {customer.notes && (
-            <div className="p-3.5 rounded-xl bg-pos-bg border border-pos-border space-y-1">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-pos-text-muted flex items-center gap-1">
+            <div className="p-3 rounded-lg bg-pos-surface-subtle border border-pos-border space-y-1">
+              <span className="text-[10px] font-semibold uppercase tracking-wider text-pos-text-secondary flex items-center gap-1">
                 <FileText size={12} /> Notes & Preferences
               </span>
               <p className="text-xs text-pos-text font-medium">{customer.notes}</p>
@@ -227,17 +228,17 @@ export const CustomerDetailsDrawer: React.FC<CustomerDetailsDrawerProps> = ({
           )}
 
           {/* Saved Delivery Addresses */}
-          <div className="space-y-2.5">
+          <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <h4 className="text-xs font-bold uppercase tracking-wider text-pos-text flex items-center gap-1.5">
-                <MapPin size={14} className="text-pos-accent" />
+              <h4 className="text-xs font-semibold uppercase tracking-wider text-pos-text-secondary flex items-center gap-1.5">
+                <MapPin size={14} className="text-pos-primary" />
                 <span>Saved Delivery Addresses ({addresses.length})</span>
               </h4>
 
               <button
                 type="button"
                 onClick={() => onAddAddress(customer)}
-                className="text-xs text-pos-accent hover:underline font-bold flex items-center gap-1"
+                className="text-xs text-pos-primary hover:underline font-semibold flex items-center gap-1"
               >
                 <Plus size={13} /> + Add Address
               </button>
@@ -248,14 +249,14 @@ export const CustomerDetailsDrawer: React.FC<CustomerDetailsDrawerProps> = ({
                 {addresses.map(addr => (
                   <div
                     key={addr.id}
-                    className="p-3 rounded-xl bg-pos-surface border border-pos-border text-xs flex flex-col justify-between"
+                    className="p-3 rounded-lg bg-pos-surface border border-pos-border text-xs flex flex-col justify-between shadow-xs"
                   >
                     <div className="flex items-start justify-between gap-2">
                       <div>
                         <div className="flex items-center gap-1.5 mb-1">
                           <span className="font-bold text-pos-text">{addr.address}</span>
                           {addr.isDefault && (
-                            <Badge variant="success" className="text-[9px]">
+                            <Badge variant="success" size="sm" className="text-[9px]">
                               Default
                             </Badge>
                           )}
@@ -269,7 +270,7 @@ export const CustomerDetailsDrawer: React.FC<CustomerDetailsDrawerProps> = ({
                       </div>
 
                       {addr.deliveryZone && (
-                        <Badge variant="default" className="text-[10px]">
+                        <Badge variant="default" size="sm" className="text-[10px]">
                           {addr.deliveryZone.name}
                         </Badge>
                       )}
@@ -278,16 +279,16 @@ export const CustomerDetailsDrawer: React.FC<CustomerDetailsDrawerProps> = ({
                 ))}
               </div>
             ) : (
-              <div className="p-4 text-center rounded-xl bg-pos-bg border border-pos-border text-xs text-pos-text-muted">
+              <div className="p-4 text-center rounded-lg bg-pos-surface-subtle border border-pos-border text-xs text-pos-text-muted">
                 No delivery addresses saved for this customer yet.
               </div>
             )}
           </div>
 
           {/* Past Delivery Orders History */}
-          <div className="space-y-2.5">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-pos-text flex items-center gap-1.5">
-              <ShoppingBag size={14} className="text-pos-accent" />
+          <div className="space-y-2">
+            <h4 className="text-xs font-semibold uppercase tracking-wider text-pos-text-secondary flex items-center gap-1.5">
+              <ShoppingBag size={14} className="text-pos-primary" />
               <span>Recent Delivery Orders ({recentOrders.length})</span>
             </h4>
 
@@ -300,14 +301,14 @@ export const CustomerDetailsDrawer: React.FC<CustomerDetailsDrawerProps> = ({
                 {recentOrders.map(ord => (
                   <div
                     key={ord.id}
-                    className="p-3 rounded-xl bg-pos-surface border border-pos-border text-xs flex items-center justify-between"
+                    className="p-3 rounded-lg bg-pos-surface border border-pos-border text-xs flex items-center justify-between shadow-xs"
                   >
                     <div>
                       <div className="flex items-center gap-2">
-                        <span className="font-mono font-bold text-pos-accent">
+                        <span className="font-mono font-bold text-pos-primary">
                           #{ord.orderCode}
                         </span>
-                        <Badge variant="default" className="text-[9px]">
+                        <Badge variant="default" size="sm" className="text-[9px]">
                           {ord.status}
                         </Badge>
                       </div>
@@ -324,7 +325,7 @@ export const CustomerDetailsDrawer: React.FC<CustomerDetailsDrawerProps> = ({
                 ))}
               </div>
             ) : (
-              <div className="p-4 text-center rounded-xl bg-pos-bg border border-pos-border text-xs text-pos-text-muted">
+              <div className="p-4 text-center rounded-lg bg-pos-surface-subtle border border-pos-border text-xs text-pos-text-muted">
                 No delivery order history found for this phone number.
               </div>
             )}
@@ -332,7 +333,7 @@ export const CustomerDetailsDrawer: React.FC<CustomerDetailsDrawerProps> = ({
         </div>
 
         {/* Footer */}
-        <div className="p-4 border-t border-pos-border bg-pos-header flex items-center justify-end shrink-0">
+        <div className="p-4 border-t border-pos-border bg-pos-surface flex items-center justify-end shrink-0">
           <Button variant="secondary" size="md" onClick={onClose}>
             Close
           </Button>

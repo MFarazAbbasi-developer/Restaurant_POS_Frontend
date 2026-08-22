@@ -106,31 +106,31 @@ export const ShiftsPage: React.FC = () => {
   };
 
   return (
-    <div className="h-[calc(100vh-5rem)] flex flex-col lg:flex-row gap-4 overflow-hidden select-none -m-4 md:-m-6 p-3 sm:p-4 bg-pos-bg">
+    <div className="h-[calc(100vh-5rem)] flex flex-col lg:flex-row gap-3.5 overflow-hidden select-none -m-4 md:-m-6 p-3 sm:p-4 bg-pos-bg">
       {/* =========================================================================
           LEFT / MAIN: Register Drawer, Payments Ledger & Shift Management
       ========================================================================= */}
-      <div className="flex-1 flex flex-col min-w-0 bg-pos-surface/50 border border-pos-border rounded-2xl overflow-hidden shadow-sm">
+      <div className="flex-1 flex flex-col min-w-0 bg-pos-surface border border-pos-border rounded-lg overflow-hidden shadow-xs">
         {/* Header Bar */}
-        <div className="p-3.5 border-b border-pos-border bg-pos-header/90 flex flex-wrap items-center justify-between gap-3 shrink-0">
+        <div className="p-3 sm:p-3.5 border-b border-pos-border bg-pos-surface flex flex-wrap items-center justify-between gap-2.5 shrink-0">
           {/* Shift Status & Info */}
           <div className="flex items-center gap-3">
             <div
               className={cn(
-                'h-10 w-10 rounded-xl border flex items-center justify-center',
+                'h-9 w-9 rounded-lg border flex items-center justify-center',
                 hasActiveShift
-                  ? 'bg-pos-success/15 border-pos-success/30 text-pos-success'
-                  : 'bg-pos-border/60 border-pos-border text-pos-text-muted'
+                  ? 'bg-pos-success-soft border-[#BBF7D0] text-pos-success'
+                  : 'bg-pos-surface-subtle border-pos-border text-pos-text-muted'
               )}
             >
-              <Wallet size={20} />
+              <Wallet size={18} />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="text-base font-black text-pos-text">
+                <h3 className="text-sm sm:text-base font-bold text-pos-text">
                   {hasActiveShift ? currentShift?.registerName : 'Register Closed'}
                 </h3>
-                <Badge variant={hasActiveShift ? 'success' : 'default'}>
+                <Badge variant={hasActiveShift ? 'success' : 'default'} size="sm">
                   {hasActiveShift ? 'Active Shift Open' : 'No Open Shift'}
                 </Badge>
               </div>
@@ -157,7 +157,7 @@ export const ShiftsPage: React.FC = () => {
               size="sm"
               onClick={() => refetchCurrent()}
               disabled={isRefetching}
-              className="min-h-[36px] px-3 font-semibold flex items-center gap-1.5"
+              className="min-h-[36px] px-3 font-medium flex items-center gap-1.5"
             >
               <RotateCw size={14} className={isRefetching ? 'animate-spin' : ''} />
               <span className="hidden sm:inline">Refresh</span>
@@ -189,7 +189,7 @@ export const ShiftsPage: React.FC = () => {
                   variant="danger"
                   size="sm"
                   onClick={() => setIsCloseShiftOpen(true)}
-                  className="min-h-[36px] text-xs font-bold flex items-center gap-1.5 shadow-sm"
+                  className="min-h-[36px] text-xs font-bold flex items-center gap-1.5 shadow-xs"
                 >
                   <Lock size={15} />
                   <span>Close Shift</span>
@@ -200,7 +200,7 @@ export const ShiftsPage: React.FC = () => {
                 variant="primary"
                 size="sm"
                 onClick={() => setIsOpenShiftOpen(true)}
-                className="min-h-[36px] text-xs font-bold flex items-center gap-1.5 shadow-sm"
+                className="min-h-[36px] text-xs font-bold flex items-center gap-1.5 shadow-xs"
               >
                 <Plus size={16} />
                 <span>Open Register Shift</span>
@@ -210,15 +210,15 @@ export const ShiftsPage: React.FC = () => {
         </div>
 
         {/* View Switcher Tabs */}
-        <div className="px-3.5 py-2 border-b border-pos-border bg-pos-bg/40 flex items-center gap-2 overflow-x-auto custom-scrollbar shrink-0">
+        <div className="px-3.5 py-2 border-b border-pos-border bg-pos-surface-subtle flex items-center gap-1.5 overflow-x-auto custom-scrollbar shrink-0">
           <button
             type="button"
             onClick={() => setActiveTab('DRAWER')}
             className={cn(
-              'px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all flex items-center gap-1.5 min-h-[34px]',
+              'px-3 py-1.5 rounded-md text-xs font-semibold whitespace-nowrap transition-colors flex items-center gap-1.5 min-h-[32px]',
               activeTab === 'DRAWER'
-                ? 'bg-pos-accent text-white shadow-sm'
-                : 'bg-pos-surface text-pos-text-muted hover:text-pos-text border border-pos-border'
+                ? 'bg-pos-primary text-white shadow-xs'
+                : 'bg-pos-surface text-pos-text-secondary hover:text-pos-text border border-pos-border'
             )}
           >
             <Wallet size={14} />
@@ -229,10 +229,10 @@ export const ShiftsPage: React.FC = () => {
             type="button"
             onClick={() => setActiveTab('PAYMENTS')}
             className={cn(
-              'px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all flex items-center gap-1.5 min-h-[34px]',
+              'px-3 py-1.5 rounded-md text-xs font-semibold whitespace-nowrap transition-colors flex items-center gap-1.5 min-h-[32px]',
               activeTab === 'PAYMENTS'
-                ? 'bg-pos-accent text-white shadow-sm'
-                : 'bg-pos-surface text-pos-text-muted hover:text-pos-text border border-pos-border'
+                ? 'bg-pos-primary text-white shadow-xs'
+                : 'bg-pos-surface text-pos-text-secondary hover:text-pos-text border border-pos-border'
             )}
           >
             <Receipt size={14} />
@@ -243,10 +243,10 @@ export const ShiftsPage: React.FC = () => {
             type="button"
             onClick={() => setActiveTab('HISTORY')}
             className={cn(
-              'px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all flex items-center gap-1.5 min-h-[34px]',
+              'px-3 py-1.5 rounded-md text-xs font-semibold whitespace-nowrap transition-colors flex items-center gap-1.5 min-h-[32px]',
               activeTab === 'HISTORY'
-                ? 'bg-pos-accent text-white shadow-sm'
-                : 'bg-pos-surface text-pos-text-muted hover:text-pos-text border border-pos-border'
+                ? 'bg-pos-primary text-white shadow-xs'
+                : 'bg-pos-surface text-pos-text-secondary hover:text-pos-text border border-pos-border'
             )}
           >
             <History size={14} />
@@ -255,7 +255,7 @@ export const ShiftsPage: React.FC = () => {
         </div>
 
         {/* Viewport Content Area */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar">
+        <div className="flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar bg-pos-bg">
           {/* =========================================================================
               TAB 1: Active Drawer & Shift Ledger
           ========================================================================= */}
@@ -272,7 +272,7 @@ export const ShiftsPage: React.FC = () => {
                   <p className="font-bold text-base text-pos-text">
                     Register is Currently Closed
                   </p>
-                  <p className="text-xs max-w-sm">
+                  <p className="text-xs max-w-sm text-pos-text-secondary">
                     There is no active open shift for your cashier account. Click below to
                     enter opening cash float and open the register drawer.
                   </p>
@@ -290,11 +290,11 @@ export const ShiftsPage: React.FC = () => {
                 <div className="space-y-4">
                   {/* Top Metric Cards */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-                    <div className="p-4 rounded-2xl bg-pos-surface border border-pos-border shadow-xs">
-                      <span className="text-[10px] font-bold text-pos-text-muted uppercase tracking-wider block mb-1">
+                    <div className="p-3.5 rounded-lg bg-pos-surface border border-pos-border shadow-xs">
+                      <span className="text-[10px] font-semibold text-pos-text-muted uppercase tracking-wider block mb-1">
                         Current Drawer Balance
                       </span>
-                      <span className="text-2xl font-black font-mono text-pos-accent block">
+                      <span className="text-xl sm:text-2xl font-black font-mono text-pos-primary block">
                         {formatPrice(currentShift?.currentDrawerCash || 0)}
                       </span>
                       <span className="text-[11px] text-pos-text-muted mt-1 block">
@@ -302,11 +302,11 @@ export const ShiftsPage: React.FC = () => {
                       </span>
                     </div>
 
-                    <div className="p-4 rounded-2xl bg-pos-surface border border-pos-border shadow-xs">
-                      <span className="text-[10px] font-bold text-pos-text-muted uppercase tracking-wider block mb-1">
+                    <div className="p-3.5 rounded-lg bg-pos-surface border border-pos-border shadow-xs">
+                      <span className="text-[10px] font-semibold text-pos-text-muted uppercase tracking-wider block mb-1">
                         Cash Sales Inflow
                       </span>
-                      <span className="text-2xl font-black font-mono text-pos-success block">
+                      <span className="text-xl sm:text-2xl font-black font-mono text-pos-success block">
                         +{formatPrice(currentShift?.cashSales || 0)}
                       </span>
                       <span className="text-[11px] text-pos-text-muted mt-1 block">
@@ -314,11 +314,11 @@ export const ShiftsPage: React.FC = () => {
                       </span>
                     </div>
 
-                    <div className="p-4 rounded-2xl bg-pos-surface border border-pos-border shadow-xs">
-                      <span className="text-[10px] font-bold text-pos-text-muted uppercase tracking-wider block mb-1">
+                    <div className="p-3.5 rounded-lg bg-pos-surface border border-pos-border shadow-xs">
+                      <span className="text-[10px] font-semibold text-pos-text-muted uppercase tracking-wider block mb-1">
                         Safe Cash Drops
                       </span>
-                      <span className="text-2xl font-black font-mono text-pos-warning block">
+                      <span className="text-xl sm:text-2xl font-black font-mono text-pos-warning block">
                         -{formatPrice(currentShift?.cashDrops || 0)}
                       </span>
                       <span className="text-[11px] text-pos-text-muted mt-1 block">
@@ -326,11 +326,11 @@ export const ShiftsPage: React.FC = () => {
                       </span>
                     </div>
 
-                    <div className="p-4 rounded-2xl bg-pos-surface border border-pos-border shadow-xs">
-                      <span className="text-[10px] font-bold text-pos-text-muted uppercase tracking-wider block mb-1">
+                    <div className="p-3.5 rounded-lg bg-pos-surface border border-pos-border shadow-xs">
+                      <span className="text-[10px] font-semibold text-pos-text-muted uppercase tracking-wider block mb-1">
                         Cash Adjustments (Net)
                       </span>
-                      <span className="text-2xl font-black font-mono text-pos-info block">
+                      <span className="text-xl sm:text-2xl font-black font-mono text-pos-info block">
                         {currentShift && currentShift.cashAdjustments >= 0 ? '+' : ''}
                         {formatPrice(currentShift?.cashAdjustments || 0)}
                       </span>
@@ -342,7 +342,7 @@ export const ShiftsPage: React.FC = () => {
 
                   {/* Cash Transactions List */}
                   <div>
-                    <h4 className="text-xs font-bold uppercase tracking-wider text-pos-text mb-2.5 flex items-center justify-between">
+                    <h4 className="text-xs font-semibold uppercase tracking-wider text-pos-text-secondary mb-2.5 flex items-center justify-between">
                       <span>Shift Cash Transactions Log</span>
                       <span className="text-[11px] text-pos-text-muted font-normal">
                         {currentShift?.cashTransactions?.length || 0} recorded movements
@@ -355,19 +355,19 @@ export const ShiftsPage: React.FC = () => {
                         {currentShift.cashTransactions.map(tx => (
                           <div
                             key={tx.id}
-                            className="p-3 rounded-xl bg-pos-surface border border-pos-border flex items-center justify-between text-xs"
+                            className="p-3 rounded-lg bg-pos-surface border border-pos-border flex items-center justify-between text-xs shadow-xs"
                           >
                             <div className="flex items-center gap-2.5">
                               <div
                                 className={cn(
-                                  'h-8 w-8 rounded-lg flex items-center justify-center shrink-0 text-xs font-bold',
+                                  'h-8 w-8 rounded-md flex items-center justify-center shrink-0 text-xs font-bold',
                                   tx.type === 'OPENING_FLOAT'
-                                    ? 'bg-pos-accent/15 text-pos-accent'
+                                    ? 'bg-pos-primary-soft text-pos-primary'
                                     : tx.type === 'CASH_DROP'
-                                      ? 'bg-pos-warning/15 text-pos-warning'
+                                      ? 'bg-pos-warning-soft text-pos-warning'
                                       : tx.type === 'PAY_IN'
-                                        ? 'bg-pos-success/15 text-pos-success'
-                                        : 'bg-pos-danger/15 text-pos-danger'
+                                        ? 'bg-pos-success-soft text-pos-success'
+                                        : 'bg-pos-danger-soft text-pos-danger'
                                 )}
                               >
                                 {tx.type === 'OPENING_FLOAT'
@@ -410,7 +410,7 @@ export const ShiftsPage: React.FC = () => {
                         ))}
                       </div>
                     ) : (
-                      <div className="p-8 text-center bg-pos-surface border border-pos-border rounded-xl text-xs text-pos-text-muted">
+                      <div className="p-8 text-center bg-pos-surface border border-pos-border rounded-lg text-xs text-pos-text-muted">
                         No manual cash transactions logged in this shift yet.
                       </div>
                     )}
@@ -435,9 +435,9 @@ export const ShiftsPage: React.FC = () => {
                   No payment transactions found.
                 </div>
               ) : (
-                <div className="overflow-x-auto border border-pos-border rounded-xl bg-pos-surface">
+                <div className="overflow-x-auto border border-pos-border rounded-lg bg-pos-surface">
                   <table className="w-full text-left text-xs">
-                    <thead className="bg-pos-header border-b border-pos-border text-pos-text-muted font-bold uppercase text-[10px] tracking-wider">
+                    <thead className="bg-pos-surface-subtle border-b border-pos-border text-pos-text-muted font-semibold uppercase text-[10px] tracking-wider">
                       <tr>
                         <th className="p-3">Order / Code</th>
                         <th className="p-3">Method</th>
@@ -448,14 +448,14 @@ export const ShiftsPage: React.FC = () => {
                         <th className="p-3 text-right">Actions</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-pos-border/60">
+                    <tbody className="divide-y divide-pos-border">
                       {paymentsData.payments.map(p => {
                         const isRefundable =
                           p.status !== 'REFUNDED' && p.status !== 'VOIDED';
                         return (
                           <tr
                             key={p.id}
-                            className="hover:bg-pos-surface-hover transition-colors"
+                            className="hover:bg-pos-surface-subtle transition-colors"
                           >
                             <td className="p-3 font-mono font-bold text-pos-text">
                               {p.order
@@ -463,7 +463,11 @@ export const ShiftsPage: React.FC = () => {
                                 : `#${p.orderId.slice(0, 8)}`}
                             </td>
                             <td className="p-3">
-                              <Badge variant="default" className="font-mono text-[10px]">
+                              <Badge
+                                variant="default"
+                                size="sm"
+                                className="font-mono text-[10px]"
+                              >
                                 {p.paymentMethod}
                               </Badge>
                             </td>
@@ -484,6 +488,7 @@ export const ShiftsPage: React.FC = () => {
                             </td>
                             <td className="p-3">
                               <Badge
+                                size="sm"
                                 variant={
                                   p.status === 'COMPLETED'
                                     ? 'success'
@@ -537,9 +542,9 @@ export const ShiftsPage: React.FC = () => {
                   No past closed shifts found.
                 </div>
               ) : (
-                <div className="overflow-x-auto border border-pos-border rounded-xl bg-pos-surface">
+                <div className="overflow-x-auto border border-pos-border rounded-lg bg-pos-surface">
                   <table className="w-full text-left text-xs">
-                    <thead className="bg-pos-header border-b border-pos-border text-pos-text-muted font-bold uppercase text-[10px] tracking-wider">
+                    <thead className="bg-pos-surface-subtle border-b border-pos-border text-pos-text-muted font-semibold uppercase text-[10px] tracking-wider">
                       <tr>
                         <th className="p-3">Register</th>
                         <th className="p-3">Cashier</th>
@@ -551,11 +556,11 @@ export const ShiftsPage: React.FC = () => {
                         <th className="p-3 text-right">Z-Report</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-pos-border/60">
+                    <tbody className="divide-y divide-pos-border">
                       {pastShiftsData.shifts.map(s => (
                         <tr
                           key={s.id}
-                          className="hover:bg-pos-surface-hover transition-colors"
+                          className="hover:bg-pos-surface-subtle transition-colors"
                         >
                           <td className="p-3 font-bold text-pos-text">
                             {s.registerName}
@@ -588,7 +593,10 @@ export const ShiftsPage: React.FC = () => {
                             )}
                           </td>
                           <td className="p-3">
-                            <Badge variant={s.status === 'OPEN' ? 'success' : 'default'}>
+                            <Badge
+                              size="sm"
+                              variant={s.status === 'OPEN' ? 'success' : 'default'}
+                            >
                               {s.status}
                             </Badge>
                           </td>
@@ -596,7 +604,7 @@ export const ShiftsPage: React.FC = () => {
                             <button
                               type="button"
                               onClick={() => handleOpenSummaryForPastShift(s)}
-                              className="text-xs text-pos-accent hover:underline font-semibold"
+                              className="text-xs text-pos-primary hover:underline font-semibold"
                             >
                               View Z-Report
                             </button>
@@ -686,3 +694,5 @@ export const ShiftsPage: React.FC = () => {
     </div>
   );
 };
+
+export default ShiftsPage;

@@ -150,6 +150,8 @@ export const ReportsPage: React.FC = () => {
       const m = summaryQuery.data.ordersMetrics;
       rows = [
         ['Metric', 'Value'],
+        ['Start Date', startDate],
+        ['End Date', endDate],
         ['Gross Sales', s.grossSales.toString()],
         ['Total Discounts', s.totalDiscounts.toString()],
         ['Net Sales', s.netSales.toString()],
@@ -159,9 +161,10 @@ export const ReportsPage: React.FC = () => {
         ['Packaging Charges', s.packagingCharges.toString()],
         ['Grand Total', s.grandTotal.toString()],
         ['Total Payments Collected', s.totalPaymentsCollected.toString()],
-        ['Total Orders', m.totalOrdersCount.toString()],
+        ['Outstanding Balance', s.outstandingBalance.toString()],
         ['Completed Orders', m.completedOrdersCount.toString()],
         ['Cancelled Orders', m.cancelledOrdersCount.toString()],
+        ['Voided Orders', m.voidedOrdersCount.toString()],
         ['Average Order Value', m.averageOrderValue.toString()],
       ];
     } else if (activeTab === 'items' && itemsRankingQuery.data) {
@@ -169,12 +172,11 @@ export const ReportsPage: React.FC = () => {
         [
           'Rank',
           'Item Name',
-          'Code',
+          'Item Code',
           'Category',
           'Quantity Sold',
-          'Gross Sales',
           'Net Sales',
-          'Avg Price',
+          'Average Price',
         ],
         ...itemsRankingQuery.data.items.map((it, idx) => [
           (idx + 1).toString(),
@@ -182,7 +184,6 @@ export const ReportsPage: React.FC = () => {
           it.itemCode,
           it.categoryName,
           it.quantitySold.toString(),
-          it.grossSales.toString(),
           it.netSales.toString(),
           it.averagePrice.toString(),
         ]),
@@ -190,13 +191,13 @@ export const ReportsPage: React.FC = () => {
     } else if (activeTab === 'channels' && channelsQuery.data) {
       rows = [
         [
-          'Channel',
+          'Order Type',
           'Order Count',
-          '% of Orders',
+          'Percentage of Orders',
           'Gross Sales',
           'Net Sales',
           'Grand Total',
-          'AOV',
+          'Average Order Value',
         ],
         ...channelsQuery.data.breakdown.map(b => [
           b.orderType,
@@ -240,17 +241,17 @@ export const ReportsPage: React.FC = () => {
       {/* =========================================================================
           TOP HEADER BAR: Date Filters & Action CTAs
       ========================================================================= */}
-      <div className="p-3.5 border-b border-pos-border bg-pos-header/90 rounded-t-2xl flex flex-wrap items-center justify-between gap-3 shrink-0 shadow-xs">
+      <div className="p-3 sm:p-3.5 border-b border-pos-border bg-pos-surface rounded-t-lg flex flex-wrap items-center justify-between gap-2.5 shrink-0 shadow-xs">
         <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-xl bg-pos-accent/15 border border-pos-accent/30 text-pos-accent flex items-center justify-center">
-            <BarChart3 size={20} />
+          <div className="h-9 w-9 rounded-lg bg-pos-primary-soft border border-pos-primary/20 text-pos-primary flex items-center justify-center">
+            <BarChart3 size={18} />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h2 className="text-base font-black text-pos-text">
+              <h2 className="text-sm sm:text-base font-bold text-pos-text">
                 Reports & Business Intelligence
               </h2>
-              <Badge variant="default" className="text-[10px] font-mono">
+              <Badge variant="default" size="sm" className="text-[10px] font-mono">
                 {startDate} → {endDate}
               </Badge>
             </div>
@@ -264,7 +265,7 @@ export const ReportsPage: React.FC = () => {
         {/* Date Filter Presets & Actions */}
         <div className="flex flex-wrap items-center gap-2 text-xs">
           {/* Preset Buttons */}
-          <div className="p-1 rounded-xl bg-pos-bg border border-pos-border flex items-center gap-1">
+          <div className="p-1 rounded-md bg-pos-surface-subtle border border-pos-border flex items-center gap-1">
             {(['today', 'yesterday', '7days', 'month', 'custom'] as DatePreset[]).map(
               p => (
                 <button
@@ -272,10 +273,10 @@ export const ReportsPage: React.FC = () => {
                   type="button"
                   onClick={() => handleDatePresetChange(p)}
                   className={cn(
-                    'px-2.5 py-1 rounded-lg font-bold transition-all text-xs',
+                    'px-2.5 py-1 rounded-md font-semibold transition-colors text-xs',
                     datePreset === p
-                      ? 'bg-pos-accent text-white'
-                      : 'text-pos-text-muted hover:text-pos-text'
+                      ? 'bg-pos-primary text-white shadow-xs'
+                      : 'text-pos-text-secondary hover:text-pos-text'
                   )}
                 >
                   {p === 'today'
@@ -294,19 +295,19 @@ export const ReportsPage: React.FC = () => {
 
           {/* Custom Date Pickers */}
           {datePreset === 'custom' && (
-            <div className="flex items-center gap-1 bg-pos-bg p-1 rounded-xl border border-pos-border">
+            <div className="flex items-center gap-1 bg-pos-surface-subtle p-1 rounded-md border border-pos-border">
               <input
                 type="date"
                 value={startDate}
                 onChange={e => setStartDate(e.target.value)}
-                className="px-2 py-1 rounded-lg bg-pos-surface border border-pos-border text-pos-text text-xs"
+                className="px-2 py-1 rounded-md bg-pos-surface border border-pos-border text-pos-text text-xs"
               />
               <span className="text-pos-text-muted">→</span>
               <input
                 type="date"
                 value={endDate}
                 onChange={e => setEndDate(e.target.value)}
-                className="px-2 py-1 rounded-lg bg-pos-surface border border-pos-border text-pos-text text-xs"
+                className="px-2 py-1 rounded-md bg-pos-surface border border-pos-border text-pos-text text-xs"
               />
             </div>
           )}
@@ -315,7 +316,7 @@ export const ReportsPage: React.FC = () => {
             variant="secondary"
             size="sm"
             onClick={handleRefreshCurrent}
-            className="min-h-[34px] px-2.5 font-semibold flex items-center gap-1"
+            className="min-h-[34px] px-2.5 font-medium flex items-center gap-1"
           >
             <RotateCw size={13} />
             <span className="hidden sm:inline">Refresh</span>
@@ -325,7 +326,7 @@ export const ReportsPage: React.FC = () => {
             variant="secondary"
             size="sm"
             onClick={handleExportCSV}
-            className="min-h-[34px] px-2.5 font-semibold flex items-center gap-1"
+            className="min-h-[34px] px-2.5 font-medium flex items-center gap-1"
           >
             <Download size={13} />
             <span className="hidden sm:inline">Export CSV</span>
@@ -335,7 +336,7 @@ export const ReportsPage: React.FC = () => {
             variant="secondary"
             size="sm"
             onClick={handlePrint}
-            className="min-h-[34px] px-2.5 font-semibold flex items-center gap-1"
+            className="min-h-[34px] px-2.5 font-medium flex items-center gap-1"
           >
             <Printer size={13} />
             <span className="hidden sm:inline">Print</span>
@@ -347,11 +348,11 @@ export const ReportsPage: React.FC = () => {
           SUMMARY METRICS TILES
       ========================================================================= */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 p-3 border-b border-pos-border bg-pos-surface shrink-0">
-        <div className="p-2.5 rounded-xl bg-pos-bg border border-pos-border/60">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-pos-accent block">
+        <div className="p-2.5 rounded-lg bg-pos-surface-subtle border border-pos-border">
+          <span className="text-[10px] font-semibold uppercase tracking-wider text-pos-primary block">
             Net Sales Revenue
           </span>
-          <span className="text-base font-mono font-black text-pos-accent mt-0.5 block">
+          <span className="text-base font-mono font-bold text-pos-primary mt-0.5 block">
             {formatPrice(summary?.netSales || 0)}
           </span>
           <span className="text-[10px] text-pos-text-muted">
@@ -359,8 +360,8 @@ export const ReportsPage: React.FC = () => {
           </span>
         </div>
 
-        <div className="p-2.5 rounded-xl bg-pos-bg border border-pos-border/60">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-pos-text block">
+        <div className="p-2.5 rounded-lg bg-pos-surface-subtle border border-pos-border">
+          <span className="text-[10px] font-semibold uppercase tracking-wider text-pos-text-secondary block">
             Valid Orders
           </span>
           <span className="text-base font-mono font-bold text-pos-text mt-0.5 block">
@@ -371,8 +372,8 @@ export const ReportsPage: React.FC = () => {
           </span>
         </div>
 
-        <div className="p-2.5 rounded-xl bg-pos-bg border border-pos-border/60">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-pos-text block">
+        <div className="p-2.5 rounded-lg bg-pos-surface-subtle border border-pos-border">
+          <span className="text-[10px] font-semibold uppercase tracking-wider text-pos-text-secondary block">
             Average Order Value (AOV)
           </span>
           <span className="text-base font-mono font-bold text-pos-text mt-0.5 block">
@@ -381,8 +382,8 @@ export const ReportsPage: React.FC = () => {
           <span className="text-[10px] text-pos-text-muted">Per valid check</span>
         </div>
 
-        <div className="p-2.5 rounded-xl bg-pos-bg border border-pos-border/60">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-pos-success block">
+        <div className="p-2.5 rounded-lg bg-pos-surface-subtle border border-pos-border">
+          <span className="text-[10px] font-semibold uppercase tracking-wider text-pos-success block">
             Payments Collected
           </span>
           <span className="text-base font-mono font-bold text-pos-success mt-0.5 block">
@@ -398,15 +399,15 @@ export const ReportsPage: React.FC = () => {
           REPORT VIEW TABS
       ========================================================================= */}
       <div className="p-3 border-b border-pos-border bg-pos-surface flex flex-wrap items-center justify-between gap-2 shrink-0">
-        <div className="p-1 rounded-xl bg-pos-bg border border-pos-border flex items-center gap-1 text-xs overflow-x-auto custom-scrollbar">
+        <div className="p-1 rounded-md bg-pos-surface-subtle border border-pos-border flex items-center gap-1 text-xs overflow-x-auto custom-scrollbar">
           <button
             type="button"
             onClick={() => setActiveTab('summary')}
             className={cn(
-              'px-3 py-1.5 rounded-lg font-bold transition-all flex items-center gap-1.5 whitespace-nowrap',
+              'px-3 py-1.5 rounded-md font-semibold transition-colors flex items-center gap-1.5 whitespace-nowrap',
               activeTab === 'summary'
-                ? 'bg-pos-accent text-white'
-                : 'text-pos-text-muted hover:text-pos-text'
+                ? 'bg-pos-primary text-white shadow-xs'
+                : 'text-pos-text-secondary hover:text-pos-text'
             )}
           >
             <TrendingUp size={13} />
@@ -417,10 +418,10 @@ export const ReportsPage: React.FC = () => {
             type="button"
             onClick={() => setActiveTab('channels')}
             className={cn(
-              'px-3 py-1.5 rounded-lg font-bold transition-all flex items-center gap-1.5 whitespace-nowrap',
+              'px-3 py-1.5 rounded-md font-semibold transition-colors flex items-center gap-1.5 whitespace-nowrap',
               activeTab === 'channels'
-                ? 'bg-pos-accent text-white'
-                : 'text-pos-text-muted hover:text-pos-text'
+                ? 'bg-pos-primary text-white shadow-xs'
+                : 'text-pos-text-secondary hover:text-pos-text'
             )}
           >
             <CreditCard size={13} />
@@ -431,10 +432,10 @@ export const ReportsPage: React.FC = () => {
             type="button"
             onClick={() => setActiveTab('items')}
             className={cn(
-              'px-3 py-1.5 rounded-lg font-bold transition-all flex items-center gap-1.5 whitespace-nowrap',
+              'px-3 py-1.5 rounded-md font-semibold transition-colors flex items-center gap-1.5 whitespace-nowrap',
               activeTab === 'items'
-                ? 'bg-pos-accent text-white'
-                : 'text-pos-text-muted hover:text-pos-text'
+                ? 'bg-pos-primary text-white shadow-xs'
+                : 'text-pos-text-secondary hover:text-pos-text'
             )}
           >
             <Layers size={13} />
@@ -445,10 +446,10 @@ export const ReportsPage: React.FC = () => {
             type="button"
             onClick={() => setActiveTab('hourly')}
             className={cn(
-              'px-3 py-1.5 rounded-lg font-bold transition-all flex items-center gap-1.5 whitespace-nowrap',
+              'px-3 py-1.5 rounded-md font-semibold transition-colors flex items-center gap-1.5 whitespace-nowrap',
               activeTab === 'hourly'
-                ? 'bg-pos-accent text-white'
-                : 'text-pos-text-muted hover:text-pos-text'
+                ? 'bg-pos-primary text-white shadow-xs'
+                : 'text-pos-text-secondary hover:text-pos-text'
             )}
           >
             <Clock size={13} />
@@ -459,10 +460,10 @@ export const ReportsPage: React.FC = () => {
             type="button"
             onClick={() => setActiveTab('staff_shifts')}
             className={cn(
-              'px-3 py-1.5 rounded-lg font-bold transition-all flex items-center gap-1.5 whitespace-nowrap',
+              'px-3 py-1.5 rounded-md font-semibold transition-colors flex items-center gap-1.5 whitespace-nowrap',
               activeTab === 'staff_shifts'
-                ? 'bg-pos-accent text-white'
-                : 'text-pos-text-muted hover:text-pos-text'
+                ? 'bg-pos-primary text-white shadow-xs'
+                : 'text-pos-text-secondary hover:text-pos-text'
             )}
           >
             <Users size={13} />
@@ -473,10 +474,10 @@ export const ReportsPage: React.FC = () => {
             type="button"
             onClick={() => setActiveTab('operations')}
             className={cn(
-              'px-3 py-1.5 rounded-lg font-bold transition-all flex items-center gap-1.5 whitespace-nowrap',
+              'px-3 py-1.5 rounded-md font-semibold transition-colors flex items-center gap-1.5 whitespace-nowrap',
               activeTab === 'operations'
-                ? 'bg-pos-accent text-white'
-                : 'text-pos-text-muted hover:text-pos-text'
+                ? 'bg-pos-primary text-white shadow-xs'
+                : 'text-pos-text-secondary hover:text-pos-text'
             )}
           >
             <Truck size={13} />
@@ -488,7 +489,7 @@ export const ReportsPage: React.FC = () => {
       {/* =========================================================================
           MAIN REPORT CONTENT CONTAINER
       ========================================================================= */}
-      <div className="flex-1 overflow-y-auto p-4 custom-scrollbar bg-pos-surface/40 border-x border-b border-pos-border rounded-b-2xl">
+      <div className="flex-1 overflow-y-auto p-4 custom-scrollbar bg-pos-bg border-x border-b border-pos-border rounded-b-lg">
         {/* VIEW 1: EXECUTIVE SALES SUMMARY */}
         {activeTab === 'summary' && (
           <div>
@@ -506,14 +507,14 @@ export const ReportsPage: React.FC = () => {
                 {/* Financial Overview Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {/* Revenue Breakdown */}
-                  <div className="p-4 rounded-2xl bg-pos-surface border border-pos-border space-y-3">
-                    <h4 className="text-xs font-bold uppercase tracking-wider text-pos-text flex items-center gap-1.5">
-                      <DollarSign size={14} className="text-pos-accent" />
+                  <div className="p-4 rounded-lg bg-pos-surface border border-pos-border shadow-xs space-y-3">
+                    <h4 className="text-xs font-semibold uppercase tracking-wider text-pos-text-secondary flex items-center gap-1.5">
+                      <DollarSign size={14} className="text-pos-primary" />
                       <span>Sales & Revenue Statement</span>
                     </h4>
 
                     <div className="space-y-2 text-xs">
-                      <div className="flex items-center justify-between p-2 rounded-xl bg-pos-bg border border-pos-border/60">
+                      <div className="flex items-center justify-between p-2 rounded-md bg-pos-surface-subtle border border-pos-border">
                         <span className="font-semibold text-pos-text">
                           Gross Sales (Items Subtotal)
                         </span>
@@ -522,22 +523,22 @@ export const ReportsPage: React.FC = () => {
                         </span>
                       </div>
 
-                      <div className="flex items-center justify-between p-2 rounded-xl bg-pos-bg border border-pos-border/60 text-pos-danger">
+                      <div className="flex items-center justify-between p-2 rounded-md bg-pos-surface-subtle border border-pos-border text-pos-danger">
                         <span className="font-semibold">Total Discounts Given</span>
                         <span className="font-mono font-bold">
                           -{formatPrice(summary.totalDiscounts)}
                         </span>
                       </div>
 
-                      <div className="flex items-center justify-between p-2.5 rounded-xl bg-pos-accent/10 border border-pos-accent/30 font-bold">
-                        <span className="text-pos-accent font-black">Net Sales</span>
-                        <span className="font-mono text-base font-black text-pos-accent">
+                      <div className="flex items-center justify-between p-2.5 rounded-md bg-pos-primary-soft border border-pos-primary/20 font-bold">
+                        <span className="text-pos-primary font-bold">Net Sales</span>
+                        <span className="font-mono text-base font-bold text-pos-primary">
                           {formatPrice(summary.netSales)}
                         </span>
                       </div>
 
                       <div className="grid grid-cols-2 gap-2 pt-1">
-                        <div className="p-2 rounded-xl bg-pos-bg border border-pos-border/60 text-[11px]">
+                        <div className="p-2 rounded-md bg-pos-surface-subtle border border-pos-border text-[11px]">
                           <span className="text-pos-text-muted block">
                             Tax Collected:
                           </span>
@@ -545,7 +546,7 @@ export const ReportsPage: React.FC = () => {
                             {formatPrice(summary.taxCollected)}
                           </span>
                         </div>
-                        <div className="p-2 rounded-xl bg-pos-bg border border-pos-border/60 text-[11px]">
+                        <div className="p-2 rounded-md bg-pos-surface-subtle border border-pos-border text-[11px]">
                           <span className="text-pos-text-muted block">
                             Service Charges:
                           </span>
@@ -553,7 +554,7 @@ export const ReportsPage: React.FC = () => {
                             {formatPrice(summary.serviceCharges)}
                           </span>
                         </div>
-                        <div className="p-2 rounded-xl bg-pos-bg border border-pos-border/60 text-[11px]">
+                        <div className="p-2 rounded-md bg-pos-surface-subtle border border-pos-border text-[11px]">
                           <span className="text-pos-text-muted block">
                             Delivery Fees:
                           </span>
@@ -561,7 +562,7 @@ export const ReportsPage: React.FC = () => {
                             {formatPrice(summary.deliveryCharges)}
                           </span>
                         </div>
-                        <div className="p-2 rounded-xl bg-pos-bg border border-pos-border/60 text-[11px]">
+                        <div className="p-2 rounded-md bg-pos-surface-subtle border border-pos-border text-[11px]">
                           <span className="text-pos-text-muted block">
                             Packaging Fees:
                           </span>
@@ -571,7 +572,7 @@ export const ReportsPage: React.FC = () => {
                         </div>
                       </div>
 
-                      <div className="flex items-center justify-between p-3 rounded-xl bg-pos-surface border-2 border-pos-border text-sm font-black">
+                      <div className="flex items-center justify-between p-3 rounded-md bg-pos-surface border border-pos-border text-sm font-bold shadow-xs">
                         <span className="text-pos-text">Grand Total Billed</span>
                         <span className="font-mono text-pos-text">
                           {formatPrice(summary.grandTotal)}
@@ -581,14 +582,14 @@ export const ReportsPage: React.FC = () => {
                   </div>
 
                   {/* Order Volume & Fulfillment Health */}
-                  <div className="p-4 rounded-2xl bg-pos-surface border border-pos-border space-y-3">
-                    <h4 className="text-xs font-bold uppercase tracking-wider text-pos-text flex items-center gap-1.5">
-                      <Receipt size={14} className="text-pos-accent" />
+                  <div className="p-4 rounded-lg bg-pos-surface border border-pos-border shadow-xs space-y-3">
+                    <h4 className="text-xs font-semibold uppercase tracking-wider text-pos-text-secondary flex items-center gap-1.5">
+                      <Receipt size={14} className="text-pos-primary" />
                       <span>Order Fulfillment & Status Volume</span>
                     </h4>
 
                     <div className="space-y-2.5 text-xs">
-                      <div className="p-3 rounded-xl bg-pos-bg border border-pos-border/60 flex items-center justify-between">
+                      <div className="p-3 rounded-md bg-pos-surface-subtle border border-pos-border flex items-center justify-between">
                         <div className="flex items-center gap-2">
                           <CheckCircle2 size={16} className="text-pos-success" />
                           <div>
@@ -600,12 +601,12 @@ export const ReportsPage: React.FC = () => {
                             </span>
                           </div>
                         </div>
-                        <span className="font-mono font-black text-sm text-pos-success">
+                        <span className="font-mono font-bold text-sm text-pos-success">
                           {metrics?.completedOrdersCount || 0}
                         </span>
                       </div>
 
-                      <div className="p-3 rounded-xl bg-pos-bg border border-pos-border/60 flex items-center justify-between">
+                      <div className="p-3 rounded-md bg-pos-surface-subtle border border-pos-border flex items-center justify-between">
                         <div className="flex items-center gap-2">
                           <XCircle size={16} className="text-pos-danger" />
                           <div>
@@ -617,12 +618,12 @@ export const ReportsPage: React.FC = () => {
                             </span>
                           </div>
                         </div>
-                        <span className="font-mono font-black text-sm text-pos-danger">
+                        <span className="font-mono font-bold text-sm text-pos-danger">
                           {metrics?.cancelledOrdersCount || 0}
                         </span>
                       </div>
 
-                      <div className="p-3 rounded-xl bg-pos-bg border border-pos-border/60 flex items-center justify-between">
+                      <div className="p-3 rounded-md bg-pos-surface-subtle border border-pos-border flex items-center justify-between">
                         <div className="flex items-center gap-2">
                           <Ban size={16} className="text-pos-text-muted" />
                           <div>
@@ -634,13 +635,13 @@ export const ReportsPage: React.FC = () => {
                             </span>
                           </div>
                         </div>
-                        <span className="font-mono font-black text-sm text-pos-text-muted">
+                        <span className="font-mono font-bold text-sm text-pos-text-muted">
                           {metrics?.voidedOrdersCount || 0}
                         </span>
                       </div>
 
-                      <div className="p-3 rounded-xl bg-pos-surface border border-pos-border text-xs flex items-center justify-between">
-                        <span className="text-pos-text-muted">
+                      <div className="p-3 rounded-md bg-pos-surface border border-pos-border text-xs flex items-center justify-between shadow-xs">
+                        <span className="text-pos-text-secondary font-medium">
                           Outstanding Unpaid Balance
                         </span>
                         <span className="font-mono font-bold text-pos-danger">
@@ -666,9 +667,9 @@ export const ReportsPage: React.FC = () => {
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* Sales by Channel */}
-                <div className="p-4 rounded-2xl bg-pos-surface border border-pos-border space-y-3">
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-pos-text flex items-center gap-1.5">
-                    <Truck size={14} className="text-pos-accent" />
+                <div className="p-4 rounded-lg bg-pos-surface border border-pos-border shadow-xs space-y-3">
+                  <h4 className="text-xs font-semibold uppercase tracking-wider text-pos-text-secondary flex items-center gap-1.5">
+                    <Truck size={14} className="text-pos-primary" />
                     <span>Sales by Channel (Dining Method)</span>
                   </h4>
 
@@ -678,20 +679,20 @@ export const ReportsPage: React.FC = () => {
                       {channelsQuery.data.breakdown.map(ch => (
                         <div
                           key={ch.orderType}
-                          className="p-3 rounded-xl bg-pos-bg border border-pos-border space-y-2 text-xs"
+                          className="p-3 rounded-md bg-pos-surface-subtle border border-pos-border space-y-2 text-xs"
                         >
                           <div className="flex items-center justify-between">
-                            <span className="font-black text-pos-text">
+                            <span className="font-bold text-pos-text">
                               {ch.orderType.replace('_', ' ')} ({ch.orderCount} orders)
                             </span>
-                            <span className="font-mono font-black text-pos-accent text-sm">
+                            <span className="font-mono font-bold text-pos-primary text-sm">
                               {formatPrice(ch.grandTotal)} ({ch.percentageOfSales}%)
                             </span>
                           </div>
 
-                          <div className="h-2 w-full bg-pos-surface rounded-full overflow-hidden border border-pos-border/60">
+                          <div className="h-2 w-full bg-pos-surface rounded-full overflow-hidden border border-pos-border">
                             <div
-                              className="h-full bg-pos-accent transition-all rounded-full"
+                              className="h-full bg-pos-primary transition-all rounded-full"
                               style={{ width: `${ch.percentageOfSales}%` }}
                             />
                           </div>
@@ -711,9 +712,9 @@ export const ReportsPage: React.FC = () => {
                 </div>
 
                 {/* Sales by Payment Method */}
-                <div className="p-4 rounded-2xl bg-pos-surface border border-pos-border space-y-3">
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-pos-text flex items-center gap-1.5">
-                    <CreditCard size={14} className="text-pos-accent" />
+                <div className="p-4 rounded-lg bg-pos-surface border border-pos-border shadow-xs space-y-3">
+                  <h4 className="text-xs font-semibold uppercase tracking-wider text-pos-text-secondary flex items-center gap-1.5">
+                    <CreditCard size={14} className="text-pos-primary" />
                     <span>Payment Method Collection Mix</span>
                   </h4>
 
@@ -723,19 +724,19 @@ export const ReportsPage: React.FC = () => {
                       {paymentsQuery.data.breakdown.map(pm => (
                         <div
                           key={pm.paymentMethod}
-                          className="p-3 rounded-xl bg-pos-bg border border-pos-border space-y-2 text-xs"
+                          className="p-3 rounded-md bg-pos-surface-subtle border border-pos-border space-y-2 text-xs"
                         >
                           <div className="flex items-center justify-between">
-                            <span className="font-black text-pos-text">
+                            <span className="font-bold text-pos-text">
                               {pm.paymentMethod} ({pm.transactionCount} transactions)
                             </span>
-                            <span className="font-mono font-black text-pos-success text-sm">
+                            <span className="font-mono font-bold text-pos-success text-sm">
                               {formatPrice(pm.totalAmountCollected)} (
                               {pm.percentageOfAmount}%)
                             </span>
                           </div>
 
-                          <div className="h-2 w-full bg-pos-surface rounded-full overflow-hidden border border-pos-border/60">
+                          <div className="h-2 w-full bg-pos-surface rounded-full overflow-hidden border border-pos-border">
                             <div
                               className="h-full bg-pos-success transition-all rounded-full"
                               style={{ width: `${pm.percentageOfAmount}%` }}
@@ -764,12 +765,12 @@ export const ReportsPage: React.FC = () => {
         {activeTab === 'items' && (
           <div className="space-y-4">
             {/* Toolbar for Product Ranking */}
-            <div className="p-3 rounded-2xl bg-pos-surface border border-pos-border flex flex-wrap items-center justify-between gap-2.5 text-xs">
+            <div className="p-3 rounded-lg bg-pos-surface border border-pos-border flex flex-wrap items-center justify-between gap-2.5 text-xs shadow-xs">
               <div className="flex items-center gap-2">
                 <select
                   value={itemCategoryFilter}
                   onChange={e => setItemCategoryFilter(e.target.value)}
-                  className="px-2.5 py-1.5 rounded-xl bg-pos-bg border border-pos-border text-pos-text font-semibold focus:outline-none focus:ring-2 focus:ring-pos-accent"
+                  className="px-2.5 py-1.5 rounded-md bg-pos-surface border border-pos-border text-pos-text font-medium focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary"
                 >
                   <option value="">All Menu Categories</option>
                   {menuCategories.map(c => (
@@ -779,15 +780,15 @@ export const ReportsPage: React.FC = () => {
                   ))}
                 </select>
 
-                <div className="p-1 rounded-xl bg-pos-bg border border-pos-border flex items-center gap-1">
+                <div className="p-1 rounded-md bg-pos-surface-subtle border border-pos-border flex items-center gap-1">
                   <button
                     type="button"
                     onClick={() => setItemSortBy('revenue')}
                     className={cn(
-                      'px-2.5 py-1 rounded-lg font-bold transition-all text-xs',
+                      'px-2.5 py-1 rounded-md font-semibold transition-colors text-xs',
                       itemSortBy === 'revenue'
-                        ? 'bg-pos-accent text-white'
-                        : 'text-pos-text-muted hover:text-pos-text'
+                        ? 'bg-pos-primary text-white shadow-xs'
+                        : 'text-pos-text-secondary hover:text-pos-text'
                     )}
                   >
                     By Revenue
@@ -796,10 +797,10 @@ export const ReportsPage: React.FC = () => {
                     type="button"
                     onClick={() => setItemSortBy('quantity')}
                     className={cn(
-                      'px-2.5 py-1 rounded-lg font-bold transition-all text-xs',
+                      'px-2.5 py-1 rounded-md font-semibold transition-colors text-xs',
                       itemSortBy === 'quantity'
-                        ? 'bg-pos-accent text-white'
-                        : 'text-pos-text-muted hover:text-pos-text'
+                        ? 'bg-pos-primary text-white shadow-xs'
+                        : 'text-pos-text-secondary hover:text-pos-text'
                     )}
                   >
                     By Volume Sold
@@ -810,9 +811,9 @@ export const ReportsPage: React.FC = () => {
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
               {/* Product Ranking Table */}
-              <div className="lg:col-span-2 p-4 rounded-2xl bg-pos-surface border border-pos-border space-y-3">
-                <h4 className="text-xs font-bold uppercase tracking-wider text-pos-text flex items-center gap-1.5">
-                  <Flame size={14} className="text-pos-accent" />
+              <div className="lg:col-span-2 p-4 rounded-lg bg-pos-surface border border-pos-border shadow-xs space-y-3">
+                <h4 className="text-xs font-semibold uppercase tracking-wider text-pos-text-secondary flex items-center gap-1.5">
+                  <Flame size={14} className="text-pos-primary" />
                   <span>Top-Selling Menu Products</span>
                 </h4>
 
@@ -829,7 +830,7 @@ export const ReportsPage: React.FC = () => {
                   <div className="overflow-x-auto custom-scrollbar">
                     <table className="w-full text-left text-xs">
                       <thead>
-                        <tr className="border-b border-pos-border text-pos-text-muted text-[10px] uppercase tracking-wider">
+                        <tr className="border-b border-pos-border text-pos-text-muted text-[10px] uppercase tracking-wider font-semibold">
                           <th className="py-2 px-1">#</th>
                           <th className="py-2 px-2">Item Name</th>
                           <th className="py-2 px-2">Category</th>
@@ -838,11 +839,11 @@ export const ReportsPage: React.FC = () => {
                           <th className="py-2 px-2 text-right">Avg Price</th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-pos-border/60">
+                      <tbody className="divide-y divide-pos-border">
                         {itemsRankingQuery.data.items.map((item, idx) => (
                           <tr
                             key={item.menuItemId}
-                            className="hover:bg-pos-surface-hover/50 transition-colors"
+                            className="hover:bg-pos-surface-subtle transition-colors"
                           >
                             <td className="py-2.5 px-1 font-mono font-bold text-pos-text-muted">
                               {idx + 1}
@@ -856,14 +857,14 @@ export const ReportsPage: React.FC = () => {
                               </span>
                             </td>
                             <td className="py-2.5 px-2 text-pos-text-muted">
-                              <Badge variant="default" className="text-[9px]">
+                              <Badge variant="default" size="sm" className="text-[9px]">
                                 {item.categoryName}
                               </Badge>
                             </td>
                             <td className="py-2.5 px-2 text-right font-mono font-bold text-pos-text">
                               {item.quantitySold}
                             </td>
-                            <td className="py-2.5 px-2 text-right font-mono font-bold text-pos-accent">
+                            <td className="py-2.5 px-2 text-right font-mono font-bold text-pos-primary">
                               {formatPrice(item.netSales)}
                             </td>
                             <td className="py-2.5 px-2 text-right font-mono text-pos-text-muted">
@@ -878,9 +879,9 @@ export const ReportsPage: React.FC = () => {
               </div>
 
               {/* Category Contribution */}
-              <div className="p-4 rounded-2xl bg-pos-surface border border-pos-border space-y-3">
-                <h4 className="text-xs font-bold uppercase tracking-wider text-pos-text flex items-center gap-1.5">
-                  <Tag size={14} className="text-pos-accent" />
+              <div className="p-4 rounded-lg bg-pos-surface border border-pos-border shadow-xs space-y-3">
+                <h4 className="text-xs font-semibold uppercase tracking-wider text-pos-text-secondary flex items-center gap-1.5">
+                  <Tag size={14} className="text-pos-primary" />
                   <span>Category Revenue Share</span>
                 </h4>
 
@@ -898,20 +899,20 @@ export const ReportsPage: React.FC = () => {
                     {categorySalesQuery.data.categories.map(c => (
                       <div
                         key={c.categoryId}
-                        className="p-2.5 rounded-xl bg-pos-bg border border-pos-border space-y-1.5 text-xs"
+                        className="p-2.5 rounded-md bg-pos-surface-subtle border border-pos-border space-y-1.5 text-xs"
                       >
                         <div className="flex items-center justify-between">
                           <span className="font-bold text-pos-text">
                             {c.categoryName}
                           </span>
-                          <span className="font-mono font-bold text-pos-accent">
+                          <span className="font-mono font-bold text-pos-primary">
                             {formatPrice(c.netSales)} ({c.percentageOfSales}%)
                           </span>
                         </div>
 
-                        <div className="h-1.5 w-full bg-pos-surface rounded-full overflow-hidden border border-pos-border/60">
+                        <div className="h-1.5 w-full bg-pos-surface rounded-full overflow-hidden border border-pos-border">
                           <div
-                            className="h-full bg-pos-accent transition-all rounded-full"
+                            className="h-full bg-pos-primary transition-all rounded-full"
                             style={{ width: `${c.percentageOfSales}%` }}
                           />
                         </div>
@@ -945,16 +946,16 @@ export const ReportsPage: React.FC = () => {
               <div className="space-y-4">
                 {/* Peak Hour Callout */}
                 {hourlyTrendsQuery.data.peakHour && (
-                  <div className="p-4 rounded-2xl bg-pos-accent/10 border border-pos-accent/30 flex items-center justify-between">
+                  <div className="p-4 rounded-lg bg-pos-primary-soft border border-pos-primary/20 flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <div className="h-10 w-10 rounded-xl bg-pos-accent text-white flex items-center justify-center font-bold">
-                        <Flame size={20} />
+                      <div className="h-9 w-9 rounded-lg bg-pos-primary text-white flex items-center justify-center font-bold shadow-xs">
+                        <Flame size={18} />
                       </div>
                       <div>
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-pos-accent block">
+                        <span className="text-[10px] font-semibold uppercase tracking-wider text-pos-primary block">
                           Peak Dining Rush Hour
                         </span>
-                        <span className="text-base font-black text-pos-text">
+                        <span className="text-base font-bold text-pos-text">
                           {hourlyTrendsQuery.data.peakHour.hourLabel} (
                           {hourlyTrendsQuery.data.peakHour.orderCount} Orders)
                         </span>
@@ -965,7 +966,7 @@ export const ReportsPage: React.FC = () => {
                       <span className="text-[10px] text-pos-text-muted block">
                         Peak Hourly Sales
                       </span>
-                      <span className="text-lg font-black text-pos-accent">
+                      <span className="text-lg font-bold text-pos-primary">
                         {formatPrice(hourlyTrendsQuery.data.peakHour.netSales)}
                       </span>
                     </div>
@@ -973,8 +974,8 @@ export const ReportsPage: React.FC = () => {
                 )}
 
                 {/* 24-Hour Timeline Grid */}
-                <div className="p-4 rounded-2xl bg-pos-surface border border-pos-border space-y-3">
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-pos-text">
+                <div className="p-4 rounded-lg bg-pos-surface border border-pos-border shadow-xs space-y-3">
+                  <h4 className="text-xs font-semibold uppercase tracking-wider text-pos-text-secondary">
                     Hourly Sales & Volume Timeline
                   </h4>
 
@@ -989,15 +990,15 @@ export const ReportsPage: React.FC = () => {
                       return (
                         <div
                           key={h.hour}
-                          className="p-2 rounded-xl bg-pos-bg border border-pos-border/60 text-xs flex items-center gap-3"
+                          className="p-2 rounded-md bg-pos-surface-subtle border border-pos-border text-xs flex items-center gap-3"
                         >
                           <span className="font-mono font-bold text-pos-text w-24 text-[11px] shrink-0">
                             {h.hourLabel}
                           </span>
 
-                          <div className="flex-1 h-3 bg-pos-surface rounded-full overflow-hidden border border-pos-border/60">
+                          <div className="flex-1 h-2.5 bg-pos-surface rounded-full overflow-hidden border border-pos-border">
                             <div
-                              className="h-full bg-pos-accent transition-all rounded-full"
+                              className="h-full bg-pos-primary transition-all rounded-full"
                               style={{ width: `${percent}%` }}
                             />
                           </div>
@@ -1006,7 +1007,7 @@ export const ReportsPage: React.FC = () => {
                             <span className="text-pos-text-muted">
                               {h.orderCount} orders
                             </span>
-                            <span className="font-bold text-pos-accent w-24">
+                            <span className="font-bold text-pos-primary w-24">
                               {formatPrice(h.netSales)}
                             </span>
                           </div>
@@ -1025,9 +1026,9 @@ export const ReportsPage: React.FC = () => {
           <div className="space-y-4">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               {/* Staff Performance */}
-              <div className="p-4 rounded-2xl bg-pos-surface border border-pos-border space-y-3">
-                <h4 className="text-xs font-bold uppercase tracking-wider text-pos-text flex items-center gap-1.5">
-                  <Users size={14} className="text-pos-accent" />
+              <div className="p-4 rounded-lg bg-pos-surface border border-pos-border shadow-xs space-y-3">
+                <h4 className="text-xs font-semibold uppercase tracking-wider text-pos-text-secondary flex items-center gap-1.5">
+                  <Users size={14} className="text-pos-primary" />
                   <span>Staff & Cashier Sales Performance</span>
                 </h4>
 
@@ -1044,7 +1045,7 @@ export const ReportsPage: React.FC = () => {
                     {staffQuery.data.staff.map(st => (
                       <div
                         key={st.staffId}
-                        className="p-3 rounded-xl bg-pos-bg border border-pos-border space-y-1.5 text-xs"
+                        className="p-3 rounded-md bg-pos-surface-subtle border border-pos-border space-y-1.5 text-xs"
                       >
                         <div className="flex items-center justify-between">
                           <div>
@@ -1055,12 +1056,12 @@ export const ReportsPage: React.FC = () => {
                               {st.role} • @{st.username}
                             </span>
                           </div>
-                          <span className="font-mono font-black text-sm text-pos-accent">
+                          <span className="font-mono font-bold text-sm text-pos-primary">
                             {formatPrice(st.totalSales)}
                           </span>
                         </div>
 
-                        <div className="flex items-center justify-between text-[11px] text-pos-text-muted pt-1 border-t border-pos-border/40">
+                        <div className="flex items-center justify-between text-[11px] text-pos-text-muted pt-1 border-t border-pos-border">
                           <span>
                             {st.completedOrders} Orders Fulfilled ({st.cancelledOrders}{' '}
                             Cancelled)
@@ -1074,9 +1075,9 @@ export const ReportsPage: React.FC = () => {
               </div>
 
               {/* Shift Settlement Summary */}
-              <div className="p-4 rounded-2xl bg-pos-surface border border-pos-border space-y-3">
-                <h4 className="text-xs font-bold uppercase tracking-wider text-pos-text flex items-center gap-1.5">
-                  <RotateCw size={14} className="text-pos-accent" />
+              <div className="p-4 rounded-lg bg-pos-surface border border-pos-border shadow-xs space-y-3">
+                <h4 className="text-xs font-semibold uppercase tracking-wider text-pos-text-secondary flex items-center gap-1.5">
+                  <RotateCw size={14} className="text-pos-primary" />
                   <span>Register Shift Settlements & Cash Variance</span>
                 </h4>
 
@@ -1094,7 +1095,7 @@ export const ReportsPage: React.FC = () => {
                     {shiftsSummaryQuery.data.shifts.map(sh => (
                       <div
                         key={sh.shiftId}
-                        className="p-3 rounded-xl bg-pos-bg border border-pos-border space-y-1.5 text-xs"
+                        className="p-3 rounded-md bg-pos-surface-subtle border border-pos-border space-y-1.5 text-xs"
                       >
                         <div className="flex items-center justify-between">
                           <div>
@@ -1107,6 +1108,7 @@ export const ReportsPage: React.FC = () => {
                           </div>
                           <Badge
                             variant={sh.status === 'CLOSED' ? 'default' : 'success'}
+                            size="sm"
                             className="text-[9px]"
                           >
                             {sh.status}
@@ -1150,8 +1152,8 @@ export const ReportsPage: React.FC = () => {
 
             {/* Financial Adjustments & Voids Audit Log */}
             {financialAdjQuery.data && (
-              <div className="p-4 rounded-2xl bg-pos-surface border border-pos-border space-y-3">
-                <h4 className="text-xs font-bold uppercase tracking-wider text-pos-text flex items-center gap-1.5">
+              <div className="p-4 rounded-lg bg-pos-surface border border-pos-border shadow-xs space-y-3">
+                <h4 className="text-xs font-semibold uppercase tracking-wider text-pos-text-secondary flex items-center gap-1.5">
                   <AlertTriangle size={14} className="text-pos-danger" />
                   <span>Void & Cancellation Audit Logs</span>
                 </h4>
@@ -1159,13 +1161,13 @@ export const ReportsPage: React.FC = () => {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {/* Voided Orders */}
                   <div className="space-y-2">
-                    <span className="text-[11px] font-bold text-pos-danger block">
+                    <span className="text-[11px] font-semibold text-pos-danger block">
                       Voided Checks ({financialAdjQuery.data.voidedOrders.length})
                     </span>
                     {financialAdjQuery.data.voidedOrders.slice(0, 5).map(v => (
                       <div
                         key={v.orderId}
-                        className="p-2.5 rounded-xl bg-pos-bg border border-pos-danger/30 text-xs space-y-0.5"
+                        className="p-2.5 rounded-md bg-pos-surface-subtle border border-[#FECACA] text-xs space-y-0.5"
                       >
                         <div className="flex items-center justify-between font-mono font-bold text-pos-text">
                           <span>#{v.orderCode}</span>
@@ -1182,13 +1184,13 @@ export const ReportsPage: React.FC = () => {
 
                   {/* Cancelled Orders */}
                   <div className="space-y-2">
-                    <span className="text-[11px] font-bold text-pos-danger block">
+                    <span className="text-[11px] font-semibold text-pos-danger block">
                       Cancelled Orders ({financialAdjQuery.data.cancelledOrders.length})
                     </span>
                     {financialAdjQuery.data.cancelledOrders.slice(0, 5).map(c => (
                       <div
                         key={c.orderId}
-                        className="p-2.5 rounded-xl bg-pos-bg border border-pos-danger/30 text-xs space-y-0.5"
+                        className="p-2.5 rounded-md bg-pos-surface-subtle border border-[#FECACA] text-xs space-y-0.5"
                       >
                         <div className="flex items-center justify-between font-mono font-bold text-pos-text">
                           <span>#{c.orderCode}</span>
@@ -1223,11 +1225,11 @@ export const ReportsPage: React.FC = () => {
             ) : (
               <div className="space-y-4">
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                  <div className="p-3 rounded-2xl bg-pos-surface border border-pos-border space-y-1">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-pos-text-muted block">
+                  <div className="p-3.5 rounded-lg bg-pos-surface border border-pos-border shadow-xs space-y-1">
+                    <span className="text-[10px] font-semibold uppercase tracking-wider text-pos-text-secondary block">
                       Delivery Avg Duration
                     </span>
-                    <span className="text-xl font-black font-mono text-pos-accent block">
+                    <span className="text-xl font-bold font-mono text-pos-primary block">
                       {operationsQuery.data.delivery.averageDeliveryTimeMinutes || 0} mins
                     </span>
                     <span className="text-[10px] text-pos-text-muted">
@@ -1236,11 +1238,11 @@ export const ReportsPage: React.FC = () => {
                     </span>
                   </div>
 
-                  <div className="p-3 rounded-2xl bg-pos-surface border border-pos-border space-y-1">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-pos-text-muted block">
+                  <div className="p-3.5 rounded-lg bg-pos-surface border border-pos-border shadow-xs space-y-1">
+                    <span className="text-[10px] font-semibold uppercase tracking-wider text-pos-text-secondary block">
                       Takeaway Prep Time
                     </span>
-                    <span className="text-xl font-black font-mono text-pos-text block">
+                    <span className="text-xl font-bold font-mono text-pos-text block">
                       {operationsQuery.data.takeaway.averagePreparationTimeMinutes || 0}{' '}
                       mins
                     </span>
@@ -1249,11 +1251,11 @@ export const ReportsPage: React.FC = () => {
                     </span>
                   </div>
 
-                  <div className="p-3 rounded-2xl bg-pos-surface border border-pos-border space-y-1">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-pos-text-muted block">
+                  <div className="p-3.5 rounded-lg bg-pos-surface border border-pos-border shadow-xs space-y-1">
+                    <span className="text-[10px] font-semibold uppercase tracking-wider text-pos-text-secondary block">
                       Dine-In Avg Seating
                     </span>
-                    <span className="text-xl font-black font-mono text-pos-text block">
+                    <span className="text-xl font-bold font-mono text-pos-text block">
                       {operationsQuery.data.dineIn.averageSeatingTimeMinutes || 0} mins
                     </span>
                     <span className="text-[10px] text-pos-text-muted">
@@ -1264,9 +1266,9 @@ export const ReportsPage: React.FC = () => {
 
                 {/* Rider Performance */}
                 {operationsQuery.data.delivery.riderPerformance && (
-                  <div className="p-4 rounded-2xl bg-pos-surface border border-pos-border space-y-3">
-                    <h4 className="text-xs font-bold uppercase tracking-wider text-pos-text flex items-center gap-1.5">
-                      <Truck size={14} className="text-pos-accent" />
+                  <div className="p-4 rounded-lg bg-pos-surface border border-pos-border shadow-xs space-y-3">
+                    <h4 className="text-xs font-semibold uppercase tracking-wider text-pos-text-secondary flex items-center gap-1.5">
+                      <Truck size={14} className="text-pos-primary" />
                       <span>Rider Fulfillment Leaderboard</span>
                     </h4>
 
@@ -1274,14 +1276,14 @@ export const ReportsPage: React.FC = () => {
                       {operationsQuery.data.delivery.riderPerformance.map(r => (
                         <div
                           key={r.riderId}
-                          className="p-3 rounded-xl bg-pos-bg border border-pos-border space-y-1 text-xs"
+                          className="p-3 rounded-md bg-pos-surface-subtle border border-pos-border space-y-1 text-xs"
                         >
                           <span className="font-bold text-pos-text block">
                             {r.riderName}
                           </span>
                           <div className="flex items-center justify-between text-[11px] text-pos-text-muted pt-1">
                             <span>{r.deliveriesCompleted} Deliveries</span>
-                            <span className="font-mono font-bold text-pos-accent">
+                            <span className="font-mono font-bold text-pos-primary">
                               {r.averageTimeMinutes} mins avg
                             </span>
                           </div>
@@ -1298,3 +1300,5 @@ export const ReportsPage: React.FC = () => {
     </div>
   );
 };
+
+export default ReportsPage;

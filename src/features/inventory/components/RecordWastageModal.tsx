@@ -95,13 +95,13 @@ export const RecordWastageModal: React.FC<RecordWastageModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 animate-in fade-in duration-150 select-none">
-      <div className="w-full max-w-lg bg-pos-surface border border-pos-border rounded-2xl shadow-2xl flex flex-col max-h-[90vh] overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 animate-in fade-in duration-150 select-none">
+      <div className="w-full max-w-lg bg-pos-surface border border-pos-border rounded-xl shadow-modal flex flex-col max-h-[90vh] overflow-hidden">
         {/* Header */}
-        <div className="p-4 sm:p-5 border-b border-pos-border flex items-center justify-between bg-pos-header shrink-0">
+        <div className="p-4 sm:p-5 border-b border-pos-border flex items-center justify-between bg-pos-surface shrink-0">
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-xl bg-pos-danger/15 border border-pos-danger/30 text-pos-danger flex items-center justify-center">
-              <Trash2 size={20} />
+            <div className="h-9 w-9 rounded-lg bg-pos-danger-soft border border-[#FECACA] text-pos-danger flex items-center justify-center">
+              <Trash2 size={18} />
             </div>
             <div>
               <h3 className="text-base font-bold text-pos-text">
@@ -116,9 +116,9 @@ export const RecordWastageModal: React.FC<RecordWastageModalProps> = ({
             type="button"
             onClick={onClose}
             aria-label="Close modal"
-            className="p-2 rounded-xl text-pos-text-muted hover:text-pos-text hover:bg-pos-surface-hover transition-colors"
+            className="p-1.5 rounded-lg text-pos-text-muted hover:text-pos-text hover:bg-pos-surface-subtle transition-colors"
           >
-            <X size={20} />
+            <X size={18} />
           </button>
         </div>
 
@@ -128,7 +128,7 @@ export const RecordWastageModal: React.FC<RecordWastageModalProps> = ({
           className="flex-1 overflow-y-auto p-5 space-y-4 custom-scrollbar"
         >
           {errorMessage && (
-            <div className="p-3 rounded-xl bg-pos-danger/10 border border-pos-danger/30 text-pos-danger text-xs flex items-center gap-2">
+            <div className="p-3 rounded-lg bg-pos-danger-soft border border-[#FECACA] text-pos-danger text-xs flex items-center gap-2">
               <AlertCircle size={15} className="shrink-0" />
               <span>{errorMessage}</span>
             </div>
@@ -136,14 +136,14 @@ export const RecordWastageModal: React.FC<RecordWastageModalProps> = ({
 
           {/* Item Selector */}
           <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-pos-text mb-1.5">
+            <label className="block text-xs font-semibold uppercase tracking-wider text-pos-text-secondary mb-1.5">
               Select Inventory Item <span className="text-pos-danger">*</span>
             </label>
             <select
               value={selectedItemId}
               onChange={e => handleItemChange(e.target.value)}
               required
-              className="w-full px-3 py-2.5 rounded-xl bg-pos-bg border border-pos-border text-pos-text text-xs focus:outline-none focus:ring-2 focus:ring-pos-accent font-semibold"
+              className="w-full px-3 py-2 rounded-lg bg-pos-surface border border-pos-border text-pos-text text-xs focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary font-medium shadow-xs"
             >
               {allItems.map(i => (
                 <option key={i.id} value={i.id}>
@@ -156,7 +156,7 @@ export const RecordWastageModal: React.FC<RecordWastageModalProps> = ({
           {/* Reason & Quantity */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-pos-text mb-1.5">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-pos-text-secondary mb-1.5">
                 Wastage Reason Category <span className="text-pos-danger">*</span>
               </label>
               <select
@@ -172,7 +172,7 @@ export const RecordWastageModal: React.FC<RecordWastageModalProps> = ({
                       | 'OTHER'
                   )
                 }
-                className="w-full px-3 py-2.5 rounded-xl bg-pos-bg border border-pos-border text-pos-text text-xs focus:outline-none focus:ring-2 focus:ring-pos-accent font-semibold"
+                className="w-full px-3 py-2 rounded-lg bg-pos-surface border border-pos-border text-pos-text text-xs focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary font-medium shadow-xs"
               >
                 <option value="EXPIRED">Expired Past Best-Before</option>
                 <option value="SPOILED">Spoiled / Rotten</option>
@@ -184,7 +184,7 @@ export const RecordWastageModal: React.FC<RecordWastageModalProps> = ({
             </div>
 
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-pos-text mb-1.5">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-pos-text-secondary mb-1.5">
                 Quantity Wasted ({selectedItem?.unit}){' '}
                 <span className="text-pos-danger">*</span>
               </label>
@@ -196,13 +196,13 @@ export const RecordWastageModal: React.FC<RecordWastageModalProps> = ({
                 value={quantity}
                 onChange={e => setQuantity(e.target.value)}
                 placeholder="1.0"
-                className="w-full px-3 py-2.5 rounded-xl bg-pos-bg border border-pos-border text-pos-text font-mono font-bold text-sm focus:outline-none focus:ring-2 focus:ring-pos-accent"
+                className="w-full px-3 py-2 rounded-lg bg-pos-surface border border-pos-border text-pos-text font-mono font-bold text-sm focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary shadow-xs"
               />
             </div>
           </div>
 
           {/* Financial Loss Calculation Banner */}
-          <div className="p-3.5 rounded-xl bg-pos-danger/10 border border-pos-danger/20 flex items-center justify-between text-xs">
+          <div className="p-3.5 rounded-lg bg-pos-danger-soft border border-[#FECACA] flex items-center justify-between text-xs">
             <div>
               <span className="text-pos-text font-bold block">Estimated Loss Value</span>
               <span className="text-pos-text-muted text-[11px]">
@@ -218,7 +218,7 @@ export const RecordWastageModal: React.FC<RecordWastageModalProps> = ({
           {/* Specific Item Reason & Location */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-pos-text mb-1.5">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-pos-text-secondary mb-1.5">
                 Specific Incident / Detail
               </label>
               <input
@@ -226,18 +226,18 @@ export const RecordWastageModal: React.FC<RecordWastageModalProps> = ({
                 value={itemReason}
                 onChange={e => setItemReason(e.target.value)}
                 placeholder="e.g. Freezer power outage incident"
-                className="w-full px-3 py-2.5 rounded-xl bg-pos-bg border border-pos-border text-pos-text text-xs focus:outline-none focus:ring-2 focus:ring-pos-accent font-medium"
+                className="w-full px-3 py-2 rounded-lg bg-pos-surface border border-pos-border text-pos-text text-xs focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary font-medium shadow-xs"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-pos-text mb-1.5">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-pos-text-secondary mb-1.5">
                 Storage Location
               </label>
               <select
                 value={locationId}
                 onChange={e => setLocationId(e.target.value)}
-                className="w-full px-3 py-2.5 rounded-xl bg-pos-bg border border-pos-border text-pos-text text-xs focus:outline-none focus:ring-2 focus:ring-pos-accent font-medium"
+                className="w-full px-3 py-2 rounded-lg bg-pos-surface border border-pos-border text-pos-text text-xs focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary font-medium shadow-xs"
               >
                 <option value="">-- Main Location --</option>
                 {locations.map(loc => (
@@ -251,7 +251,7 @@ export const RecordWastageModal: React.FC<RecordWastageModalProps> = ({
 
           {/* Notes */}
           <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-pos-text mb-1.5">
+            <label className="block text-xs font-semibold uppercase tracking-wider text-pos-text-secondary mb-1.5">
               Notes (Optional)
             </label>
             <textarea
@@ -259,7 +259,7 @@ export const RecordWastageModal: React.FC<RecordWastageModalProps> = ({
               value={notes}
               onChange={e => setNotes(e.target.value)}
               placeholder="e.g. Disposed as per health & hygiene guidelines..."
-              className="w-full p-3 rounded-xl bg-pos-bg border border-pos-border text-pos-text placeholder-pos-text-muted/60 text-xs focus:outline-none focus:ring-2 focus:ring-pos-accent resize-none font-medium"
+              className="w-full p-2.5 rounded-lg bg-pos-surface border border-pos-border text-pos-text placeholder-pos-text-muted text-xs focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary resize-none font-medium shadow-xs"
             />
           </div>
 
@@ -280,7 +280,7 @@ export const RecordWastageModal: React.FC<RecordWastageModalProps> = ({
               size="md"
               isLoading={createWastageMutation.isPending}
               disabled={!selectedItemId || !quantity}
-              className="font-bold shadow-sm"
+              className="font-bold shadow-xs"
             >
               Confirm & Post Wastage
             </Button>

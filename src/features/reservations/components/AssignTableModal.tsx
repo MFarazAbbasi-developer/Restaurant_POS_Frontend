@@ -70,13 +70,13 @@ export const AssignTableModal: React.FC<AssignTableModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 animate-in fade-in duration-150 select-none">
-      <div className="w-full max-w-md bg-pos-surface border border-pos-border rounded-2xl shadow-2xl flex flex-col overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 animate-in fade-in duration-150 select-none">
+      <div className="w-full max-w-md bg-pos-surface border border-pos-border rounded-xl shadow-modal flex flex-col overflow-hidden">
         {/* Header */}
-        <div className="p-4 sm:p-5 border-b border-pos-border flex items-center justify-between bg-pos-header shrink-0">
+        <div className="p-4 sm:p-5 border-b border-pos-border flex items-center justify-between bg-pos-surface shrink-0">
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-xl bg-pos-accent/15 border border-pos-accent/30 text-pos-accent flex items-center justify-center">
-              <Grid size={20} />
+            <div className="h-9 w-9 rounded-lg bg-pos-primary-soft border border-pos-primary/20 text-pos-primary flex items-center justify-center">
+              <Grid size={18} />
             </div>
             <div>
               <h3 className="text-base font-bold text-pos-text">Assign Floor Table</h3>
@@ -90,23 +90,23 @@ export const AssignTableModal: React.FC<AssignTableModalProps> = ({
             type="button"
             onClick={onClose}
             aria-label="Close modal"
-            className="p-2 rounded-xl text-pos-text-muted hover:text-pos-text hover:bg-pos-surface-hover transition-colors"
+            className="p-1.5 rounded-lg text-pos-text-muted hover:text-pos-text hover:bg-pos-surface-subtle transition-colors"
           >
-            <X size={20} />
+            <X size={18} />
           </button>
         </div>
 
         {/* Body */}
         <form onSubmit={handleAssign} className="p-5 space-y-4">
           {errorMessage && (
-            <div className="p-3 rounded-xl bg-pos-danger/10 border border-pos-danger/30 text-pos-danger text-xs flex items-center gap-2">
+            <div className="p-3 rounded-lg bg-pos-danger-soft border border-[#FECACA] text-pos-danger text-xs flex items-center gap-2">
               <AlertCircle size={15} className="shrink-0" />
               <span>{errorMessage}</span>
             </div>
           )}
 
           <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-pos-text mb-2 flex items-center justify-between">
+            <label className="block text-xs font-semibold uppercase tracking-wider text-pos-text-secondary mb-2 flex items-center justify-between">
               <span>Select Available Table</span>
               <span className="text-[11px] text-pos-text-muted font-normal">
                 Min Capacity: {reservation.guestCount}
@@ -127,10 +127,10 @@ export const AssignTableModal: React.FC<AssignTableModalProps> = ({
                       type="button"
                       onClick={() => setSelectedTableId(tbl.id)}
                       className={cn(
-                        'p-3 rounded-xl border text-left transition-all flex flex-col justify-between',
+                        'p-3 rounded-lg border text-left transition-all flex flex-col justify-between shadow-xs',
                         isSelected
-                          ? 'bg-pos-accent text-white border-pos-accent shadow-sm'
-                          : 'bg-pos-bg border-pos-border text-pos-text hover:border-pos-accent/40'
+                          ? 'bg-pos-primary text-white border-pos-primary'
+                          : 'bg-pos-surface border-pos-border text-pos-text hover:border-pos-primary/40'
                       )}
                     >
                       <div className="flex items-center justify-between">
@@ -143,7 +143,7 @@ export const AssignTableModal: React.FC<AssignTableModalProps> = ({
                           'flex items-center justify-between text-[11px] mt-2 pt-2 border-t',
                           isSelected
                             ? 'border-white/20 text-white/80'
-                            : 'border-pos-border/60 text-pos-text-muted'
+                            : 'border-pos-border text-pos-text-muted'
                         )}
                       >
                         <span>{tbl.zone?.name || 'Floor'}</span>
@@ -156,7 +156,7 @@ export const AssignTableModal: React.FC<AssignTableModalProps> = ({
                 })}
               </div>
             ) : (
-              <div className="p-6 text-center rounded-xl bg-pos-bg border border-pos-border text-xs text-pos-text-muted">
+              <div className="p-6 text-center rounded-lg bg-pos-surface-subtle border border-pos-border text-xs text-pos-text-muted">
                 No suitable tables available for this time window and party size.
               </div>
             )}
@@ -178,7 +178,7 @@ export const AssignTableModal: React.FC<AssignTableModalProps> = ({
               size="md"
               isLoading={assignTableMutation.isPending}
               disabled={!selectedTableId}
-              className="font-bold shadow-sm"
+              className="font-bold shadow-xs"
             >
               Confirm Table
             </Button>

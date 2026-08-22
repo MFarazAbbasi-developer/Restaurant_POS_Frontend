@@ -97,13 +97,13 @@ export const ItemModifiersModal: React.FC<ItemModifiersModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 animate-in fade-in duration-150 select-none">
-      <div className="w-full max-w-lg bg-pos-surface border border-pos-border rounded-2xl shadow-2xl flex flex-col max-h-[90vh] overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 animate-in fade-in duration-150 select-none">
+      <div className="w-full max-w-lg bg-pos-surface border border-pos-border rounded-xl shadow-modal flex flex-col max-h-[90vh] overflow-hidden">
         {/* Header */}
-        <div className="p-4 sm:p-5 border-b border-pos-border flex items-center justify-between bg-pos-header shrink-0">
+        <div className="p-4 sm:p-5 border-b border-pos-border flex items-center justify-between bg-pos-surface shrink-0">
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-xl bg-pos-accent/15 border border-pos-accent/30 text-pos-accent flex items-center justify-center">
-              <SlidersHorizontal size={20} />
+            <div className="h-9 w-9 rounded-lg bg-pos-primary-soft border border-pos-primary/20 text-pos-primary flex items-center justify-center">
+              <SlidersHorizontal size={18} />
             </div>
             <div>
               <h3 className="text-base font-bold text-pos-text">
@@ -118,16 +118,16 @@ export const ItemModifiersModal: React.FC<ItemModifiersModalProps> = ({
             type="button"
             onClick={onClose}
             aria-label="Close modal"
-            className="p-2 rounded-xl text-pos-text-muted hover:text-pos-text hover:bg-pos-surface-hover transition-colors"
+            className="p-1.5 rounded-lg text-pos-text-muted hover:text-pos-text hover:bg-pos-surface-subtle transition-colors"
           >
-            <X size={20} />
+            <X size={18} />
           </button>
         </div>
 
         {/* Scrollable Body */}
-        <div className="flex-1 overflow-y-auto p-5 space-y-5 custom-scrollbar">
+        <div className="flex-1 overflow-y-auto p-5 space-y-4 custom-scrollbar">
           {errorMessage && (
-            <div className="p-3 rounded-xl bg-pos-danger/10 border border-pos-danger/30 text-pos-danger text-xs flex items-center gap-2">
+            <div className="p-3 rounded-lg bg-pos-danger-soft border border-[#FECACA] text-pos-danger text-xs flex items-center gap-2">
               <AlertCircle size={15} className="shrink-0" />
               <span>{errorMessage}</span>
             </div>
@@ -137,22 +137,22 @@ export const ItemModifiersModal: React.FC<ItemModifiersModalProps> = ({
           {availableToLink.length > 0 ? (
             <form
               onSubmit={handleLinkGroup}
-              className="p-4 rounded-xl bg-pos-bg border border-pos-border space-y-3"
+              className="p-3.5 rounded-lg bg-pos-surface-subtle border border-pos-border space-y-3"
             >
-              <h4 className="text-xs font-bold uppercase tracking-wider text-pos-text flex items-center gap-1.5">
-                <Plus size={14} className="text-pos-accent" />
+              <h4 className="text-xs font-semibold uppercase tracking-wider text-pos-text-secondary flex items-center gap-1.5">
+                <Plus size={14} className="text-pos-primary" />
                 <span>Link Modifier Group to Item</span>
               </h4>
 
               <div>
-                <label className="block text-[11px] font-semibold text-pos-text-muted mb-1">
+                <label className="block text-[11px] font-semibold text-pos-text-secondary mb-1">
                   Select Modifier Group
                 </label>
                 <select
                   value={selectedGroupId}
                   onChange={e => setSelectedGroupId(e.target.value)}
                   required
-                  className="w-full px-3 py-2 rounded-xl bg-pos-surface border border-pos-border text-pos-text text-xs focus:outline-none focus:ring-2 focus:ring-pos-accent font-semibold"
+                  className="w-full px-3 py-2 rounded-lg bg-pos-surface border border-pos-border text-pos-text text-xs focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary font-medium shadow-xs"
                 >
                   <option value="">-- Choose a modifier group --</option>
                   {availableToLink.map((g: ModifierGroupWithCount) => (
@@ -164,14 +164,14 @@ export const ItemModifiersModal: React.FC<ItemModifiersModalProps> = ({
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 items-center pt-1">
-                <label className="flex items-center gap-2 p-2 rounded-xl bg-pos-surface border border-pos-border text-xs cursor-pointer select-none">
+                <label className="flex items-center gap-2 p-2 rounded-lg bg-pos-surface border border-pos-border text-xs cursor-pointer select-none">
                   <input
                     type="checkbox"
                     checked={isRequired}
                     onChange={e => setIsRequired(e.target.checked)}
-                    className="h-4 w-4 rounded accent-pos-accent"
+                    className="h-4 w-4 rounded accent-pos-primary"
                   />
-                  <span className="font-bold text-pos-text">Required</span>
+                  <span className="font-semibold text-pos-text">Required</span>
                 </label>
 
                 <div>
@@ -181,7 +181,7 @@ export const ItemModifiersModal: React.FC<ItemModifiersModalProps> = ({
                     value={minSelections}
                     onChange={e => setMinSelections(e.target.value)}
                     placeholder="Min picks (opt)"
-                    className="w-full px-2.5 py-1.5 rounded-xl bg-pos-surface border border-pos-border text-pos-text text-xs focus:outline-none focus:ring-2 focus:ring-pos-accent font-mono"
+                    className="w-full px-2.5 py-1.5 rounded-md bg-pos-surface border border-pos-border text-pos-text text-xs focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary font-mono shadow-xs"
                   />
                 </div>
 
@@ -192,7 +192,7 @@ export const ItemModifiersModal: React.FC<ItemModifiersModalProps> = ({
                     value={maxSelections}
                     onChange={e => setMaxSelections(e.target.value)}
                     placeholder="Max picks (opt)"
-                    className="w-full px-2.5 py-1.5 rounded-xl bg-pos-surface border border-pos-border text-pos-text text-xs focus:outline-none focus:ring-2 focus:ring-pos-accent font-mono"
+                    className="w-full px-2.5 py-1.5 rounded-md bg-pos-surface border border-pos-border text-pos-text text-xs focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary font-mono shadow-xs"
                   />
                 </div>
               </div>
@@ -204,7 +204,7 @@ export const ItemModifiersModal: React.FC<ItemModifiersModalProps> = ({
                   size="sm"
                   isLoading={linkMutation.isPending}
                   disabled={!selectedGroupId}
-                  className="font-bold text-xs"
+                  className="font-bold text-xs shadow-xs"
                 >
                   <Check size={14} className="mr-1" />
                   Link Group
@@ -212,7 +212,7 @@ export const ItemModifiersModal: React.FC<ItemModifiersModalProps> = ({
               </div>
             </form>
           ) : (
-            <div className="p-4 text-center rounded-xl bg-pos-bg border border-pos-border text-xs text-pos-text-muted">
+            <div className="p-4 text-center rounded-lg bg-pos-surface-subtle border border-pos-border text-xs text-pos-text-muted">
               All existing modifier groups are already linked to this item, or none are
               configured.
             </div>
@@ -220,7 +220,7 @@ export const ItemModifiersModal: React.FC<ItemModifiersModalProps> = ({
 
           {/* Currently Linked Groups */}
           <div>
-            <h4 className="text-xs font-bold uppercase tracking-wider text-pos-text mb-2.5 flex items-center justify-between">
+            <h4 className="text-xs font-semibold uppercase tracking-wider text-pos-text-secondary mb-2.5 flex items-center justify-between">
               <span>Attached Modifier Groups</span>
               <span className="text-[11px] text-pos-text-muted font-normal">
                 {item.modifierGroups?.length || 0} groups
@@ -234,7 +234,7 @@ export const ItemModifiersModal: React.FC<ItemModifiersModalProps> = ({
                   return (
                     <div
                       key={link.id}
-                      className="p-3 rounded-xl bg-pos-surface border border-pos-border flex items-center justify-between text-xs"
+                      className="p-3 rounded-lg bg-pos-surface border border-pos-border flex items-center justify-between text-xs shadow-xs"
                     >
                       <div>
                         <div className="flex items-center gap-2">
@@ -243,6 +243,7 @@ export const ItemModifiersModal: React.FC<ItemModifiersModalProps> = ({
                           </span>
                           <Badge
                             variant={link.isRequired ? 'danger' : 'default'}
+                            size="sm"
                             className="text-[10px]"
                           >
                             {link.isRequired ? 'Required' : 'Optional'}
@@ -265,17 +266,17 @@ export const ItemModifiersModal: React.FC<ItemModifiersModalProps> = ({
                         type="button"
                         onClick={() => handleUnlinkGroup(link.modifierGroupId)}
                         disabled={unlinkMutation.isPending}
-                        className="p-1.5 rounded-lg text-pos-text-muted hover:text-pos-danger hover:bg-pos-danger/10 transition-colors"
+                        className="p-1.5 rounded-md text-pos-text-muted hover:text-pos-danger hover:bg-pos-danger-soft transition-colors"
                         aria-label="Unlink modifier group"
                       >
-                        <Trash2 size={16} />
+                        <Trash2 size={15} />
                       </button>
                     </div>
                   );
                 })}
               </div>
             ) : (
-              <div className="p-8 text-center bg-pos-bg border border-pos-border rounded-xl text-xs text-pos-text-muted">
+              <div className="p-8 text-center bg-pos-surface-subtle border border-pos-border rounded-lg text-xs text-pos-text-muted">
                 No modifier groups linked to this menu item.
               </div>
             )}
@@ -283,7 +284,7 @@ export const ItemModifiersModal: React.FC<ItemModifiersModalProps> = ({
         </div>
 
         {/* Footer */}
-        <div className="p-4 border-t border-pos-border bg-pos-header flex items-center justify-end shrink-0">
+        <div className="p-4 border-t border-pos-border bg-pos-surface flex items-center justify-end shrink-0">
           <Button variant="secondary" size="md" onClick={onClose}>
             Done
           </Button>

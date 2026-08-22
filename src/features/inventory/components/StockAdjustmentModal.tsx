@@ -91,13 +91,13 @@ export const StockAdjustmentModal: React.FC<StockAdjustmentModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 animate-in fade-in duration-150 select-none">
-      <div className="w-full max-w-lg bg-pos-surface border border-pos-border rounded-2xl shadow-2xl flex flex-col max-h-[90vh] overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 animate-in fade-in duration-150 select-none">
+      <div className="w-full max-w-lg bg-pos-surface border border-pos-border rounded-xl shadow-modal flex flex-col max-h-[90vh] overflow-hidden">
         {/* Header */}
-        <div className="p-4 sm:p-5 border-b border-pos-border flex items-center justify-between bg-pos-header shrink-0">
+        <div className="p-4 sm:p-5 border-b border-pos-border flex items-center justify-between bg-pos-surface shrink-0">
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-xl bg-pos-accent/15 border border-pos-accent/30 text-pos-accent flex items-center justify-center">
-              <Sliders size={20} />
+            <div className="h-9 w-9 rounded-lg bg-pos-primary-soft border border-pos-primary/20 text-pos-primary flex items-center justify-center">
+              <Sliders size={18} />
             </div>
             <div>
               <h3 className="text-base font-bold text-pos-text">
@@ -112,9 +112,9 @@ export const StockAdjustmentModal: React.FC<StockAdjustmentModalProps> = ({
             type="button"
             onClick={onClose}
             aria-label="Close modal"
-            className="p-2 rounded-xl text-pos-text-muted hover:text-pos-text hover:bg-pos-surface-hover transition-colors"
+            className="p-1.5 rounded-lg text-pos-text-muted hover:text-pos-text hover:bg-pos-surface-subtle transition-colors"
           >
-            <X size={20} />
+            <X size={18} />
           </button>
         </div>
 
@@ -124,7 +124,7 @@ export const StockAdjustmentModal: React.FC<StockAdjustmentModalProps> = ({
           className="flex-1 overflow-y-auto p-5 space-y-4 custom-scrollbar"
         >
           {errorMessage && (
-            <div className="p-3 rounded-xl bg-pos-danger/10 border border-pos-danger/30 text-pos-danger text-xs flex items-center gap-2">
+            <div className="p-3 rounded-lg bg-pos-danger-soft border border-[#FECACA] text-pos-danger text-xs flex items-center gap-2">
               <AlertCircle size={15} className="shrink-0" />
               <span>{errorMessage}</span>
             </div>
@@ -132,14 +132,14 @@ export const StockAdjustmentModal: React.FC<StockAdjustmentModalProps> = ({
 
           {/* Item Selector */}
           <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-pos-text mb-1.5">
+            <label className="block text-xs font-semibold uppercase tracking-wider text-pos-text-secondary mb-1.5">
               Select Inventory Item <span className="text-pos-danger">*</span>
             </label>
             <select
               value={selectedItemId}
               onChange={e => handleItemChange(e.target.value)}
               required
-              className="w-full px-3 py-2.5 rounded-xl bg-pos-bg border border-pos-border text-pos-text text-xs focus:outline-none focus:ring-2 focus:ring-pos-accent font-semibold"
+              className="w-full px-3 py-2 rounded-lg bg-pos-surface border border-pos-border text-pos-text text-xs focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary font-medium shadow-xs"
             >
               {allItems.map(i => (
                 <option key={i.id} value={i.id}>
@@ -150,19 +150,19 @@ export const StockAdjustmentModal: React.FC<StockAdjustmentModalProps> = ({
           </div>
 
           {/* Stock Counts & Variance Card */}
-          <div className="p-4 rounded-xl bg-pos-bg border border-pos-border space-y-3">
+          <div className="p-4 rounded-lg bg-pos-surface-subtle border border-pos-border space-y-3">
             <div className="grid grid-cols-2 gap-3">
-              <div className="p-3 rounded-lg bg-pos-surface border border-pos-border">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-pos-text-muted block">
+              <div className="p-3 rounded-md bg-pos-surface border border-pos-border shadow-xs">
+                <span className="text-[10px] font-semibold uppercase tracking-wider text-pos-text-muted block">
                   System Recorded Stock
                 </span>
-                <span className="text-lg font-mono font-black text-pos-text mt-1 block">
+                <span className="text-lg font-mono font-bold text-pos-text mt-1 block">
                   {currentSystemStock} {selectedItem?.unit}
                 </span>
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold uppercase tracking-wider text-pos-text mb-1">
+                <label className="block text-[10px] font-semibold uppercase tracking-wider text-pos-text-secondary mb-1">
                   Actual Counted Stock <span className="text-pos-danger">*</span>
                 </label>
                 <div className="relative">
@@ -177,7 +177,7 @@ export const StockAdjustmentModal: React.FC<StockAdjustmentModalProps> = ({
                     required
                     value={actualStock}
                     onChange={e => setActualStock(e.target.value)}
-                    className="w-full pl-8 pr-3 py-2.5 rounded-lg bg-pos-surface border border-pos-border text-pos-text font-mono font-bold text-sm focus:outline-none focus:ring-2 focus:ring-pos-accent"
+                    className="w-full pl-8 pr-3 py-2 rounded-md bg-pos-surface border border-pos-border text-pos-text font-mono font-bold text-sm focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary shadow-xs"
                   />
                 </div>
               </div>
@@ -186,11 +186,11 @@ export const StockAdjustmentModal: React.FC<StockAdjustmentModalProps> = ({
             {/* Calculated Variance */}
             <div
               className={cn(
-                'p-3 rounded-lg flex items-center justify-between border text-xs font-semibold',
+                'p-3 rounded-md flex items-center justify-between border text-xs font-semibold',
                 variance > 0
-                  ? 'bg-pos-success/10 border-pos-success/30 text-pos-success'
+                  ? 'bg-pos-success-soft border-[#BBF7D0] text-pos-success'
                   : variance < 0
-                    ? 'bg-pos-danger/10 border-pos-danger/30 text-pos-danger'
+                    ? 'bg-pos-danger-soft border-[#FECACA] text-pos-danger'
                     : 'bg-pos-surface border-pos-border text-pos-text-muted'
               )}
             >
@@ -205,7 +205,7 @@ export const StockAdjustmentModal: React.FC<StockAdjustmentModalProps> = ({
                 <span>Stock Discrepancy (Variance)</span>
               </div>
 
-              <span className="font-mono font-black text-sm">
+              <span className="font-mono font-bold text-sm">
                 {variance > 0 ? `+${variance.toFixed(2)}` : variance.toFixed(2)}{' '}
                 {selectedItem?.unit}
               </span>
@@ -215,7 +215,7 @@ export const StockAdjustmentModal: React.FC<StockAdjustmentModalProps> = ({
           {/* Reason & Location */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-pos-text mb-1.5">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-pos-text-secondary mb-1.5">
                 Adjustment Reason <span className="text-pos-danger">*</span>
               </label>
               <input
@@ -224,18 +224,18 @@ export const StockAdjustmentModal: React.FC<StockAdjustmentModalProps> = ({
                 value={reason}
                 onChange={e => setReason(e.target.value)}
                 placeholder="e.g. Month-end physical count"
-                className="w-full px-3 py-2.5 rounded-xl bg-pos-bg border border-pos-border text-pos-text text-xs focus:outline-none focus:ring-2 focus:ring-pos-accent font-medium"
+                className="w-full px-3 py-2 rounded-lg bg-pos-surface border border-pos-border text-pos-text text-xs focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary font-medium shadow-xs"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-pos-text mb-1.5">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-pos-text-secondary mb-1.5">
                 Location (Optional)
               </label>
               <select
                 value={locationId}
                 onChange={e => setLocationId(e.target.value)}
-                className="w-full px-3 py-2.5 rounded-xl bg-pos-bg border border-pos-border text-pos-text text-xs focus:outline-none focus:ring-2 focus:ring-pos-accent font-medium"
+                className="w-full px-3 py-2 rounded-lg bg-pos-surface border border-pos-border text-pos-text text-xs focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary font-medium shadow-xs"
               >
                 <option value="">-- Main Location --</option>
                 {locations.map(loc => (
@@ -249,7 +249,7 @@ export const StockAdjustmentModal: React.FC<StockAdjustmentModalProps> = ({
 
           {/* Notes */}
           <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-pos-text mb-1.5">
+            <label className="block text-xs font-semibold uppercase tracking-wider text-pos-text-secondary mb-1.5">
               Additional Notes (Optional)
             </label>
             <textarea
@@ -257,7 +257,7 @@ export const StockAdjustmentModal: React.FC<StockAdjustmentModalProps> = ({
               value={notes}
               onChange={e => setNotes(e.target.value)}
               placeholder="e.g. Recounted with kitchen manager..."
-              className="w-full p-3 rounded-xl bg-pos-bg border border-pos-border text-pos-text placeholder-pos-text-muted/60 text-xs focus:outline-none focus:ring-2 focus:ring-pos-accent resize-none font-medium"
+              className="w-full p-2.5 rounded-lg bg-pos-surface border border-pos-border text-pos-text placeholder-pos-text-muted text-xs focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary resize-none font-medium shadow-xs"
             />
           </div>
 
@@ -278,7 +278,7 @@ export const StockAdjustmentModal: React.FC<StockAdjustmentModalProps> = ({
               size="md"
               isLoading={createAdjustmentMutation.isPending}
               disabled={!selectedItemId || !reason.trim()}
-              className="font-bold shadow-sm"
+              className="font-bold shadow-xs"
             >
               Post Stock Adjustment
             </Button>

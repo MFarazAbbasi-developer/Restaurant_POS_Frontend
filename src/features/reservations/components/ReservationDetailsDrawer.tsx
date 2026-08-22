@@ -58,43 +58,43 @@ export const ReservationDetailsDrawer: React.FC<ReservationDetailsDrawerProps> =
     switch (status) {
       case 'CONFIRMED':
         return (
-          <Badge variant="success" className="text-[10px]">
+          <Badge variant="success" size="sm" className="text-[10px]">
             Confirmed
           </Badge>
         );
       case 'SEATED':
         return (
-          <Badge variant="default" className="text-[10px] bg-pos-accent text-white">
+          <Badge variant="primary" size="sm" className="text-[10px]">
             Seated
           </Badge>
         );
       case 'PENDING':
         return (
-          <Badge variant="warning" className="text-[10px]">
+          <Badge variant="warning" size="sm" className="text-[10px]">
             Pending Hold
           </Badge>
         );
       case 'COMPLETED':
         return (
-          <Badge variant="success" className="text-[10px]">
+          <Badge variant="success" size="sm" className="text-[10px]">
             Completed
           </Badge>
         );
       case 'CANCELLED':
         return (
-          <Badge variant="danger" className="text-[10px]">
+          <Badge variant="danger" size="sm" className="text-[10px]">
             Cancelled
           </Badge>
         );
       case 'NO_SHOW':
         return (
-          <Badge variant="danger" className="text-[10px]">
+          <Badge variant="danger" size="sm" className="text-[10px]">
             No-Show
           </Badge>
         );
       default:
         return (
-          <Badge variant="default" className="text-[10px]">
+          <Badge variant="default" size="sm" className="text-[10px]">
             {status}
           </Badge>
         );
@@ -117,17 +117,17 @@ export const ReservationDetailsDrawer: React.FC<ReservationDetailsDrawerProps> =
   });
 
   return (
-    <div className="fixed inset-0 z-50 overflow-hidden bg-black/60 backdrop-blur-xs flex justify-end animate-in fade-in duration-200 select-none">
-      <div className="w-full max-w-lg bg-pos-surface border-l border-pos-border shadow-2xl flex flex-col h-full overflow-hidden animate-in slide-in-from-right duration-200">
+    <div className="fixed inset-0 z-50 overflow-hidden bg-black/50 backdrop-blur-xs flex justify-end animate-in fade-in duration-200 select-none">
+      <div className="w-full max-w-lg bg-pos-surface border-l border-pos-border shadow-modal flex flex-col h-full overflow-hidden animate-in slide-in-from-right duration-200">
         {/* Header */}
-        <div className="p-4 sm:p-5 border-b border-pos-border flex items-center justify-between bg-pos-header shrink-0">
+        <div className="p-4 sm:p-5 border-b border-pos-border flex items-center justify-between bg-pos-surface shrink-0">
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-xl bg-pos-accent/15 border border-pos-accent/30 text-pos-accent flex items-center justify-center">
-              <CalendarCheck size={20} />
+            <div className="h-9 w-9 rounded-lg bg-pos-primary-soft border border-pos-primary/20 text-pos-primary flex items-center justify-center">
+              <CalendarCheck size={18} />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="text-base font-black text-pos-text font-mono">
+                <h3 className="text-base font-bold text-pos-text font-mono">
                   #{reservation.reservationCode}
                 </h3>
                 {getStatusBadge(reservation.status)}
@@ -143,30 +143,30 @@ export const ReservationDetailsDrawer: React.FC<ReservationDetailsDrawerProps> =
               <button
                 type="button"
                 onClick={() => onEdit(reservation)}
-                className="p-2 rounded-xl text-pos-text-muted hover:text-pos-text hover:bg-pos-surface-hover transition-colors"
+                className="p-1.5 rounded-lg text-pos-text-muted hover:text-pos-text hover:bg-pos-surface-subtle transition-colors"
                 title="Edit booking"
                 aria-label="Edit booking"
               >
-                <Edit2 size={16} />
+                <Edit2 size={15} />
               </button>
             )}
             <button
               type="button"
               onClick={onClose}
-              className="p-2 rounded-xl text-pos-text-muted hover:text-pos-text hover:bg-pos-surface-hover transition-colors"
+              className="p-1.5 rounded-lg text-pos-text-muted hover:text-pos-text hover:bg-pos-surface-subtle transition-colors"
               aria-label="Close drawer"
             >
-              <X size={20} />
+              <X size={18} />
             </button>
           </div>
         </div>
 
         {/* Scrollable Body */}
-        <div className="flex-1 overflow-y-auto p-5 space-y-5 custom-scrollbar">
+        <div className="flex-1 overflow-y-auto p-5 space-y-4 custom-scrollbar">
           {/* Quick Lifecycle Action Bar */}
           {!['COMPLETED', 'CANCELLED', 'NO_SHOW'].includes(reservation.status) && (
-            <div className="p-3.5 rounded-2xl bg-pos-bg border border-pos-border space-y-2">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-pos-text-muted block">
+            <div className="p-3.5 rounded-lg bg-pos-surface-subtle border border-pos-border space-y-2">
+              <span className="text-[10px] font-semibold uppercase tracking-wider text-pos-text-secondary block">
                 Reservation Actions
               </span>
               <div className="flex flex-wrap items-center gap-2">
@@ -176,7 +176,7 @@ export const ReservationDetailsDrawer: React.FC<ReservationDetailsDrawerProps> =
                     size="sm"
                     isLoading={updateStatusMutation.isPending}
                     onClick={() => handleStatusChange('CONFIRMED')}
-                    className="font-bold text-xs flex items-center gap-1.5"
+                    className="font-bold text-xs flex items-center gap-1.5 shadow-xs"
                   >
                     <CheckCircle2 size={14} />
                     <span>Confirm Booking</span>
@@ -190,7 +190,7 @@ export const ReservationDetailsDrawer: React.FC<ReservationDetailsDrawerProps> =
                     size="sm"
                     isLoading={updateStatusMutation.isPending}
                     onClick={() => handleStatusChange('SEATED')}
-                    className="font-bold text-xs flex items-center gap-1.5 bg-pos-accent text-white shadow-xs"
+                    className="font-bold text-xs flex items-center gap-1.5 shadow-xs"
                   >
                     <Sparkles size={14} />
                     <span>Seat Guests Now</span>
@@ -203,7 +203,7 @@ export const ReservationDetailsDrawer: React.FC<ReservationDetailsDrawerProps> =
                     size="sm"
                     isLoading={updateStatusMutation.isPending}
                     onClick={() => handleStatusChange('COMPLETED')}
-                    className="font-bold text-xs flex items-center gap-1.5"
+                    className="font-bold text-xs flex items-center gap-1.5 shadow-xs"
                   >
                     <CheckCircle2 size={14} />
                     <span>Mark Dining Completed</span>
@@ -216,7 +216,7 @@ export const ReservationDetailsDrawer: React.FC<ReservationDetailsDrawerProps> =
                     size="sm"
                     isLoading={updateStatusMutation.isPending}
                     onClick={() => handleStatusChange('NO_SHOW')}
-                    className="text-xs font-semibold text-pos-danger hover:bg-pos-danger/10 flex items-center gap-1.5"
+                    className="text-xs font-semibold text-pos-danger hover:bg-pos-danger-soft flex items-center gap-1.5"
                   >
                     <UserX size={14} />
                     <span>No-Show</span>
@@ -237,7 +237,7 @@ export const ReservationDetailsDrawer: React.FC<ReservationDetailsDrawerProps> =
                   variant="secondary"
                   size="sm"
                   onClick={() => onCancel(reservation)}
-                  className="text-xs font-semibold text-pos-danger hover:bg-pos-danger/10 flex items-center gap-1.5"
+                  className="text-xs font-semibold text-pos-danger hover:bg-pos-danger-soft flex items-center gap-1.5"
                 >
                   <Ban size={14} />
                   <span>Cancel</span>
@@ -248,7 +248,7 @@ export const ReservationDetailsDrawer: React.FC<ReservationDetailsDrawerProps> =
 
           {/* Timing & Party Info */}
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
-            <div className="p-3 rounded-xl bg-pos-surface border border-pos-border">
+            <div className="p-3 rounded-lg bg-pos-surface border border-pos-border shadow-xs">
               <span className="text-[10px] text-pos-text-muted flex items-center gap-1 font-semibold uppercase">
                 <Calendar size={11} /> Date
               </span>
@@ -257,7 +257,7 @@ export const ReservationDetailsDrawer: React.FC<ReservationDetailsDrawerProps> =
               </span>
             </div>
 
-            <div className="p-3 rounded-xl bg-pos-surface border border-pos-border">
+            <div className="p-3 rounded-lg bg-pos-surface border border-pos-border shadow-xs">
               <span className="text-[10px] text-pos-text-muted flex items-center gap-1 font-semibold uppercase">
                 <Clock size={11} /> Time Window
               </span>
@@ -266,7 +266,7 @@ export const ReservationDetailsDrawer: React.FC<ReservationDetailsDrawerProps> =
               </span>
             </div>
 
-            <div className="p-3 rounded-xl bg-pos-surface border border-pos-border">
+            <div className="p-3 rounded-lg bg-pos-surface border border-pos-border shadow-xs">
               <span className="text-[10px] text-pos-text-muted flex items-center gap-1 font-semibold uppercase">
                 <Users size={11} /> Party Size
               </span>
@@ -277,10 +277,10 @@ export const ReservationDetailsDrawer: React.FC<ReservationDetailsDrawerProps> =
           </div>
 
           {/* Table & Seating Status */}
-          <div className="p-4 rounded-2xl bg-pos-bg border border-pos-border space-y-2">
+          <div className="p-3.5 rounded-lg bg-pos-surface-subtle border border-pos-border space-y-2">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-bold uppercase tracking-wider text-pos-text flex items-center gap-1.5">
-                <Grid size={14} className="text-pos-accent" />
+              <span className="text-xs font-semibold uppercase tracking-wider text-pos-text-secondary flex items-center gap-1.5">
+                <Grid size={14} className="text-pos-primary" />
                 <span>Assigned Table</span>
               </span>
 
@@ -288,7 +288,7 @@ export const ReservationDetailsDrawer: React.FC<ReservationDetailsDrawerProps> =
                 <button
                   type="button"
                   onClick={() => onAssignTable(reservation)}
-                  className="text-xs text-pos-accent hover:underline font-bold"
+                  className="text-xs text-pos-primary hover:underline font-semibold"
                 >
                   {reservation.table ? 'Reassign' : '+ Assign Table'}
                 </button>
@@ -296,9 +296,9 @@ export const ReservationDetailsDrawer: React.FC<ReservationDetailsDrawerProps> =
             </div>
 
             {reservation.table ? (
-              <div className="p-3 rounded-xl bg-pos-surface border border-pos-border flex items-center justify-between text-xs">
+              <div className="p-3 rounded-lg bg-pos-surface border border-pos-border flex items-center justify-between text-xs shadow-xs">
                 <div>
-                  <span className="font-black text-sm text-pos-text block">
+                  <span className="font-bold text-sm text-pos-text block">
                     Table {reservation.table.name}
                   </span>
                   <span className="text-[11px] text-pos-text-muted">
@@ -312,16 +312,16 @@ export const ReservationDetailsDrawer: React.FC<ReservationDetailsDrawerProps> =
                 </div>
               </div>
             ) : (
-              <div className="p-3 rounded-xl bg-pos-surface border border-pos-border text-xs text-pos-text-muted">
+              <div className="p-3 rounded-lg bg-pos-surface border border-pos-border text-xs text-pos-text-muted">
                 No floor table assigned yet. Guest will be assigned upon arrival.
               </div>
             )}
           </div>
 
           {/* Guest Contact Details */}
-          <div className="p-4 rounded-2xl bg-pos-bg border border-pos-border space-y-2.5">
-            <span className="text-xs font-bold uppercase tracking-wider text-pos-text flex items-center gap-1.5">
-              <User size={14} className="text-pos-accent" />
+          <div className="p-3.5 rounded-lg bg-pos-surface-subtle border border-pos-border space-y-2.5">
+            <span className="text-xs font-semibold uppercase tracking-wider text-pos-text-secondary flex items-center gap-1.5">
+              <User size={14} className="text-pos-primary" />
               <span>Guest Information</span>
             </span>
 
@@ -330,12 +330,12 @@ export const ReservationDetailsDrawer: React.FC<ReservationDetailsDrawerProps> =
                 <User size={14} className="text-pos-text-muted" />
                 <span className="font-semibold">{reservation.customerName}</span>
               </div>
-              <div className="flex items-center gap-2 text-pos-text font-mono">
+              <div className="flex items-center gap-2 text-pos-text font-mono font-medium">
                 <Phone size={14} className="text-pos-text-muted" />
                 <span>{reservation.customerPhone}</span>
               </div>
               {reservation.customerEmail && (
-                <div className="flex items-center gap-2 text-pos-text font-mono">
+                <div className="flex items-center gap-2 text-pos-text font-mono font-medium">
                   <Mail size={14} className="text-pos-text-muted" />
                   <span>{reservation.customerEmail}</span>
                 </div>
@@ -345,8 +345,8 @@ export const ReservationDetailsDrawer: React.FC<ReservationDetailsDrawerProps> =
 
           {/* Special Requests */}
           {reservation.specialRequests && (
-            <div className="p-3.5 rounded-xl bg-pos-bg border border-pos-border space-y-1">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-pos-text-muted flex items-center gap-1">
+            <div className="p-3 rounded-lg bg-pos-surface-subtle border border-pos-border space-y-1">
+              <span className="text-[10px] font-semibold uppercase tracking-wider text-pos-text-secondary flex items-center gap-1">
                 <FileText size={12} /> Special Requests & Occasion
               </span>
               <p className="text-xs text-pos-text font-medium">
@@ -357,17 +357,17 @@ export const ReservationDetailsDrawer: React.FC<ReservationDetailsDrawerProps> =
 
           {/* Cancellation Reason */}
           {reservation.cancelReason && (
-            <div className="p-3.5 rounded-xl bg-pos-danger/10 border border-pos-danger/30 space-y-1 text-xs">
-              <span className="font-bold text-pos-danger block">
+            <div className="p-3 rounded-lg bg-pos-danger-soft border border-[#FECACA] space-y-1 text-xs">
+              <span className="font-semibold text-pos-danger block">
                 Cancellation Reason:
               </span>
-              <p className="text-pos-text">{reservation.cancelReason}</p>
+              <p className="text-pos-text font-medium">{reservation.cancelReason}</p>
             </div>
           )}
         </div>
 
         {/* Footer */}
-        <div className="p-4 border-t border-pos-border bg-pos-header flex items-center justify-end shrink-0">
+        <div className="p-4 border-t border-pos-border bg-pos-surface flex items-center justify-end shrink-0">
           <Button variant="secondary" size="md" onClick={onClose}>
             Close
           </Button>

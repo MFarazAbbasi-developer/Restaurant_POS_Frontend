@@ -81,17 +81,17 @@ export const CustomersPage: React.FC = () => {
       {/* =========================================================================
           TOP HEADER BAR: Metrics & Quick Action CTAs
       ========================================================================= */}
-      <div className="p-3.5 border-b border-pos-border bg-pos-header/90 rounded-t-2xl flex flex-wrap items-center justify-between gap-3 shrink-0 shadow-xs">
+      <div className="p-3 sm:p-3.5 border-b border-pos-border bg-pos-surface rounded-t-lg flex flex-wrap items-center justify-between gap-2.5 shrink-0 shadow-xs">
         <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-xl bg-pos-accent/15 border border-pos-accent/30 text-pos-accent flex items-center justify-center">
-            <Users size={20} />
+          <div className="h-9 w-9 rounded-lg bg-pos-primary-soft border border-pos-primary/20 text-pos-primary flex items-center justify-center">
+            <Users size={18} />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h2 className="text-base font-black text-pos-text">
+              <h2 className="text-sm sm:text-base font-bold text-pos-text">
                 Customer Directory & CRM
               </h2>
-              <Badge variant="default" className="text-[10px] font-mono">
+              <Badge variant="default" size="sm" className="text-[10px] font-mono">
                 {totalCustomers} Registered Customers
               </Badge>
             </div>
@@ -109,7 +109,7 @@ export const CustomersPage: React.FC = () => {
             size="sm"
             onClick={() => refetchCustomers()}
             disabled={isCustomersRefetching}
-            className="min-h-[36px] px-3 font-semibold flex items-center gap-1.5"
+            className="min-h-[36px] px-3 font-medium flex items-center gap-1.5"
           >
             <RotateCw size={14} className={isCustomersRefetching ? 'animate-spin' : ''} />
             <span className="hidden sm:inline">Refresh</span>
@@ -119,7 +119,7 @@ export const CustomersPage: React.FC = () => {
             variant="primary"
             size="sm"
             onClick={() => setCustomerModal({ open: true, customer: null })}
-            className="min-h-[36px] text-xs font-bold flex items-center gap-1.5 shadow-sm"
+            className="min-h-[36px] text-xs font-bold flex items-center gap-1.5 shadow-xs"
           >
             <Plus size={16} />
             <span>+ New Customer</span>
@@ -134,7 +134,7 @@ export const CustomersPage: React.FC = () => {
         {/* Search Bar */}
         <div className="relative flex-1 max-w-md">
           <Search
-            size={15}
+            size={14}
             className="absolute left-3 top-1/2 -translate-y-1/2 text-pos-text-muted"
           />
           <input
@@ -142,7 +142,7 @@ export const CustomersPage: React.FC = () => {
             value={searchQuery}
             onChange={e => handleSearchChange(e.target.value)}
             placeholder="Search by customer name or phone number..."
-            className="w-full pl-9 pr-3 py-2 rounded-xl bg-pos-bg border border-pos-border text-xs text-pos-text placeholder-pos-text-muted/60 focus:outline-none focus:ring-2 focus:ring-pos-accent font-medium"
+            className="w-full pl-9 pr-3 py-1.5 rounded-md bg-pos-surface border border-pos-border text-xs text-pos-text placeholder-pos-text-muted focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary font-medium"
           />
         </div>
 
@@ -158,7 +158,7 @@ export const CustomersPage: React.FC = () => {
               type="button"
               disabled={page <= 1}
               onClick={() => setPage(p => Math.max(1, p - 1))}
-              className="p-1.5 rounded-lg bg-pos-bg border border-pos-border text-pos-text-muted hover:text-pos-text disabled:opacity-30 disabled:pointer-events-none transition-colors"
+              className="p-1 rounded-md bg-pos-surface border border-pos-border text-pos-text-secondary hover:text-pos-text disabled:opacity-30 disabled:pointer-events-none transition-colors"
               aria-label="Previous page"
             >
               <ChevronLeft size={16} />
@@ -168,7 +168,7 @@ export const CustomersPage: React.FC = () => {
               type="button"
               disabled={page >= totalPages}
               onClick={() => setPage(p => Math.min(totalPages, p + 1))}
-              className="p-1.5 rounded-lg bg-pos-bg border border-pos-border text-pos-text-muted hover:text-pos-text disabled:opacity-30 disabled:pointer-events-none transition-colors"
+              className="p-1 rounded-md bg-pos-surface border border-pos-border text-pos-text-secondary hover:text-pos-text disabled:opacity-30 disabled:pointer-events-none transition-colors"
               aria-label="Next page"
             >
               <ChevronRight size={16} />
@@ -180,7 +180,7 @@ export const CustomersPage: React.FC = () => {
       {/* =========================================================================
           DIRECTORY CONTENT AREA
       ========================================================================= */}
-      <div className="flex-1 overflow-y-auto p-4 custom-scrollbar bg-pos-surface/40 border-x border-b border-pos-border rounded-b-2xl">
+      <div className="flex-1 overflow-y-auto p-4 custom-scrollbar bg-pos-bg border-x border-b border-pos-border rounded-b-lg">
         {isCustomersLoading ? (
           <div className="py-24 flex flex-col items-center justify-center gap-3 text-pos-text-muted text-xs">
             <Spinner size="lg" />
@@ -190,7 +190,7 @@ export const CustomersPage: React.FC = () => {
           <div className="py-24 text-center text-xs text-pos-text-muted flex flex-col items-center gap-3">
             <Users size={40} className="text-pos-text-muted/40" />
             <p className="font-bold text-base text-pos-text">No Customers Found</p>
-            <p className="text-xs max-w-sm">
+            <p className="text-xs max-w-sm text-pos-text-secondary">
               {searchQuery
                 ? `No customers match search term "${searchQuery}".`
                 : 'No customer profiles registered yet. Click below to add your first customer.'}
@@ -199,7 +199,7 @@ export const CustomersPage: React.FC = () => {
               variant="primary"
               size="sm"
               onClick={() => setCustomerModal({ open: true, customer: null })}
-              className="font-bold mt-2"
+              className="font-bold mt-2 shadow-xs"
             >
               + Register Customer
             </Button>
@@ -212,23 +212,24 @@ export const CustomersPage: React.FC = () => {
               return (
                 <div
                   key={c.id}
-                  className="p-4 rounded-2xl bg-pos-surface border border-pos-border shadow-xs hover:border-pos-accent/40 transition-all flex flex-col justify-between"
+                  className="p-3.5 rounded-lg bg-pos-surface border border-pos-border shadow-xs hover:border-pos-primary/40 transition-colors flex flex-col justify-between"
                 >
                   <div>
                     {/* Top Row: Name, Status & Edit */}
                     <div className="flex items-start justify-between gap-2 mb-2">
                       <div>
                         <div className="flex items-center gap-2">
-                          <h4 className="font-black text-pos-text text-sm">{c.name}</h4>
+                          <h4 className="font-bold text-pos-text text-sm">{c.name}</h4>
                           <Badge
                             variant={c.isActive ? 'success' : 'default'}
+                            size="sm"
                             className="text-[9px]"
                           >
                             {c.isActive ? 'Active' : 'Inactive'}
                           </Badge>
                         </div>
 
-                        <div className="flex items-center gap-1 text-xs font-mono font-bold text-pos-accent mt-0.5">
+                        <div className="flex items-center gap-1 text-xs font-mono font-bold text-pos-primary mt-0.5">
                           <Phone size={12} />
                           <span>{c.phone}</span>
                         </div>
@@ -237,7 +238,7 @@ export const CustomersPage: React.FC = () => {
                       <button
                         type="button"
                         onClick={() => setCustomerModal({ open: true, customer: c })}
-                        className="p-1.5 rounded-lg text-pos-text-muted hover:text-pos-text hover:bg-pos-surface-hover transition-colors"
+                        className="p-1.5 rounded-md text-pos-text-muted hover:text-pos-text hover:bg-pos-surface-subtle transition-colors"
                         aria-label="Edit customer"
                       >
                         <Edit2 size={14} />
@@ -245,10 +246,10 @@ export const CustomersPage: React.FC = () => {
                     </div>
 
                     {/* Address Preview */}
-                    <div className="my-2.5 p-2.5 rounded-xl bg-pos-bg border border-pos-border/60 text-xs space-y-1">
+                    <div className="my-2.5 p-2.5 rounded-md bg-pos-surface-subtle border border-pos-border text-xs space-y-1">
                       <div className="flex items-center justify-between text-[11px] text-pos-text-muted font-semibold">
                         <span className="flex items-center gap-1">
-                          <MapPin size={12} className="text-pos-accent" />
+                          <MapPin size={12} className="text-pos-primary" />
                           <span>
                             {c.addresses.length > 0
                               ? `${c.addresses.length} Saved Address${
@@ -259,7 +260,7 @@ export const CustomersPage: React.FC = () => {
                         </span>
 
                         {defaultAddr?.deliveryZone && (
-                          <Badge variant="default" className="text-[9px]">
+                          <Badge variant="default" size="sm" className="text-[9px]">
                             {defaultAddr.deliveryZone.name}
                           </Badge>
                         )}
@@ -279,7 +280,7 @@ export const CustomersPage: React.FC = () => {
 
                     {/* Notes Preview */}
                     {c.notes && (
-                      <div className="flex items-start gap-1 text-[11px] text-pos-text-muted line-clamp-1 mb-2">
+                      <div className="flex items-start gap-1 text-[11px] text-pos-text-secondary line-clamp-1 mb-2">
                         <FileText size={12} className="shrink-0 mt-0.5" />
                         <span>{c.notes}</span>
                       </div>
@@ -287,11 +288,11 @@ export const CustomersPage: React.FC = () => {
                   </div>
 
                   {/* Actions Footer */}
-                  <div className="pt-3 border-t border-pos-border/60 flex items-center justify-between gap-2">
+                  <div className="pt-3 border-t border-pos-border flex items-center justify-between gap-2">
                     <button
                       type="button"
                       onClick={() => setAddressModalCustomer(c)}
-                      className="text-xs text-pos-accent hover:underline font-bold flex items-center gap-1"
+                      className="text-xs text-pos-primary hover:underline font-semibold flex items-center gap-1"
                     >
                       <Plus size={12} /> + Address
                     </button>
@@ -310,7 +311,7 @@ export const CustomersPage: React.FC = () => {
                       <button
                         type="button"
                         onClick={() => navigate('/orders')}
-                        className="p-1.5 rounded-lg bg-pos-accent/15 text-pos-accent hover:bg-pos-accent hover:text-white transition-colors"
+                        className="p-1.5 rounded-md bg-pos-primary-soft text-pos-primary hover:bg-pos-primary hover:text-white transition-colors"
                         title="Start POS Order"
                         aria-label="Start POS Order"
                       >
@@ -364,3 +365,5 @@ export const CustomersPage: React.FC = () => {
     </div>
   );
 };
+
+export default CustomersPage;

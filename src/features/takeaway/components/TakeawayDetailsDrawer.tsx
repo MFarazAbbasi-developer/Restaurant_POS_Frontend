@@ -45,17 +45,41 @@ export const TakeawayDetailsDrawer: React.FC<TakeawayDetailsDrawerProps> = ({
   const getStatusBadge = (status: TakeawayOrderRecord['status']) => {
     switch (status) {
       case 'PENDING':
-        return <Badge variant="warning">Pending</Badge>;
+        return (
+          <Badge variant="warning" size="sm">
+            Pending
+          </Badge>
+        );
       case 'PREPARING':
-        return <Badge variant="info">Preparing</Badge>;
+        return (
+          <Badge variant="info" size="sm">
+            Preparing
+          </Badge>
+        );
       case 'READY':
-        return <Badge variant="success">Ready for Pickup</Badge>;
+        return (
+          <Badge variant="success" size="sm">
+            Ready
+          </Badge>
+        );
       case 'COMPLETED':
-        return <Badge variant="default">Completed</Badge>;
+        return (
+          <Badge variant="default" size="sm">
+            Completed
+          </Badge>
+        );
       case 'CANCELLED':
-        return <Badge variant="danger">Cancelled</Badge>;
+        return (
+          <Badge variant="danger" size="sm">
+            Cancelled
+          </Badge>
+        );
       default:
-        return <Badge variant="default">{status}</Badge>;
+        return (
+          <Badge variant="default" size="sm">
+            {status}
+          </Badge>
+        );
     }
   };
 
@@ -82,11 +106,11 @@ export const TakeawayDetailsDrawer: React.FC<TakeawayDetailsDrawerProps> = ({
   };
 
   return (
-    <div className="w-full lg:w-96 flex flex-col bg-pos-surface border border-pos-border rounded-2xl shadow-xl overflow-hidden shrink-0 animate-in slide-in-from-right-4 duration-200">
+    <div className="w-full lg:w-96 flex flex-col bg-pos-surface border border-pos-border rounded-xl shadow-dropdown overflow-hidden shrink-0 animate-in slide-in-from-right-4 duration-150">
       {/* Drawer Header */}
-      <div className="p-4 border-b border-pos-border bg-pos-header flex items-center justify-between shrink-0">
+      <div className="p-3.5 border-b border-pos-border bg-pos-surface flex items-center justify-between shrink-0">
         <div className="flex items-center gap-2.5">
-          <div className="px-3 py-1 rounded-xl bg-pos-accent text-white font-black text-lg tracking-wide shadow-sm">
+          <div className="px-2.5 py-0.5 rounded-md bg-pos-primary text-white font-black text-base font-mono tracking-wide shadow-xs">
             #{order.tokenNumber}
           </div>
           <div>
@@ -106,7 +130,7 @@ export const TakeawayDetailsDrawer: React.FC<TakeawayDetailsDrawerProps> = ({
           type="button"
           onClick={onClose}
           aria-label="Close takeaway details"
-          className="p-2 rounded-xl text-pos-text-muted hover:text-pos-text hover:bg-pos-surface-hover transition-colors"
+          className="p-1.5 rounded-lg text-pos-text-muted hover:text-pos-text hover:bg-pos-surface-subtle transition-colors"
         >
           <X size={18} />
         </button>
@@ -114,7 +138,7 @@ export const TakeawayDetailsDrawer: React.FC<TakeawayDetailsDrawerProps> = ({
 
       {/* Drawer Error Banner */}
       {errorMessage && (
-        <div className="p-3 bg-pos-danger/10 border-b border-pos-danger/30 text-pos-danger text-xs flex items-center gap-2 shrink-0">
+        <div className="p-3 bg-pos-danger-soft border-b border-[#FECACA] text-pos-danger text-xs flex items-center gap-2 shrink-0">
           <AlertCircle size={15} className="shrink-0" />
           <span className="flex-1">{errorMessage}</span>
           <button type="button" onClick={() => setErrorMessage(null)}>
@@ -126,16 +150,20 @@ export const TakeawayDetailsDrawer: React.FC<TakeawayDetailsDrawerProps> = ({
       {/* Drawer Scrollable Content */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar">
         {/* Customer & Tender Banner */}
-        <div className="p-3.5 rounded-xl bg-pos-bg border border-pos-border space-y-2 text-xs">
+        <div className="p-3 rounded-lg bg-pos-surface-subtle border border-pos-border space-y-2 text-xs">
           <div className="flex items-center justify-between">
             <span className="font-bold text-pos-text flex items-center gap-1.5 text-sm">
-              <User size={15} className="text-pos-accent" />
+              <User size={15} className="text-pos-primary" />
               {order.customerName}
             </span>
             {order.isPayOnPickup ? (
-              <Badge variant="warning">Pay on Pickup</Badge>
+              <Badge variant="warning" size="sm">
+                Pay on Pickup
+              </Badge>
             ) : (
-              <Badge variant="success">Paid ({order.paymentMethod})</Badge>
+              <Badge variant="success" size="sm">
+                Paid ({order.paymentMethod})
+              </Badge>
             )}
           </div>
 
@@ -146,7 +174,7 @@ export const TakeawayDetailsDrawer: React.FC<TakeawayDetailsDrawerProps> = ({
           )}
 
           {order.specialInstructions && (
-            <p className="text-pos-text-muted italic flex items-center gap-1.5 pt-1 border-t border-pos-border/40 text-[11px]">
+            <p className="text-pos-text-muted italic flex items-center gap-1.5 pt-1 border-t border-pos-border text-[11px]">
               <FileText size={13} className="shrink-0 text-pos-warning" />
               {order.specialInstructions}
             </p>
@@ -155,14 +183,14 @@ export const TakeawayDetailsDrawer: React.FC<TakeawayDetailsDrawerProps> = ({
 
         {/* Detailed Items Breakdown */}
         <div>
-          <h4 className="text-xs font-bold uppercase tracking-wider text-pos-text mb-2">
+          <h4 className="text-xs font-semibold uppercase tracking-wider text-pos-text-secondary mb-2">
             Order Items ({order.items.length})
           </h4>
           <div className="space-y-2">
             {order.items.map(item => (
               <div
                 key={item.id}
-                className="p-3 rounded-xl bg-pos-bg border border-pos-border text-xs space-y-1.5"
+                className="p-3 rounded-lg bg-pos-surface border border-pos-border text-xs space-y-1.5 shadow-xs"
               >
                 <div className="flex items-start justify-between gap-2">
                   <div>
@@ -170,7 +198,7 @@ export const TakeawayDetailsDrawer: React.FC<TakeawayDetailsDrawerProps> = ({
                       {item.quantity}x {item.name}
                     </span>
                     {item.variantName && (
-                      <span className="text-[11px] text-pos-accent font-semibold ml-1.5">
+                      <span className="text-[11px] text-pos-primary font-semibold ml-1.5">
                         ({item.variantName})
                       </span>
                     )}
@@ -186,7 +214,7 @@ export const TakeawayDetailsDrawer: React.FC<TakeawayDetailsDrawerProps> = ({
                   </p>
                 )}
 
-                <div className="flex justify-between items-center text-[10px] text-pos-text-muted pt-1 border-t border-pos-border/40 font-mono">
+                <div className="flex justify-between items-center text-[10px] text-pos-text-muted pt-1 border-t border-pos-border font-mono">
                   <span>Unit: {formatPrice(item.unitPrice)}</span>
                   <span>Line Total: {formatPrice(item.subtotal)}</span>
                 </div>
@@ -196,10 +224,10 @@ export const TakeawayDetailsDrawer: React.FC<TakeawayDetailsDrawerProps> = ({
         </div>
 
         {/* Financial Summary */}
-        <div className="p-3.5 rounded-xl bg-pos-header/70 border border-pos-border space-y-1.5 text-xs">
-          <div className="flex justify-between items-center text-sm font-bold pt-1 border-t border-pos-border/40">
+        <div className="p-3.5 rounded-lg bg-pos-surface-subtle border border-pos-border space-y-1.5 text-xs">
+          <div className="flex justify-between items-center text-sm font-bold">
             <span className="text-pos-text">Total Amount:</span>
-            <span className="text-lg font-black text-pos-accent font-mono">
+            <span className="text-lg font-black text-pos-primary font-mono">
               {formatPrice(order.totalAmount)}
             </span>
           </div>
@@ -207,8 +235,8 @@ export const TakeawayDetailsDrawer: React.FC<TakeawayDetailsDrawerProps> = ({
 
         {/* Status Progression Controls */}
         <div className="space-y-2 pt-2">
-          <h4 className="text-xs font-bold uppercase tracking-wider text-pos-text">
-            Update Queue Status
+          <h4 className="text-xs font-semibold uppercase tracking-wider text-pos-text-secondary">
+            Queue Actions
           </h4>
 
           {order.status === 'PENDING' && (
@@ -217,9 +245,9 @@ export const TakeawayDetailsDrawer: React.FC<TakeawayDetailsDrawerProps> = ({
               size="lg"
               onClick={() => handleUpdateStatus('PREPARING')}
               isLoading={updateStatusMutation.isPending}
-              className="w-full font-bold flex items-center justify-center gap-2"
+              className="w-full font-bold flex items-center justify-center gap-2 bg-pos-info hover:bg-pos-info/90 text-white"
             >
-              <ChefHat size={18} />
+              <ChefHat size={16} />
               <span>Start Kitchen Preparation</span>
             </Button>
           )}
@@ -230,9 +258,9 @@ export const TakeawayDetailsDrawer: React.FC<TakeawayDetailsDrawerProps> = ({
               size="lg"
               onClick={() => handleUpdateStatus('READY')}
               isLoading={updateStatusMutation.isPending}
-              className="w-full font-bold flex items-center justify-center gap-2 bg-pos-success hover:bg-pos-success/90"
+              className="w-full font-bold flex items-center justify-center gap-2 bg-pos-success hover:bg-pos-success/90 text-white"
             >
-              <CheckCircle2 size={18} />
+              <CheckCircle2 size={16} />
               <span>Mark Ready for Pickup</span>
             </Button>
           )}
@@ -243,9 +271,9 @@ export const TakeawayDetailsDrawer: React.FC<TakeawayDetailsDrawerProps> = ({
               size="lg"
               onClick={() => handleUpdateStatus('COMPLETED', order.isPayOnPickup)}
               isLoading={updateStatusMutation.isPending}
-              className="w-full font-black flex items-center justify-center gap-2 shadow-md shadow-pos-accent/20"
+              className="w-full font-bold flex items-center justify-center gap-2"
             >
-              <PackageCheck size={18} />
+              <PackageCheck size={16} />
               <span>Complete Handover {order.isPayOnPickup && '& Settle'}</span>
             </Button>
           )}
@@ -256,7 +284,7 @@ export const TakeawayDetailsDrawer: React.FC<TakeawayDetailsDrawerProps> = ({
               variant="ghost"
               size="md"
               onClick={() => setIsCancelModalOpen(true)}
-              className="w-full text-xs text-pos-text-muted hover:text-pos-danger hover:bg-pos-danger/10 font-semibold"
+              className="w-full text-xs text-pos-text-muted hover:text-pos-danger hover:bg-pos-danger-soft font-medium"
             >
               <AlertTriangle size={14} className="mr-1.5" />
               Cancel Takeaway Order
@@ -267,7 +295,7 @@ export const TakeawayDetailsDrawer: React.FC<TakeawayDetailsDrawerProps> = ({
             variant="secondary"
             size="md"
             onClick={() => window.print()}
-            className="w-full text-xs font-semibold flex items-center justify-center gap-1.5"
+            className="w-full text-xs font-medium flex items-center justify-center gap-1.5"
           >
             <Printer size={14} />
             <span>Print Counter Token Receipt</span>

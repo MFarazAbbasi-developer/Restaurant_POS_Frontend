@@ -86,13 +86,13 @@ export const ReceiveGoodsModal: React.FC<ReceiveGoodsModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 animate-in fade-in duration-150 select-none">
-      <div className="w-full max-w-3xl bg-pos-surface border border-pos-border rounded-2xl shadow-2xl flex flex-col max-h-[90vh] overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 animate-in fade-in duration-150 select-none">
+      <div className="w-full max-w-3xl bg-pos-surface border border-pos-border rounded-xl shadow-modal flex flex-col max-h-[90vh] overflow-hidden">
         {/* Header */}
-        <div className="p-4 sm:p-5 border-b border-pos-border flex items-center justify-between bg-pos-header shrink-0">
+        <div className="p-4 sm:p-5 border-b border-pos-border flex items-center justify-between bg-pos-surface shrink-0">
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-xl bg-pos-success/15 border border-pos-success/30 text-pos-success flex items-center justify-center">
-              <PackageCheck size={20} />
+            <div className="h-9 w-9 rounded-lg bg-pos-success-soft border border-[#BBF7D0] text-pos-success flex items-center justify-center">
+              <PackageCheck size={18} />
             </div>
             <div>
               <h3 className="text-base font-bold text-pos-text">
@@ -107,9 +107,9 @@ export const ReceiveGoodsModal: React.FC<ReceiveGoodsModalProps> = ({
             type="button"
             onClick={onClose}
             aria-label="Close modal"
-            className="p-2 rounded-xl text-pos-text-muted hover:text-pos-text hover:bg-pos-surface-hover transition-colors"
+            className="p-1.5 rounded-lg text-pos-text-muted hover:text-pos-text hover:bg-pos-surface-subtle transition-colors"
           >
-            <X size={20} />
+            <X size={18} />
           </button>
         </div>
 
@@ -119,16 +119,16 @@ export const ReceiveGoodsModal: React.FC<ReceiveGoodsModalProps> = ({
           className="flex-1 overflow-y-auto p-5 space-y-4 custom-scrollbar"
         >
           {errorMessage && (
-            <div className="p-3 rounded-xl bg-pos-danger/10 border border-pos-danger/30 text-pos-danger text-xs flex items-center gap-2">
+            <div className="p-3 rounded-lg bg-pos-danger-soft border border-[#FECACA] text-pos-danger text-xs flex items-center gap-2">
               <AlertCircle size={15} className="shrink-0" />
               <span>{errorMessage}</span>
             </div>
           )}
 
           {/* Receiving Details Toolbar */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3.5 rounded-xl bg-pos-bg border border-pos-border">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3 rounded-lg bg-pos-surface-subtle border border-pos-border">
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-pos-text mb-1">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-pos-text-secondary mb-1">
                 Vendor Delivery Invoice #
               </label>
               <div className="relative">
@@ -141,13 +141,13 @@ export const ReceiveGoodsModal: React.FC<ReceiveGoodsModalProps> = ({
                   value={invoiceNumber}
                   onChange={e => setInvoiceNumber(e.target.value)}
                   placeholder="e.g. INV-94821"
-                  className="w-full pl-8 pr-3 py-2 rounded-xl bg-pos-surface border border-pos-border text-pos-text text-xs font-mono font-bold focus:outline-none focus:ring-2 focus:ring-pos-accent"
+                  className="w-full pl-8 pr-3 py-2 rounded-lg bg-pos-surface border border-pos-border text-pos-text text-xs font-mono font-bold focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary shadow-xs"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-pos-text mb-1">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-pos-text-secondary mb-1">
                 Stock Location / Storage
               </label>
               <div className="relative">
@@ -158,7 +158,7 @@ export const ReceiveGoodsModal: React.FC<ReceiveGoodsModalProps> = ({
                 <select
                   value={receivedLocationId}
                   onChange={e => setReceivedLocationId(e.target.value)}
-                  className="w-full pl-8 pr-3 py-2 rounded-xl bg-pos-surface border border-pos-border text-pos-text text-xs focus:outline-none focus:ring-2 focus:ring-pos-accent font-medium"
+                  className="w-full pl-8 pr-3 py-2 rounded-lg bg-pos-surface border border-pos-border text-pos-text text-xs focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary font-medium shadow-xs"
                 >
                   <option value="">-- Main Kitchen Storage --</option>
                   {locations.map(loc => (
@@ -174,22 +174,22 @@ export const ReceiveGoodsModal: React.FC<ReceiveGoodsModalProps> = ({
           {/* Line Items Table */}
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-bold uppercase tracking-wider text-pos-text">
+              <span className="text-xs font-semibold uppercase tracking-wider text-pos-text-secondary">
                 Items to Receive
               </span>
               <button
                 type="button"
                 onClick={handleFillAll}
-                className="text-xs text-pos-accent hover:underline font-bold flex items-center gap-1"
+                className="text-xs text-pos-primary hover:underline font-semibold flex items-center gap-1"
               >
                 <CheckCircle2 size={13} /> Fill All Remaining
               </button>
             </div>
 
-            <div className="rounded-xl border border-pos-border overflow-hidden bg-pos-bg">
+            <div className="rounded-lg border border-pos-border overflow-hidden bg-pos-surface">
               <table className="w-full text-left text-xs border-collapse">
                 <thead>
-                  <tr className="border-b border-pos-border bg-pos-surface/80 text-pos-text-muted font-bold uppercase text-[10px] tracking-wider">
+                  <tr className="border-b border-pos-border bg-pos-surface-subtle text-pos-text-muted font-semibold uppercase text-[10px] tracking-wider">
                     <th className="py-2.5 px-3">Item Name</th>
                     <th className="py-2.5 px-3 text-center w-24">Ordered</th>
                     <th className="py-2.5 px-3 text-center w-24">Received</th>
@@ -197,7 +197,7 @@ export const ReceiveGoodsModal: React.FC<ReceiveGoodsModalProps> = ({
                     <th className="py-2.5 px-3 w-36 text-right">Qty Receiving Now</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-pos-border/40">
+                <tbody className="divide-y divide-pos-border">
                   {order.items.map(it => {
                     const remaining = Math.max(0, it.quantity - it.quantityReceived);
                     const isFullyReceived = remaining <= 0;
@@ -207,8 +207,8 @@ export const ReceiveGoodsModal: React.FC<ReceiveGoodsModalProps> = ({
                         key={it.id}
                         className={
                           isFullyReceived
-                            ? 'opacity-60 bg-pos-surface/20'
-                            : 'hover:bg-pos-surface/40'
+                            ? 'opacity-60 bg-pos-surface-subtle/40'
+                            : 'hover:bg-pos-surface-subtle transition-colors'
                         }
                       >
                         <td className="p-3">
@@ -229,7 +229,7 @@ export const ReceiveGoodsModal: React.FC<ReceiveGoodsModalProps> = ({
                           {it.quantityReceived}
                         </td>
 
-                        <td className="p-3 text-center font-mono font-bold text-pos-accent">
+                        <td className="p-3 text-center font-mono font-bold text-pos-primary">
                           {remaining}
                         </td>
 
@@ -242,7 +242,7 @@ export const ReceiveGoodsModal: React.FC<ReceiveGoodsModalProps> = ({
                             disabled={isFullyReceived}
                             value={receiveQtys[it.id] || '0'}
                             onChange={e => handleQtyChange(it.id, e.target.value)}
-                            className="w-28 px-2.5 py-1.5 rounded-lg bg-pos-surface border border-pos-border text-pos-text font-mono font-bold text-xs focus:outline-none focus:ring-2 focus:ring-pos-success text-right disabled:opacity-40"
+                            className="w-28 px-2.5 py-1.5 rounded-md bg-pos-surface border border-pos-border text-pos-text font-mono font-bold text-xs focus:outline-none focus:ring-2 focus:ring-pos-success text-right disabled:opacity-40 shadow-xs"
                           />
                         </td>
                       </tr>
@@ -255,7 +255,7 @@ export const ReceiveGoodsModal: React.FC<ReceiveGoodsModalProps> = ({
 
           {/* Receiving Notes */}
           <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-pos-text mb-1">
+            <label className="block text-xs font-semibold uppercase tracking-wider text-pos-text-secondary mb-1">
               Receiving Notes / Condition (Optional)
             </label>
             <textarea
@@ -263,7 +263,7 @@ export const ReceiveGoodsModal: React.FC<ReceiveGoodsModalProps> = ({
               value={notes}
               onChange={e => setNotes(e.target.value)}
               placeholder="e.g. All boxes inspected in good condition, chilled upon receipt..."
-              className="w-full p-2.5 rounded-xl bg-pos-bg border border-pos-border text-pos-text text-xs focus:outline-none focus:ring-2 focus:ring-pos-accent resize-none font-medium"
+              className="w-full p-2.5 rounded-lg bg-pos-surface border border-pos-border text-pos-text placeholder-pos-text-muted text-xs focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary resize-none font-medium shadow-xs"
             />
           </div>
 
@@ -283,7 +283,7 @@ export const ReceiveGoodsModal: React.FC<ReceiveGoodsModalProps> = ({
               variant="primary"
               size="md"
               isLoading={receiveMutation.isPending}
-              className="font-bold shadow-sm bg-pos-success hover:bg-pos-success/90"
+              className="font-bold shadow-xs bg-pos-success hover:bg-pos-success/90"
             >
               <PackageCheck size={16} className="mr-1.5" />
               Confirm Stock Receipt

@@ -116,44 +116,44 @@ export const DeliveryPage: React.FC = () => {
   ];
 
   return (
-    <div className="h-[calc(100vh-5rem)] flex flex-col lg:flex-row gap-4 overflow-hidden select-none -m-4 md:-m-6 p-3 sm:p-4 bg-pos-bg">
+    <div className="h-[calc(100vh-5rem)] flex flex-col lg:flex-row gap-3.5 overflow-hidden select-none -m-4 md:-m-6 p-3 sm:p-4 bg-pos-bg">
       {/* =========================================================================
           LEFT / CENTER: Delivery Dispatcher Queue Board
       ========================================================================= */}
-      <div className="flex-1 flex flex-col min-w-0 bg-pos-surface/50 border border-pos-border rounded-2xl overflow-hidden shadow-sm">
+      <div className="flex-1 flex flex-col min-w-0 bg-pos-surface border border-pos-border rounded-lg overflow-hidden shadow-xs">
         {/* Header Bar */}
-        <div className="p-3.5 border-b border-pos-border bg-pos-header/90 flex flex-wrap items-center justify-between gap-3 shrink-0">
+        <div className="p-3 sm:p-3.5 border-b border-pos-border bg-pos-surface flex flex-wrap items-center justify-between gap-2.5 shrink-0">
           {/* Summary Metric Chips */}
           <div className="flex items-center flex-wrap gap-2 text-xs">
-            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-pos-bg border border-pos-border">
-              <Truck size={14} className="text-pos-accent" />
+            <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md bg-pos-surface-subtle border border-pos-border">
+              <Truck size={14} className="text-pos-primary" />
               <span className="text-pos-text-muted">Active:</span>
               <span className="font-bold text-pos-text font-mono">
-                {summary.totalActive} Deliveries
+                {summary.totalActive}
               </span>
             </div>
 
-            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-pos-warning/10 border border-pos-warning/30 text-pos-warning">
-              <Clock size={14} />
-              <span className="font-semibold">Pending:</span>
+            <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md bg-pos-warning-soft border border-[#FED7AA] text-pos-warning">
+              <Clock size={13} />
+              <span className="font-medium">Pending:</span>
               <span className="font-bold font-mono">{summary.pending}</span>
             </div>
 
-            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-pos-info/10 border border-pos-info/30 text-pos-info">
-              <ChefHat size={14} />
-              <span className="font-semibold">Preparing:</span>
+            <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md bg-pos-info-soft border border-[#BFDBFE] text-pos-info">
+              <ChefHat size={13} />
+              <span className="font-medium">Preparing:</span>
               <span className="font-bold font-mono">{summary.preparing}</span>
             </div>
 
-            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-sky-500/15 border border-sky-500/30 text-sky-400">
-              <CheckCircle2 size={14} />
-              <span className="font-semibold">Ready:</span>
+            <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md bg-pos-info-soft border border-[#BFDBFE] text-pos-info">
+              <CheckCircle2 size={13} />
+              <span className="font-medium">Ready:</span>
               <span className="font-bold font-mono">{summary.ready}</span>
             </div>
 
-            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-500/20 border border-indigo-500/40 text-indigo-400">
-              <Send size={14} />
-              <span className="font-semibold">Dispatched:</span>
+            <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md bg-pos-primary-soft border border-pos-primary/20 text-pos-primary">
+              <Send size={13} />
+              <span className="font-medium">Dispatched:</span>
               <span className="font-bold font-mono">{summary.dispatched}</span>
             </div>
           </div>
@@ -165,7 +165,7 @@ export const DeliveryPage: React.FC = () => {
               <select
                 value={selectedZone}
                 onChange={e => setSelectedZone(e.target.value)}
-                className="px-3 py-1.5 rounded-xl bg-pos-bg border border-pos-border text-pos-text text-xs focus:outline-none focus:ring-2 focus:ring-pos-accent font-semibold min-h-[36px]"
+                className="px-2.5 py-1.5 rounded-md bg-pos-surface border border-pos-border text-pos-text text-xs focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary font-medium min-h-[36px]"
               >
                 <option value="ALL">All Zones</option>
                 {zones.map(z => (
@@ -176,7 +176,7 @@ export const DeliveryPage: React.FC = () => {
               </select>
             )}
 
-            <div className="relative w-44 sm:w-56">
+            <div className="relative w-40 sm:w-56">
               <Search
                 size={14}
                 className="absolute left-3 top-1/2 -translate-y-1/2 text-pos-text-muted"
@@ -186,7 +186,7 @@ export const DeliveryPage: React.FC = () => {
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
                 placeholder="Search code, address, rider..."
-                className="w-full pl-8 pr-7 py-1.5 rounded-xl bg-pos-bg border border-pos-border text-pos-text placeholder-pos-text-muted/60 text-xs focus:outline-none focus:ring-2 focus:ring-pos-accent font-medium min-h-[36px]"
+                className="w-full pl-8 pr-7 py-1.5 rounded-md bg-pos-surface border border-pos-border text-pos-text placeholder-pos-text-muted text-xs focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary font-medium min-h-[36px]"
               />
               {searchQuery && (
                 <button
@@ -205,7 +205,7 @@ export const DeliveryPage: React.FC = () => {
               size="sm"
               onClick={() => refetch()}
               disabled={isRefetching}
-              className="min-h-[36px] px-3 font-semibold flex items-center gap-1.5"
+              className="min-h-[36px] px-3 font-medium flex items-center gap-1.5"
               title="Refresh delivery queue"
             >
               <RotateCw size={14} className={isRefetching ? 'animate-spin' : ''} />
@@ -216,7 +216,7 @@ export const DeliveryPage: React.FC = () => {
               variant="primary"
               size="sm"
               onClick={handleNewDeliveryOrder}
-              className="min-h-[36px] px-3.5 font-bold flex items-center gap-1.5 shadow-sm"
+              className="min-h-[36px] px-3.5 font-bold flex items-center gap-1.5 shadow-xs"
             >
               <Plus size={15} />
               <span>New Delivery</span>
@@ -225,7 +225,7 @@ export const DeliveryPage: React.FC = () => {
         </div>
 
         {/* Status Filter Tabs */}
-        <div className="px-3.5 py-2 border-b border-pos-border bg-pos-bg/40 flex items-center gap-2 overflow-x-auto custom-scrollbar shrink-0">
+        <div className="px-3.5 py-2 border-b border-pos-border bg-pos-surface-subtle flex items-center gap-1.5 overflow-x-auto custom-scrollbar shrink-0">
           {statusFilters.map(tab => {
             const isSelected = statusFilter === tab.id;
             return (
@@ -234,19 +234,19 @@ export const DeliveryPage: React.FC = () => {
                 type="button"
                 onClick={() => setStatusFilter(tab.id)}
                 className={cn(
-                  'px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all flex items-center gap-1.5 min-h-[34px]',
+                  'px-3 py-1.5 rounded-md text-xs font-semibold whitespace-nowrap transition-colors flex items-center gap-1.5 min-h-[32px]',
                   isSelected
-                    ? 'bg-pos-accent text-white shadow-sm'
-                    : 'bg-pos-surface text-pos-text-muted hover:text-pos-text hover:bg-pos-surface-hover border border-pos-border'
+                    ? 'bg-pos-primary text-white shadow-xs'
+                    : 'bg-pos-surface text-pos-text-secondary hover:text-pos-text hover:bg-pos-surface-subtle border border-pos-border'
                 )}
               >
                 <span>{tab.label}</span>
                 <span
                   className={cn(
-                    'px-1.5 py-0.2 rounded text-[10px] font-mono font-bold',
+                    'px-1.5 py-0.2 rounded text-[10px] font-mono',
                     isSelected
-                      ? 'bg-white/25 text-white'
-                      : 'bg-pos-bg text-pos-text-muted'
+                      ? 'bg-white/20 text-white font-bold'
+                      : 'bg-pos-surface-subtle text-pos-text-muted'
                   )}
                 >
                   {tab.count}
@@ -257,7 +257,7 @@ export const DeliveryPage: React.FC = () => {
         </div>
 
         {/* Deliveries Queue Grid Viewport */}
-        <div className="flex-1 overflow-y-auto p-3.5 sm:p-4 custom-scrollbar">
+        <div className="flex-1 overflow-y-auto p-3 sm:p-4 custom-scrollbar bg-pos-bg">
           {isLoading && (
             <div className="py-24 flex flex-col items-center justify-center gap-3 text-pos-text-muted text-xs">
               <Spinner size="lg" />
@@ -266,7 +266,7 @@ export const DeliveryPage: React.FC = () => {
           )}
 
           {error && (
-            <div className="p-4 rounded-xl bg-pos-danger/10 border border-pos-danger/30 text-pos-danger text-xs flex items-center gap-2">
+            <div className="p-4 rounded-lg bg-pos-danger-soft border border-[#FECACA] text-pos-danger text-xs flex items-center gap-2">
               <AlertCircle size={16} />
               <span>Failed to load delivery queue. Please check network connection.</span>
             </div>
@@ -274,8 +274,10 @@ export const DeliveryPage: React.FC = () => {
 
           {!isLoading && filteredQueue.length === 0 && (
             <div className="py-24 text-center text-xs text-pos-text-muted flex flex-col items-center gap-2">
-              <Truck size={32} className="text-pos-text-muted/50" />
-              <p className="font-semibold text-sm">No delivery orders in this queue</p>
+              <Truck size={32} className="text-pos-text-muted/40" />
+              <p className="font-semibold text-sm text-pos-text">
+                No delivery orders in this queue
+              </p>
               <p className="text-[11px] max-w-xs">
                 {statusFilter !== 'ALL' || selectedZone !== 'ALL'
                   ? 'No orders match current status or zone filters'
@@ -329,3 +331,5 @@ export const DeliveryPage: React.FC = () => {
     </div>
   );
 };
+
+export default DeliveryPage;

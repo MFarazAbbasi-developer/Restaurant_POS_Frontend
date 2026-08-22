@@ -153,17 +153,17 @@ export const MenuPage: React.FC = () => {
       {/* =========================================================================
           TOP HEADER BAR: Metrics & Quick Action CTAs
       ========================================================================= */}
-      <div className="p-3.5 border-b border-pos-border bg-pos-header/90 rounded-t-2xl flex flex-wrap items-center justify-between gap-3 shrink-0 shadow-xs">
+      <div className="p-3 sm:p-3.5 border-b border-pos-border bg-pos-surface rounded-t-lg flex flex-wrap items-center justify-between gap-2.5 shrink-0 shadow-xs">
         <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-xl bg-pos-accent/15 border border-pos-accent/30 text-pos-accent flex items-center justify-center">
-            <UtensilsCrossed size={20} />
+          <div className="h-9 w-9 rounded-lg bg-pos-primary-soft border border-pos-primary/20 text-pos-primary flex items-center justify-center">
+            <UtensilsCrossed size={18} />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h2 className="text-base font-black text-pos-text">
+              <h2 className="text-sm sm:text-base font-bold text-pos-text">
                 Menu & Pricing Catalog
               </h2>
-              <Badge variant="default" className="text-[10px] font-mono">
+              <Badge variant="default" size="sm" className="text-[10px] font-mono">
                 {categories.length} Categories • {modifierGroups.length} Modifier Groups
               </Badge>
             </div>
@@ -180,7 +180,7 @@ export const MenuPage: React.FC = () => {
             size="sm"
             onClick={handleRefreshAll}
             disabled={isItemsRefetching}
-            className="min-h-[36px] px-3 font-semibold flex items-center gap-1.5"
+            className="min-h-[36px] px-3 font-medium flex items-center gap-1.5"
           >
             <RotateCw size={14} className={isItemsRefetching ? 'animate-spin' : ''} />
             <span className="hidden sm:inline">Refresh</span>
@@ -210,7 +210,7 @@ export const MenuPage: React.FC = () => {
             variant="primary"
             size="sm"
             onClick={() => setItemModal({ open: true, item: null })}
-            className="min-h-[36px] text-xs font-bold flex items-center gap-1.5 shadow-sm"
+            className="min-h-[36px] text-xs font-bold flex items-center gap-1.5 shadow-xs"
           >
             <Plus size={16} />
             <span>+ New Menu Item</span>
@@ -222,18 +222,18 @@ export const MenuPage: React.FC = () => {
           VIEW SWITCHER TABS
       ========================================================================= */}
       <div className="px-3.5 py-2 border-b border-pos-border bg-pos-surface flex items-center justify-between gap-2 overflow-x-auto custom-scrollbar shrink-0">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5">
           <button
             type="button"
             onClick={() => setActiveTab('ITEMS')}
             className={cn(
-              'px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all flex items-center gap-1.5 min-h-[34px]',
+              'px-3 py-1.5 rounded-md text-xs font-semibold whitespace-nowrap transition-colors flex items-center gap-1.5 min-h-[32px]',
               activeTab === 'ITEMS'
-                ? 'bg-pos-accent text-white shadow-sm'
-                : 'bg-pos-bg text-pos-text-muted hover:text-pos-text border border-pos-border'
+                ? 'bg-pos-primary text-white shadow-xs'
+                : 'bg-pos-surface-subtle text-pos-text-secondary hover:text-pos-text border border-pos-border'
             )}
           >
-            <UtensilsCrossed size={14} />
+            <UtensilsCrossed size={13} />
             <span>Menu Items & Portions ({totalItemsCount})</span>
           </button>
 
@@ -241,13 +241,13 @@ export const MenuPage: React.FC = () => {
             type="button"
             onClick={() => setActiveTab('CATEGORIES')}
             className={cn(
-              'px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all flex items-center gap-1.5 min-h-[34px]',
+              'px-3 py-1.5 rounded-md text-xs font-semibold whitespace-nowrap transition-colors flex items-center gap-1.5 min-h-[32px]',
               activeTab === 'CATEGORIES'
-                ? 'bg-pos-accent text-white shadow-sm'
-                : 'bg-pos-bg text-pos-text-muted hover:text-pos-text border border-pos-border'
+                ? 'bg-pos-primary text-white shadow-xs'
+                : 'bg-pos-surface-subtle text-pos-text-secondary hover:text-pos-text border border-pos-border'
             )}
           >
-            <FolderTree size={14} />
+            <FolderTree size={13} />
             <span>Categories ({categories.length})</span>
           </button>
 
@@ -255,13 +255,13 @@ export const MenuPage: React.FC = () => {
             type="button"
             onClick={() => setActiveTab('MODIFIERS')}
             className={cn(
-              'px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all flex items-center gap-1.5 min-h-[34px]',
+              'px-3 py-1.5 rounded-md text-xs font-semibold whitespace-nowrap transition-colors flex items-center gap-1.5 min-h-[32px]',
               activeTab === 'MODIFIERS'
-                ? 'bg-pos-accent text-white shadow-sm'
-                : 'bg-pos-bg text-pos-text-muted hover:text-pos-text border border-pos-border'
+                ? 'bg-pos-primary text-white shadow-xs'
+                : 'bg-pos-surface-subtle text-pos-text-secondary hover:text-pos-text border border-pos-border'
             )}
           >
-            <SlidersHorizontal size={14} />
+            <SlidersHorizontal size={13} />
             <span>Modifier Groups & Addons ({modifierGroups.length})</span>
           </button>
         </div>
@@ -284,24 +284,24 @@ export const MenuPage: React.FC = () => {
       {/* =========================================================================
           VIEWPORT CONTENT AREA
       ========================================================================= */}
-      <div className="flex-1 overflow-hidden bg-pos-surface/40 border-x border-b border-pos-border rounded-b-2xl flex flex-col min-h-0">
+      <div className="flex-1 overflow-hidden bg-pos-bg border-x border-b border-pos-border rounded-b-lg flex flex-col min-h-0">
         {/* =======================================================================
             TAB 1: Menu Items & Pricing
         ======================================================================= */}
         {activeTab === 'ITEMS' && (
           <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
             {/* Category Filter Chips & Search Bar */}
-            <div className="p-3 border-b border-pos-border bg-pos-bg/60 flex flex-wrap items-center justify-between gap-3 shrink-0">
+            <div className="p-3 border-b border-pos-border bg-pos-surface flex flex-wrap items-center justify-between gap-3 shrink-0">
               {/* Category Pills */}
               <div className="flex items-center gap-1.5 overflow-x-auto custom-scrollbar max-w-full pb-1 sm:pb-0">
                 <button
                   type="button"
                   onClick={() => setSelectedCategoryId('ALL')}
                   className={cn(
-                    'px-2.5 py-1 rounded-lg text-xs font-bold whitespace-nowrap transition-colors',
+                    'px-2.5 py-1 rounded-md text-xs font-semibold whitespace-nowrap transition-colors',
                     selectedCategoryId === 'ALL'
-                      ? 'bg-pos-accent text-white shadow-xs'
-                      : 'bg-pos-surface border border-pos-border text-pos-text-muted hover:text-pos-text'
+                      ? 'bg-pos-primary text-white shadow-xs'
+                      : 'bg-pos-surface-subtle border border-pos-border text-pos-text-secondary hover:text-pos-text'
                   )}
                 >
                   All Categories
@@ -312,10 +312,10 @@ export const MenuPage: React.FC = () => {
                     type="button"
                     onClick={() => setSelectedCategoryId(cat.id)}
                     className={cn(
-                      'px-2.5 py-1 rounded-lg text-xs font-bold whitespace-nowrap transition-colors',
+                      'px-2.5 py-1 rounded-md text-xs font-semibold whitespace-nowrap transition-colors',
                       selectedCategoryId === cat.id
-                        ? 'bg-pos-accent text-white shadow-xs'
-                        : 'bg-pos-surface border border-pos-border text-pos-text-muted hover:text-pos-text'
+                        ? 'bg-pos-primary text-white shadow-xs'
+                        : 'bg-pos-surface-subtle border border-pos-border text-pos-text-secondary hover:text-pos-text'
                     )}
                   >
                     {cat.name}
@@ -335,7 +335,7 @@ export const MenuPage: React.FC = () => {
                     value={searchQuery}
                     onChange={e => setSearchQuery(e.target.value)}
                     placeholder="Search dishes or SKU..."
-                    className="pl-8 pr-3 py-1.5 rounded-xl bg-pos-surface border border-pos-border text-xs text-pos-text placeholder-pos-text-muted/60 focus:outline-none focus:ring-2 focus:ring-pos-accent w-48 sm:w-60 font-medium"
+                    className="pl-8 pr-3 py-1.5 rounded-md bg-pos-surface border border-pos-border text-xs text-pos-text placeholder-pos-text-muted focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary w-48 sm:w-60 font-medium"
                   />
                 </div>
 
@@ -346,7 +346,7 @@ export const MenuPage: React.FC = () => {
                       e.target.value as 'ALL' | 'AVAILABLE' | 'UNAVAILABLE'
                     )
                   }
-                  className="px-2.5 py-1.5 rounded-xl bg-pos-surface border border-pos-border text-xs text-pos-text font-semibold focus:outline-none focus:ring-2 focus:ring-pos-accent"
+                  className="px-2.5 py-1.5 rounded-md bg-pos-surface border border-pos-border text-xs text-pos-text font-medium focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary"
                 >
                   <option value="ALL">All Statuses</option>
                   <option value="AVAILABLE">Available Only</option>
@@ -366,7 +366,7 @@ export const MenuPage: React.FC = () => {
                 <div className="py-24 text-center text-xs text-pos-text-muted flex flex-col items-center gap-3">
                   <UtensilsCrossed size={40} className="text-pos-text-muted/40" />
                   <p className="font-bold text-base text-pos-text">No Menu Items Found</p>
-                  <p className="text-xs max-w-sm">
+                  <p className="text-xs max-w-sm text-pos-text-secondary">
                     {searchQuery || selectedCategoryId !== 'ALL'
                       ? 'No items match your active search or category filters.'
                       : 'Your restaurant catalog is currently empty. Click below to add your first menu item.'}
@@ -375,15 +375,15 @@ export const MenuPage: React.FC = () => {
                     variant="primary"
                     size="sm"
                     onClick={() => setItemModal({ open: true, item: null })}
-                    className="font-bold mt-2"
+                    className="font-bold mt-2 shadow-xs"
                   >
                     + Add Menu Item
                   </Button>
                 </div>
               ) : (
-                <div className="overflow-x-auto border border-pos-border rounded-xl bg-pos-surface">
-                  <table className="w-full text-left text-xs">
-                    <thead className="bg-pos-header border-b border-pos-border text-pos-text-muted font-bold uppercase text-[10px] tracking-wider">
+                <div className="overflow-x-auto border border-pos-border rounded-lg bg-pos-surface">
+                  <table className="w-full text-left text-xs border-collapse">
+                    <thead className="bg-pos-surface-subtle border-b border-pos-border text-pos-text-muted font-semibold uppercase text-[10px] tracking-wider">
                       <tr>
                         <th className="p-3">SKU</th>
                         <th className="p-3">Item Details</th>
@@ -395,14 +395,14 @@ export const MenuPage: React.FC = () => {
                         <th className="p-3 text-right">Actions</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-pos-border/60">
+                    <tbody className="divide-y divide-pos-border">
                       {items.map(it => (
                         <tr
                           key={it.id}
-                          className="hover:bg-pos-surface-hover transition-colors"
+                          className="hover:bg-pos-surface-subtle transition-colors"
                         >
                           {/* SKU */}
-                          <td className="p-3 font-mono font-bold text-pos-accent text-xs">
+                          <td className="p-3 font-mono font-bold text-pos-primary text-xs">
                             #{it.itemCode}
                           </td>
 
@@ -420,7 +420,7 @@ export const MenuPage: React.FC = () => {
 
                           {/* Category */}
                           <td className="p-3">
-                            <Badge variant="default" className="text-[10px]">
+                            <Badge variant="default" size="sm" className="text-[10px]">
                               {it.category?.name || 'Uncategorized'}
                             </Badge>
                           </td>
@@ -435,7 +435,7 @@ export const MenuPage: React.FC = () => {
                             <button
                               type="button"
                               onClick={() => setVariantsModalItem(it)}
-                              className="px-2 py-1 rounded-lg bg-pos-bg hover:bg-pos-info/10 hover:text-pos-info border border-pos-border text-[11px] font-semibold transition-colors flex items-center gap-1.5"
+                              className="px-2 py-1 rounded-md bg-pos-surface hover:bg-pos-info-soft hover:text-pos-info border border-pos-border text-[11px] font-semibold transition-colors flex items-center gap-1.5 shadow-xs"
                             >
                               <Layers size={13} />
                               <span>
@@ -451,7 +451,7 @@ export const MenuPage: React.FC = () => {
                             <button
                               type="button"
                               onClick={() => setModifiersModalItem(it)}
-                              className="px-2 py-1 rounded-lg bg-pos-bg hover:bg-pos-accent/10 hover:text-pos-accent border border-pos-border text-[11px] font-semibold transition-colors flex items-center gap-1.5"
+                              className="px-2 py-1 rounded-md bg-pos-surface hover:bg-pos-primary-soft hover:text-pos-primary border border-pos-border text-[11px] font-semibold transition-colors flex items-center gap-1.5 shadow-xs"
                             >
                               <SlidersHorizontal size={13} />
                               <span>
@@ -473,10 +473,10 @@ export const MenuPage: React.FC = () => {
                                 })
                               }
                               className={cn(
-                                'px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider transition-colors inline-flex items-center gap-1',
+                                'px-2.5 py-1 rounded-full text-[10px] font-semibold uppercase tracking-wider transition-colors inline-flex items-center gap-1',
                                 it.isAvailable
-                                  ? 'bg-pos-success/15 text-pos-success border border-pos-success/30 hover:bg-pos-success/25'
-                                  : 'bg-pos-danger/15 text-pos-danger border border-pos-danger/30 hover:bg-pos-danger/25'
+                                  ? 'bg-pos-success-soft text-pos-success border border-[#BBF7D0] hover:bg-pos-success-soft/80'
+                                  : 'bg-pos-danger-soft text-pos-danger border border-[#FECACA] hover:bg-pos-danger-soft/80'
                               )}
                             >
                               {it.isAvailable ? (
@@ -496,10 +496,10 @@ export const MenuPage: React.FC = () => {
                             <button
                               type="button"
                               onClick={() => setItemModal({ open: true, item: it })}
-                              className="p-1.5 rounded-lg text-pos-text-muted hover:text-pos-text hover:bg-pos-surface-hover transition-colors"
+                              className="p-1.5 rounded-md text-pos-text-muted hover:text-pos-text hover:bg-pos-surface-subtle transition-colors"
                               aria-label="Edit item"
                             >
-                              <Edit2 size={15} />
+                              <Edit2 size={14} />
                             </button>
                           </td>
                         </tr>
@@ -530,7 +530,7 @@ export const MenuPage: React.FC = () => {
                   variant="primary"
                   size="sm"
                   onClick={() => setCategoryModal({ open: true, category: null })}
-                  className="font-bold mt-2"
+                  className="font-bold mt-2 shadow-xs"
                 >
                   + Create First Category
                 </Button>
@@ -540,7 +540,7 @@ export const MenuPage: React.FC = () => {
                 {categories.map(cat => (
                   <div
                     key={cat.id}
-                    className="p-4 rounded-2xl bg-pos-surface border border-pos-border shadow-xs flex flex-col justify-between"
+                    className="p-3.5 rounded-lg bg-pos-surface border border-pos-border shadow-xs flex flex-col justify-between"
                   >
                     <div>
                       <div className="flex items-center justify-between mb-2">
@@ -550,6 +550,7 @@ export const MenuPage: React.FC = () => {
                           </span>
                           <Badge
                             variant={cat.isActive ? 'success' : 'default'}
+                            size="sm"
                             className="text-[10px]"
                           >
                             {cat.isActive ? 'Active' : 'Hidden'}
@@ -559,10 +560,10 @@ export const MenuPage: React.FC = () => {
                         <button
                           type="button"
                           onClick={() => setCategoryModal({ open: true, category: cat })}
-                          className="p-1.5 rounded-lg text-pos-text-muted hover:text-pos-text hover:bg-pos-surface-hover transition-colors"
+                          className="p-1.5 rounded-md text-pos-text-muted hover:text-pos-text hover:bg-pos-surface-subtle transition-colors"
                           aria-label="Edit category"
                         >
-                          <Edit2 size={15} />
+                          <Edit2 size={14} />
                         </button>
                       </div>
 
@@ -571,7 +572,7 @@ export const MenuPage: React.FC = () => {
                       </p>
                     </div>
 
-                    <div className="pt-3 mt-3 border-t border-pos-border/60 flex items-center justify-between text-xs">
+                    <div className="pt-3 mt-3 border-t border-pos-border flex items-center justify-between text-xs">
                       <span className="text-pos-text-muted">
                         Items:{' '}
                         <strong className="text-pos-text">
@@ -587,7 +588,7 @@ export const MenuPage: React.FC = () => {
                             isActive: !cat.isActive,
                           })
                         }
-                        className="text-[11px] text-pos-accent hover:underline font-semibold"
+                        className="text-[11px] text-pos-primary hover:underline font-semibold"
                       >
                         {cat.isActive ? 'Deactivate' : 'Activate'}
                       </button>
@@ -617,7 +618,7 @@ export const MenuPage: React.FC = () => {
                   variant="primary"
                   size="sm"
                   onClick={() => setModifierGroupModal({ open: true, group: null })}
-                  className="font-bold mt-2"
+                  className="font-bold mt-2 shadow-xs"
                 >
                   + Create First Modifier Group
                 </Button>
@@ -627,7 +628,7 @@ export const MenuPage: React.FC = () => {
                 {modifierGroups.map(group => (
                   <div
                     key={group.id}
-                    className="p-4 rounded-2xl bg-pos-surface border border-pos-border shadow-xs flex flex-col"
+                    className="p-3.5 rounded-lg bg-pos-surface border border-pos-border shadow-xs flex flex-col"
                   >
                     {/* Group Header */}
                     <div className="flex items-center justify-between mb-2">
@@ -636,11 +637,11 @@ export const MenuPage: React.FC = () => {
                           <h4 className="font-bold text-pos-text text-sm">
                             {group.name}
                           </h4>
-                          <Badge variant="default" className="text-[10px]">
+                          <Badge variant="default" size="sm" className="text-[10px]">
                             {group.selectionType}
                           </Badge>
                         </div>
-                        <p className="text-[11px] text-pos-text-muted mt-0.5">
+                        <p className="text-[11px] text-pos-text-muted mt-0.5 font-medium">
                           Selection limits: Min {group.minSelections} • Max{' '}
                           {group.maxSelections}
                         </p>
@@ -650,10 +651,10 @@ export const MenuPage: React.FC = () => {
                         <button
                           type="button"
                           onClick={() => setModifierGroupModal({ open: true, group })}
-                          className="p-1.5 rounded-lg text-pos-text-muted hover:text-pos-text hover:bg-pos-surface-hover transition-colors"
+                          className="p-1.5 rounded-md text-pos-text-muted hover:text-pos-text hover:bg-pos-surface-subtle transition-colors"
                           aria-label="Edit group"
                         >
-                          <Edit2 size={15} />
+                          <Edit2 size={14} />
                         </button>
                       </div>
                     </div>
@@ -664,12 +665,12 @@ export const MenuPage: React.FC = () => {
                         group.modifiers.map(mod => (
                           <div
                             key={mod.id}
-                            className="p-2 rounded-xl bg-pos-bg border border-pos-border/60 flex items-center justify-between text-xs"
+                            className="p-2 rounded-md bg-pos-surface-subtle border border-pos-border flex items-center justify-between text-xs"
                           >
                             <span className="font-medium text-pos-text">{mod.name}</span>
 
                             <div className="flex items-center gap-2">
-                              <span className="font-mono text-xs font-bold text-pos-accent">
+                              <span className="font-mono text-xs font-bold text-pos-primary">
                                 {mod.priceAdjustment > 0
                                   ? `+${formatPrice(mod.priceAdjustment)}`
                                   : 'Free'}
@@ -707,14 +708,14 @@ export const MenuPage: React.FC = () => {
                           </div>
                         ))
                       ) : (
-                        <div className="p-4 text-center bg-pos-bg rounded-xl text-[11px] text-pos-text-muted">
+                        <div className="p-4 text-center bg-pos-surface-subtle rounded-md text-[11px] text-pos-text-muted">
                           No options added to this modifier group yet.
                         </div>
                       )}
                     </div>
 
                     {/* Group Footer */}
-                    <div className="pt-2 border-t border-pos-border/60 flex items-center justify-between">
+                    <div className="pt-2 border-t border-pos-border flex items-center justify-between">
                       <button
                         type="button"
                         onClick={() =>
@@ -723,7 +724,7 @@ export const MenuPage: React.FC = () => {
                             isActive: !group.isActive,
                           })
                         }
-                        className="text-[11px] text-pos-text-muted hover:underline"
+                        className="text-[11px] text-pos-text-muted hover:underline font-medium"
                       >
                         {group.isActive ? 'Status: Active' : 'Status: Hidden'}
                       </button>
@@ -822,3 +823,5 @@ export const MenuPage: React.FC = () => {
     </div>
   );
 };
+
+export default MenuPage;

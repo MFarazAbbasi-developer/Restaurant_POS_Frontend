@@ -141,18 +141,18 @@ export const ExpensesPage: React.FC = () => {
       {/* =========================================================================
           TOP HEADER BAR: Metrics & Quick Action CTAs
       ========================================================================= */}
-      <div className="p-3.5 border-b border-pos-border bg-pos-header/90 rounded-t-2xl flex flex-wrap items-center justify-between gap-3 shrink-0 shadow-xs">
+      <div className="p-3 sm:p-3.5 border-b border-pos-border bg-pos-surface rounded-t-lg flex flex-wrap items-center justify-between gap-2.5 shrink-0 shadow-xs">
         <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-xl bg-pos-accent/15 border border-pos-accent/30 text-pos-accent flex items-center justify-center">
-            <Receipt size={20} />
+          <div className="h-9 w-9 rounded-lg bg-pos-primary-soft border border-pos-primary/20 text-pos-primary flex items-center justify-center">
+            <Receipt size={18} />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h2 className="text-base font-black text-pos-text">
+              <h2 className="text-sm sm:text-base font-bold text-pos-text">
                 Expenses & Petty Cash Management
               </h2>
-              <Badge variant="default" className="text-[10px] font-mono">
-                {expenses.length} Expense Records
+              <Badge variant="default" size="sm" className="text-[10px] font-mono">
+                {expenses.length} Records
               </Badge>
             </div>
             <p className="text-[11px] text-pos-text-muted mt-0.5 font-medium">
@@ -169,7 +169,7 @@ export const ExpensesPage: React.FC = () => {
             size="sm"
             onClick={handleRefreshAll}
             disabled={isExpensesRefetching}
-            className="min-h-[36px] px-3 font-semibold flex items-center gap-1.5"
+            className="min-h-[36px] px-3 font-medium flex items-center gap-1.5"
           >
             <RotateCw size={14} className={isExpensesRefetching ? 'animate-spin' : ''} />
             <span className="hidden sm:inline">Refresh</span>
@@ -180,7 +180,7 @@ export const ExpensesPage: React.FC = () => {
               variant="primary"
               size="sm"
               onClick={() => setCategoryModal({ open: true, category: null })}
-              className="min-h-[36px] text-xs font-bold flex items-center gap-1.5 shadow-sm"
+              className="min-h-[36px] text-xs font-bold flex items-center gap-1.5 shadow-xs"
             >
               <Plus size={16} />
               <span>+ New Category</span>
@@ -190,7 +190,7 @@ export const ExpensesPage: React.FC = () => {
               variant="primary"
               size="sm"
               onClick={() => setExpenseModal({ open: true, expense: null })}
-              className="min-h-[36px] text-xs font-bold flex items-center gap-1.5 shadow-sm"
+              className="min-h-[36px] text-xs font-bold flex items-center gap-1.5 shadow-xs"
             >
               <Plus size={16} />
               <span>+ Record Expense</span>
@@ -202,40 +202,40 @@ export const ExpensesPage: React.FC = () => {
       {/* =========================================================================
           SUMMARY METRICS TILES
       ========================================================================= */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 p-3 border-b border-pos-border bg-pos-surface shrink-0">
-        <div className="p-2.5 rounded-xl bg-pos-bg border border-pos-border/60">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-pos-text-muted block">
-            Total Recorded Expenses
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 p-3 border-b border-pos-border bg-pos-surface-subtle shrink-0">
+        <div className="p-2.5 rounded-md bg-pos-surface border border-pos-border">
+          <span className="text-[10px] font-semibold uppercase tracking-wider text-pos-text-muted block">
+            Total Recorded
           </span>
-          <span className="text-base font-mono font-bold text-pos-text mt-0.5 block">
+          <span className="text-sm sm:text-base font-mono font-bold text-pos-text mt-0.5 block">
             {summaryData?.totalExpensesCount || expenses.length}
           </span>
         </div>
 
-        <div className="p-2.5 rounded-xl bg-pos-bg border border-pos-border/60">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-pos-danger block">
-            Total Active Expenditure
+        <div className="p-2.5 rounded-md bg-pos-surface border border-pos-border">
+          <span className="text-[10px] font-semibold uppercase tracking-wider text-pos-danger block">
+            Active Expenditure
           </span>
-          <span className="text-base font-mono font-bold text-pos-danger mt-0.5 block">
+          <span className="text-sm sm:text-base font-mono font-bold text-pos-danger mt-0.5 block">
             {formatPrice(totalActiveAmount || summaryData?.totalExpensesAmount || 0)}
           </span>
         </div>
 
-        <div className="p-2.5 rounded-xl bg-pos-bg border border-pos-border/60">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-pos-accent block">
-            Cash Drawer Payouts
+        <div className="p-2.5 rounded-md bg-pos-surface border border-pos-border">
+          <span className="text-[10px] font-semibold uppercase tracking-wider text-pos-primary block">
+            Shift Payouts
           </span>
-          <span className="text-base font-mono font-bold text-pos-accent mt-0.5 block">
+          <span className="text-sm sm:text-base font-mono font-bold text-pos-primary mt-0.5 block">
             {expenses.filter(e => e.paymentMethod === 'CASH' && e.shift).length} Shift
             Payouts
           </span>
         </div>
 
-        <div className="p-2.5 rounded-xl bg-pos-bg border border-pos-border/60">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-pos-text block">
-            Expense Categories
+        <div className="p-2.5 rounded-md bg-pos-surface border border-pos-border">
+          <span className="text-[10px] font-semibold uppercase tracking-wider text-pos-text-secondary block">
+            Categories
           </span>
-          <span className="text-base font-mono font-bold text-pos-text mt-0.5 block">
+          <span className="text-sm sm:text-base font-mono font-bold text-pos-text mt-0.5 block">
             {categories.filter(c => c.isActive).length} Active Categories
           </span>
         </div>
@@ -246,15 +246,15 @@ export const ExpensesPage: React.FC = () => {
       ========================================================================= */}
       <div className="p-3 border-b border-pos-border bg-pos-surface flex flex-wrap items-center justify-between gap-3 shrink-0">
         {/* Navigation Tabs */}
-        <div className="p-1 rounded-xl bg-pos-bg border border-pos-border flex items-center gap-1 text-xs">
+        <div className="p-1 rounded-md bg-pos-surface-subtle border border-pos-border flex items-center gap-1 text-xs">
           <button
             type="button"
             onClick={() => setActiveTab('expenses')}
             className={cn(
-              'px-3 py-1.5 rounded-lg font-bold transition-all flex items-center gap-1.5',
+              'px-3 py-1.5 rounded-md font-semibold transition-colors flex items-center gap-1.5',
               activeTab === 'expenses'
-                ? 'bg-pos-accent text-white shadow-xs'
-                : 'text-pos-text-muted hover:text-pos-text'
+                ? 'bg-pos-primary text-white shadow-xs'
+                : 'text-pos-text-secondary hover:text-pos-text'
             )}
           >
             <Receipt size={13} />
@@ -265,10 +265,10 @@ export const ExpensesPage: React.FC = () => {
             type="button"
             onClick={() => setActiveTab('categories')}
             className={cn(
-              'px-3 py-1.5 rounded-lg font-bold transition-all flex items-center gap-1.5',
+              'px-3 py-1.5 rounded-md font-semibold transition-colors flex items-center gap-1.5',
               activeTab === 'categories'
-                ? 'bg-pos-accent text-white shadow-xs'
-                : 'text-pos-text-muted hover:text-pos-text'
+                ? 'bg-pos-primary text-white shadow-xs'
+                : 'text-pos-text-secondary hover:text-pos-text'
             )}
           >
             <Tag size={13} />
@@ -279,10 +279,10 @@ export const ExpensesPage: React.FC = () => {
             type="button"
             onClick={() => setActiveTab('analytics')}
             className={cn(
-              'px-3 py-1.5 rounded-lg font-bold transition-all flex items-center gap-1.5',
+              'px-3 py-1.5 rounded-md font-semibold transition-colors flex items-center gap-1.5',
               activeTab === 'analytics'
-                ? 'bg-pos-accent text-white shadow-xs'
-                : 'text-pos-text-muted hover:text-pos-text'
+                ? 'bg-pos-primary text-white shadow-xs'
+                : 'text-pos-text-secondary hover:text-pos-text'
             )}
           >
             <TrendingUp size={13} />
@@ -297,7 +297,7 @@ export const ExpensesPage: React.FC = () => {
             <select
               value={selectedCategory}
               onChange={e => setSelectedCategory(e.target.value)}
-              className="px-2.5 py-1.5 rounded-xl bg-pos-bg border border-pos-border text-xs text-pos-text font-semibold focus:outline-none focus:ring-2 focus:ring-pos-accent max-w-[140px]"
+              className="px-2.5 py-1.5 rounded-md bg-pos-surface border border-pos-border text-xs text-pos-text font-medium focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary max-w-[140px]"
             >
               <option value="">All Categories</option>
               {categories.map(c => (
@@ -313,7 +313,7 @@ export const ExpensesPage: React.FC = () => {
               onChange={e =>
                 setSelectedPaymentMethod(e.target.value as ExpensePaymentMethod | 'ALL')
               }
-              className="px-2.5 py-1.5 rounded-xl bg-pos-bg border border-pos-border text-xs text-pos-text font-semibold focus:outline-none focus:ring-2 focus:ring-pos-accent"
+              className="px-2.5 py-1.5 rounded-md bg-pos-surface border border-pos-border text-xs text-pos-text font-medium focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary"
             >
               <option value="ALL">All Methods</option>
               <option value="CASH">Cash Drawer</option>
@@ -327,7 +327,7 @@ export const ExpensesPage: React.FC = () => {
             <select
               value={selectedStatus}
               onChange={e => setSelectedStatus(e.target.value as ExpenseStatus | 'ALL')}
-              className="px-2.5 py-1.5 rounded-xl bg-pos-bg border border-pos-border text-xs text-pos-text font-semibold focus:outline-none focus:ring-2 focus:ring-pos-accent"
+              className="px-2.5 py-1.5 rounded-md bg-pos-surface border border-pos-border text-xs text-pos-text font-medium focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary"
             >
               <option value="ALL">All Status</option>
               <option value="RECORDED">Recorded</option>
@@ -345,7 +345,7 @@ export const ExpensesPage: React.FC = () => {
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
                 placeholder="Search description, ref..."
-                className="pl-8 pr-3 py-1.5 rounded-xl bg-pos-bg border border-pos-border text-xs text-pos-text placeholder-pos-text-muted/60 focus:outline-none focus:ring-2 focus:ring-pos-accent w-40 sm:w-48 font-medium"
+                className="pl-8 pr-3 py-1.5 rounded-md bg-pos-surface border border-pos-border text-xs text-pos-text placeholder-pos-text-muted focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary w-40 sm:w-48 font-medium"
               />
             </div>
           </div>
@@ -355,7 +355,7 @@ export const ExpensesPage: React.FC = () => {
       {/* =========================================================================
           CONTENT AREA PER TAB
       ========================================================================= */}
-      <div className="flex-1 overflow-y-auto p-4 custom-scrollbar bg-pos-surface/40 border-x border-b border-pos-border rounded-b-2xl">
+      <div className="flex-1 overflow-y-auto p-4 custom-scrollbar bg-pos-bg border-x border-b border-pos-border rounded-b-lg">
         {/* TAB 1: EXPENSE LOGS */}
         {activeTab === 'expenses' && (
           <div>
@@ -368,7 +368,7 @@ export const ExpensesPage: React.FC = () => {
               <div className="py-24 text-center text-xs text-pos-text-muted flex flex-col items-center gap-3">
                 <Receipt size={40} className="text-pos-text-muted/40" />
                 <p className="font-bold text-base text-pos-text">No Expenses Found</p>
-                <p className="text-xs max-w-sm">
+                <p className="text-xs max-w-sm text-pos-text-secondary">
                   {searchQuery || selectedCategory || selectedStatus !== 'ALL'
                     ? 'No expense records match your active category, status, or search query.'
                     : 'No operational expenses recorded yet. Click below to record your first expense.'}
@@ -391,20 +391,21 @@ export const ExpensesPage: React.FC = () => {
                     <div
                       key={exp.id}
                       className={cn(
-                        'p-4 rounded-2xl bg-pos-surface border shadow-xs transition-all flex flex-col justify-between',
+                        'p-3.5 rounded-lg bg-pos-surface border shadow-xs transition-colors flex flex-col justify-between',
                         isVoided
-                          ? 'border-pos-danger/30 opacity-70'
-                          : 'border-pos-border hover:border-pos-accent/40'
+                          ? 'border-[#FECACA] bg-pos-danger-soft/20 opacity-70'
+                          : 'border-pos-border hover:border-pos-border-strong'
                       )}
                     >
                       <div>
                         {/* Top Row: Code, Status & Amount */}
                         <div className="flex items-center justify-between mb-2">
                           <div className="flex items-center gap-2">
-                            <span className="font-mono font-black text-sm text-pos-text">
+                            <span className="font-mono font-bold text-xs text-pos-text">
                               #{exp.expenseNumber}
                             </span>
                             <Badge
+                              size="sm"
                               variant={isVoided ? 'danger' : 'success'}
                               className="text-[9px]"
                             >
@@ -414,7 +415,7 @@ export const ExpensesPage: React.FC = () => {
 
                           <span
                             className={cn(
-                              'font-mono font-black text-base',
+                              'font-mono font-bold text-sm',
                               isVoided
                                 ? 'line-through text-pos-text-muted'
                                 : 'text-pos-danger'
@@ -426,11 +427,11 @@ export const ExpensesPage: React.FC = () => {
 
                         {/* Description & Category */}
                         <div className="mb-2.5">
-                          <h4 className="font-bold text-pos-text text-sm line-clamp-1">
+                          <h4 className="font-bold text-pos-text text-xs line-clamp-1">
                             {exp.description}
                           </h4>
                           <div className="flex items-center gap-2 text-xs text-pos-text-muted mt-1">
-                            <Badge variant="default" className="text-[10px]">
+                            <Badge variant="default" size="sm" className="text-[10px]">
                               {exp.category.name}
                             </Badge>
                             <span className="font-mono text-[11px] flex items-center gap-1">
@@ -441,27 +442,27 @@ export const ExpensesPage: React.FC = () => {
                         </div>
 
                         {/* Payment & Shift Info */}
-                        <div className="p-2.5 rounded-xl bg-pos-bg border border-pos-border/60 text-xs space-y-1 mb-2.5">
+                        <div className="p-2.5 rounded-md bg-pos-surface-subtle border border-pos-border text-xs space-y-1 mb-2.5">
                           <div className="flex items-center justify-between text-[11px]">
                             <span className="text-pos-text-muted flex items-center gap-1">
                               <CreditCard size={11} /> {exp.paymentMethod}
                             </span>
                             {exp.reference && (
-                              <span className="font-mono text-pos-accent font-bold">
+                              <span className="font-mono text-pos-primary font-semibold">
                                 Ref: {exp.reference}
                               </span>
                             )}
                           </div>
 
                           {exp.shift && (
-                            <div className="flex items-center gap-1 text-[10px] text-pos-accent font-semibold pt-1 border-t border-pos-border/40">
+                            <div className="flex items-center gap-1 text-[10px] text-pos-primary font-semibold pt-1 border-t border-pos-border">
                               <Link2 size={11} />
                               <span>Shift Payout: {exp.shift.registerName}</span>
                             </div>
                           )}
 
                           {exp.supplier && (
-                            <div className="flex items-center gap-1 text-[10px] text-pos-text-muted pt-1 border-t border-pos-border/40">
+                            <div className="flex items-center gap-1 text-[10px] text-pos-text-muted pt-1 border-t border-pos-border">
                               <Building2 size={11} />
                               <span>Vendor: {exp.supplier.name}</span>
                             </div>
@@ -470,13 +471,13 @@ export const ExpensesPage: React.FC = () => {
                       </div>
 
                       {/* Action Bar */}
-                      <div className="pt-3 border-t border-pos-border/60 flex items-center justify-between gap-1.5">
+                      <div className="pt-2.5 border-t border-pos-border flex items-center justify-between gap-1.5">
                         <div className="flex items-center gap-1">
                           {!isVoided && (
                             <button
                               type="button"
                               onClick={() => setVoidModalExpense(exp)}
-                              className="px-2 py-1 rounded-lg bg-pos-bg border border-pos-border text-pos-danger hover:bg-pos-danger/10 font-semibold text-[11px] transition-colors flex items-center gap-1"
+                              className="px-2 py-1 rounded-md bg-pos-surface border border-pos-border text-pos-danger hover:bg-pos-danger-soft font-semibold text-[11px] transition-colors flex items-center gap-1"
                             >
                               <Ban size={11} />
                               <span>Void</span>
@@ -491,7 +492,7 @@ export const ExpensesPage: React.FC = () => {
                               onClick={() =>
                                 setExpenseModal({ open: true, expense: exp })
                               }
-                              className="p-1.5 rounded-lg text-pos-text-muted hover:text-pos-text hover:bg-pos-surface-hover transition-colors"
+                              className="p-1 rounded-md text-pos-text-muted hover:text-pos-text hover:bg-pos-surface-subtle transition-colors"
                               title="Edit expense"
                               aria-label="Edit expense"
                             >
@@ -544,16 +545,17 @@ export const ExpensesPage: React.FC = () => {
                 {categories.map(cat => (
                   <div
                     key={cat.id}
-                    className="p-4 rounded-2xl bg-pos-surface border border-pos-border shadow-xs hover:border-pos-accent/40 transition-all flex flex-col justify-between"
+                    className="p-3.5 rounded-lg bg-pos-surface border border-pos-border shadow-xs hover:border-pos-border-strong transition-colors flex flex-col justify-between"
                   >
                     <div>
                       <div className="flex items-start justify-between gap-2 mb-2">
                         <div>
                           <div className="flex items-center gap-2">
-                            <h4 className="font-black text-pos-text text-sm">
+                            <h4 className="font-bold text-pos-text text-sm">
                               {cat.name}
                             </h4>
                             <Badge
+                              size="sm"
                               variant={cat.isActive ? 'success' : 'default'}
                               className="text-[9px]"
                             >
@@ -562,7 +564,7 @@ export const ExpensesPage: React.FC = () => {
                           </div>
 
                           {cat.description && (
-                            <p className="text-xs text-pos-text-muted font-medium mt-1">
+                            <p className="text-xs text-pos-text-secondary font-medium mt-1">
                               {cat.description}
                             </p>
                           )}
@@ -574,7 +576,7 @@ export const ExpensesPage: React.FC = () => {
                             onClick={() =>
                               setCategoryModal({ open: true, category: cat })
                             }
-                            className="p-1.5 rounded-lg text-pos-text-muted hover:text-pos-text hover:bg-pos-surface-hover transition-colors"
+                            className="p-1 rounded-md text-pos-text-muted hover:text-pos-text hover:bg-pos-surface-subtle transition-colors"
                             aria-label="Edit category"
                           >
                             <Edit2 size={13} />
@@ -582,7 +584,7 @@ export const ExpensesPage: React.FC = () => {
                           <button
                             type="button"
                             onClick={() => handleDeleteCategory(cat)}
-                            className="p-1.5 rounded-lg text-pos-text-muted hover:text-pos-danger hover:bg-pos-danger/10 transition-colors"
+                            className="p-1 rounded-md text-pos-text-muted hover:text-pos-danger hover:bg-pos-danger-soft transition-colors"
                             aria-label="Delete category"
                           >
                             <Trash2 size={13} />
@@ -591,7 +593,7 @@ export const ExpensesPage: React.FC = () => {
                       </div>
                     </div>
 
-                    <div className="pt-2.5 border-t border-pos-border/60 flex items-center justify-between text-[11px] text-pos-text-muted">
+                    <div className="pt-2 border-t border-pos-border flex items-center justify-between text-[11px] text-pos-text-muted">
                       <span>{cat._count?.expenses || 0} Recorded Expenses</span>
                     </div>
                   </div>
@@ -612,9 +614,9 @@ export const ExpensesPage: React.FC = () => {
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* Category Spend Breakdown */}
-                <div className="p-4 rounded-2xl bg-pos-surface border border-pos-border space-y-3">
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-pos-text flex items-center gap-1.5">
-                    <Tag size={14} className="text-pos-accent" />
+                <div className="p-4 rounded-lg bg-pos-surface border border-pos-border space-y-3 shadow-xs">
+                  <h4 className="text-xs font-semibold uppercase tracking-wider text-pos-text-secondary flex items-center gap-1.5">
+                    <Tag size={14} className="text-pos-primary" />
                     <span>Expenditure by Category</span>
                   </h4>
 
@@ -639,9 +641,9 @@ export const ExpensesPage: React.FC = () => {
                               </span>
                             </div>
 
-                            <div className="h-2 w-full bg-pos-bg rounded-full overflow-hidden border border-pos-border/60">
+                            <div className="h-1.5 w-full bg-pos-surface-subtle rounded-full overflow-hidden border border-pos-border">
                               <div
-                                className="h-full bg-pos-accent transition-all rounded-full"
+                                className="h-full bg-pos-primary transition-all rounded-full"
                                 style={{ width: `${percent}%` }}
                               />
                             </div>
@@ -657,9 +659,9 @@ export const ExpensesPage: React.FC = () => {
                 </div>
 
                 {/* Payment Method Breakdown */}
-                <div className="p-4 rounded-2xl bg-pos-surface border border-pos-border space-y-3">
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-pos-text flex items-center gap-1.5">
-                    <CreditCard size={14} className="text-pos-accent" />
+                <div className="p-4 rounded-lg bg-pos-surface border border-pos-border space-y-3 shadow-xs">
+                  <h4 className="text-xs font-semibold uppercase tracking-wider text-pos-text-secondary flex items-center gap-1.5">
+                    <CreditCard size={14} className="text-pos-primary" />
                     <span>Expenditure by Payment Method</span>
                   </h4>
 
@@ -669,7 +671,7 @@ export const ExpensesPage: React.FC = () => {
                       {summaryData.byPaymentMethod.map(pm => (
                         <div
                           key={pm.paymentMethod}
-                          className="p-3 rounded-xl bg-pos-bg border border-pos-border text-xs flex items-center justify-between"
+                          className="p-3 rounded-lg bg-pos-surface-subtle border border-pos-border text-xs flex items-center justify-between"
                         >
                           <div>
                             <span className="font-bold text-pos-text block">
@@ -747,3 +749,5 @@ export const ExpensesPage: React.FC = () => {
     </div>
   );
 };
+
+export default ExpensesPage;

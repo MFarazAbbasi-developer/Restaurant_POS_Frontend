@@ -134,13 +134,13 @@ export const InventoryItemModal: React.FC<InventoryItemModalProps> = ({
   const isPending = createItemMutation.isPending || updateItemMutation.isPending;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 animate-in fade-in duration-150 select-none">
-      <div className="w-full max-w-lg bg-pos-surface border border-pos-border rounded-2xl shadow-2xl flex flex-col max-h-[90vh] overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 animate-in fade-in duration-150 select-none">
+      <div className="w-full max-w-lg bg-pos-surface border border-pos-border rounded-xl shadow-modal flex flex-col max-h-[90vh] overflow-hidden">
         {/* Header */}
-        <div className="p-4 sm:p-5 border-b border-pos-border flex items-center justify-between bg-pos-header shrink-0">
+        <div className="p-4 sm:p-5 border-b border-pos-border flex items-center justify-between bg-pos-surface shrink-0">
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-xl bg-pos-accent/15 border border-pos-accent/30 text-pos-accent flex items-center justify-center">
-              <Package size={20} />
+            <div className="h-9 w-9 rounded-lg bg-pos-primary-soft border border-pos-primary/20 text-pos-primary flex items-center justify-center">
+              <Package size={18} />
             </div>
             <div>
               <h3 className="text-base font-bold text-pos-text">
@@ -157,9 +157,9 @@ export const InventoryItemModal: React.FC<InventoryItemModalProps> = ({
             type="button"
             onClick={onClose}
             aria-label="Close modal"
-            className="p-2 rounded-xl text-pos-text-muted hover:text-pos-text hover:bg-pos-surface-hover transition-colors"
+            className="p-1.5 rounded-lg text-pos-text-muted hover:text-pos-text hover:bg-pos-surface-subtle transition-colors"
           >
-            <X size={20} />
+            <X size={18} />
           </button>
         </div>
 
@@ -169,7 +169,7 @@ export const InventoryItemModal: React.FC<InventoryItemModalProps> = ({
           className="flex-1 overflow-y-auto p-5 space-y-4 custom-scrollbar"
         >
           {errorMessage && (
-            <div className="p-3 rounded-xl bg-pos-danger/10 border border-pos-danger/30 text-pos-danger text-xs flex items-center gap-2">
+            <div className="p-3 rounded-lg bg-pos-danger-soft border border-[#FECACA] text-pos-danger text-xs flex items-center gap-2">
               <AlertCircle size={15} className="shrink-0" />
               <span>{errorMessage}</span>
             </div>
@@ -178,7 +178,7 @@ export const InventoryItemModal: React.FC<InventoryItemModalProps> = ({
           {/* Name & SKU */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-pos-text mb-1.5">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-pos-text-secondary mb-1.5">
                 Item Name <span className="text-pos-danger">*</span>
               </label>
               <input
@@ -187,17 +187,17 @@ export const InventoryItemModal: React.FC<InventoryItemModalProps> = ({
                 value={name}
                 onChange={e => setName(e.target.value)}
                 placeholder="e.g. Basmati Rice, Boneless Chicken"
-                className="w-full px-3 py-2.5 rounded-xl bg-pos-bg border border-pos-border text-pos-text text-sm font-medium focus:outline-none focus:ring-2 focus:ring-pos-accent"
+                className="w-full px-3 py-2 rounded-lg bg-pos-surface border border-pos-border text-pos-text text-xs font-medium focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary shadow-xs"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-pos-text mb-1.5">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-pos-text-secondary mb-1.5">
                 SKU / Item Code <span className="text-pos-danger">*</span>
               </label>
               <div className="relative">
                 <Tag
-                  size={15}
+                  size={14}
                   className="absolute left-3 top-1/2 -translate-y-1/2 text-pos-text-muted"
                 />
                 <input
@@ -206,7 +206,7 @@ export const InventoryItemModal: React.FC<InventoryItemModalProps> = ({
                   value={itemCode}
                   onChange={e => setItemCode(e.target.value.toUpperCase())}
                   placeholder="e.g. RICE_BASMATI"
-                  className="w-full pl-8 pr-3 py-2.5 rounded-xl bg-pos-bg border border-pos-border text-pos-text font-mono font-bold text-xs focus:outline-none focus:ring-2 focus:ring-pos-accent"
+                  className="w-full pl-8 pr-3 py-2 rounded-lg bg-pos-surface border border-pos-border text-pos-text font-mono font-bold text-xs focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary shadow-xs"
                 />
               </div>
             </div>
@@ -215,7 +215,7 @@ export const InventoryItemModal: React.FC<InventoryItemModalProps> = ({
           {/* Unit & Unit Cost */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-pos-text mb-1.5">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-pos-text-secondary mb-1.5">
                 Unit of Measurement <span className="text-pos-danger">*</span>
               </label>
               <div className="flex gap-2">
@@ -225,14 +225,14 @@ export const InventoryItemModal: React.FC<InventoryItemModalProps> = ({
                   value={unit}
                   onChange={e => setUnit(e.target.value.toUpperCase())}
                   placeholder="KG"
-                  className="w-full px-3 py-2 rounded-xl bg-pos-bg border border-pos-border text-pos-text font-mono font-bold text-xs focus:outline-none focus:ring-2 focus:ring-pos-accent"
+                  className="w-full px-3 py-2 rounded-lg bg-pos-surface border border-pos-border text-pos-text font-mono font-bold text-xs focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary shadow-xs"
                 />
                 <select
                   value=""
                   onChange={e => {
                     if (e.target.value) setUnit(e.target.value);
                   }}
-                  className="px-2 py-2 rounded-xl bg-pos-bg border border-pos-border text-pos-text text-xs"
+                  className="px-2 py-2 rounded-lg bg-pos-surface border border-pos-border text-pos-text text-xs shadow-xs"
                 >
                   <option value="">Preset</option>
                   {commonUnits.map(u => (
@@ -245,12 +245,12 @@ export const InventoryItemModal: React.FC<InventoryItemModalProps> = ({
             </div>
 
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-pos-text mb-1.5">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-pos-text-secondary mb-1.5">
                 Cost Per Unit ({currency}) <span className="text-pos-danger">*</span>
               </label>
               <div className="relative">
                 <DollarSign
-                  size={15}
+                  size={14}
                   className="absolute left-3 top-1/2 -translate-y-1/2 text-pos-text-muted"
                 />
                 <input
@@ -261,7 +261,7 @@ export const InventoryItemModal: React.FC<InventoryItemModalProps> = ({
                   value={costPerUnit}
                   onChange={e => setCostPerUnit(e.target.value)}
                   placeholder="0.00"
-                  className="w-full pl-8 pr-3 py-2 rounded-xl bg-pos-bg border border-pos-border text-pos-text font-mono font-bold text-xs focus:outline-none focus:ring-2 focus:ring-pos-accent"
+                  className="w-full pl-8 pr-3 py-2 rounded-lg bg-pos-surface border border-pos-border text-pos-text font-mono font-bold text-xs focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary shadow-xs"
                 />
               </div>
             </div>
@@ -271,7 +271,7 @@ export const InventoryItemModal: React.FC<InventoryItemModalProps> = ({
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             {!isEditing && (
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-pos-text mb-1.5">
+                <label className="block text-xs font-semibold uppercase tracking-wider text-pos-text-secondary mb-1.5">
                   Initial Stock ({unit})
                 </label>
                 <input
@@ -281,13 +281,13 @@ export const InventoryItemModal: React.FC<InventoryItemModalProps> = ({
                   required
                   value={currentStock}
                   onChange={e => setCurrentStock(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-pos-bg border border-pos-border text-pos-text font-mono font-bold text-xs focus:outline-none focus:ring-2 focus:ring-pos-accent"
+                  className="w-full px-3 py-2 rounded-lg bg-pos-surface border border-pos-border text-pos-text font-mono font-bold text-xs focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary shadow-xs"
                 />
               </div>
             )}
 
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-pos-text mb-1.5">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-pos-text-secondary mb-1.5">
                 Min Stock Alert ({unit}) <span className="text-pos-danger">*</span>
               </label>
               <input
@@ -297,12 +297,12 @@ export const InventoryItemModal: React.FC<InventoryItemModalProps> = ({
                 required
                 value={minStockLevel}
                 onChange={e => setMinStockLevel(e.target.value)}
-                className="w-full px-3 py-2 rounded-xl bg-pos-bg border border-pos-border text-pos-text font-mono font-bold text-xs focus:outline-none focus:ring-2 focus:ring-pos-accent text-pos-warning"
+                className="w-full px-3 py-2 rounded-lg bg-pos-surface border border-pos-border text-pos-text font-mono font-bold text-xs focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary text-pos-warning shadow-xs"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-pos-text mb-1.5">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-pos-text-secondary mb-1.5">
                 Target Stock ({unit})
               </label>
               <input
@@ -311,7 +311,7 @@ export const InventoryItemModal: React.FC<InventoryItemModalProps> = ({
                 min="0"
                 value={targetStockLevel}
                 onChange={e => setTargetStockLevel(e.target.value)}
-                className="w-full px-3 py-2 rounded-xl bg-pos-bg border border-pos-border text-pos-text font-mono font-bold text-xs focus:outline-none focus:ring-2 focus:ring-pos-accent text-pos-success"
+                className="w-full px-3 py-2 rounded-lg bg-pos-surface border border-pos-border text-pos-text font-mono font-bold text-xs focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary text-pos-success shadow-xs"
               />
             </div>
           </div>
@@ -319,13 +319,13 @@ export const InventoryItemModal: React.FC<InventoryItemModalProps> = ({
           {/* Location & Supplier */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-pos-text mb-1.5">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-pos-text-secondary mb-1.5">
                 Storage Location
               </label>
               <select
                 value={locationId}
                 onChange={e => setLocationId(e.target.value)}
-                className="w-full px-3 py-2 rounded-xl bg-pos-bg border border-pos-border text-pos-text text-xs focus:outline-none focus:ring-2 focus:ring-pos-accent font-medium"
+                className="w-full px-3 py-2 rounded-lg bg-pos-surface border border-pos-border text-pos-text text-xs focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary font-medium shadow-xs"
               >
                 <option value="">-- None / Default --</option>
                 {locations.map(loc => (
@@ -337,13 +337,13 @@ export const InventoryItemModal: React.FC<InventoryItemModalProps> = ({
             </div>
 
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-pos-text mb-1.5">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-pos-text-secondary mb-1.5">
                 Primary Supplier
               </label>
               <select
                 value={supplierId}
                 onChange={e => setSupplierId(e.target.value)}
-                className="w-full px-3 py-2 rounded-xl bg-pos-bg border border-pos-border text-pos-text text-xs focus:outline-none focus:ring-2 focus:ring-pos-accent font-medium"
+                className="w-full px-3 py-2 rounded-lg bg-pos-surface border border-pos-border text-pos-text text-xs focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary font-medium shadow-xs"
               >
                 <option value="">-- None / Direct --</option>
                 {suppliers.map(sup => (
@@ -357,7 +357,7 @@ export const InventoryItemModal: React.FC<InventoryItemModalProps> = ({
 
           {/* Description */}
           <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-pos-text mb-1.5">
+            <label className="block text-xs font-semibold uppercase tracking-wider text-pos-text-secondary mb-1.5">
               Description & Specifications (Optional)
             </label>
             <textarea
@@ -365,7 +365,7 @@ export const InventoryItemModal: React.FC<InventoryItemModalProps> = ({
               value={description}
               onChange={e => setDescription(e.target.value)}
               placeholder="e.g. Grade A premium long grain basmati rice, 50kg sacks..."
-              className="w-full p-3 rounded-xl bg-pos-bg border border-pos-border text-pos-text placeholder-pos-text-muted/60 text-xs focus:outline-none focus:ring-2 focus:ring-pos-accent resize-none font-medium"
+              className="w-full p-2.5 rounded-lg bg-pos-surface border border-pos-border text-pos-text placeholder-pos-text-muted text-xs focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary resize-none font-medium shadow-xs"
             />
           </div>
 
@@ -386,7 +386,7 @@ export const InventoryItemModal: React.FC<InventoryItemModalProps> = ({
               size="md"
               isLoading={isPending}
               disabled={!name.trim() || !itemCode.trim()}
-              className="font-bold shadow-sm"
+              className="font-bold shadow-xs"
             >
               {isEditing ? 'Save Changes' : 'Create Inventory Item'}
             </Button>
