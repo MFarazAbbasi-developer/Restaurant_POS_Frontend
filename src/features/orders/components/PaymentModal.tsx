@@ -137,16 +137,16 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
   ].filter((v, idx, arr) => arr.indexOf(v) === idx && v >= grandTotal);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 animate-in fade-in duration-150 select-none">
-      <div className="w-full max-w-2xl bg-pos-surface border border-pos-border rounded-2xl shadow-2xl flex flex-col max-h-[90vh] overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 animate-in fade-in duration-150 select-none">
+      <div className="w-full max-w-2xl bg-pos-surface border border-pos-border rounded-xl shadow-modal flex flex-col max-h-[90vh] overflow-hidden">
         {/* Header */}
-        <div className="p-4 sm:p-5 border-b border-pos-border flex items-center justify-between bg-pos-header shrink-0">
+        <div className="p-4 sm:p-5 border-b border-pos-border flex items-center justify-between bg-pos-surface shrink-0">
           <div>
             <div className="flex items-center gap-2">
-              <span className="text-xs font-mono text-pos-accent font-bold bg-pos-accent/10 px-2 py-0.5 rounded">
+              <span className="text-xs font-mono text-pos-primary font-bold bg-pos-primary-soft px-2 py-0.5 rounded">
                 #{order.orderCode}
               </span>
-              <h3 className="text-lg font-bold text-pos-text">Payment Tender</h3>
+              <h3 className="text-base font-semibold text-pos-text">Payment Tender</h3>
             </div>
             <p className="text-xs text-pos-text-muted mt-0.5">
               Select tender method and enter payment details
@@ -157,28 +157,28 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
             onClick={onClose}
             disabled={processPaymentMutation.isPending}
             aria-label="Close payment modal"
-            className="p-2 rounded-xl text-pos-text-muted hover:text-pos-text hover:bg-pos-surface-hover transition-colors"
+            className="p-1.5 rounded-lg text-pos-text-muted hover:text-pos-text hover:bg-pos-surface-subtle transition-colors"
           >
-            <X size={20} />
+            <X size={18} />
           </button>
         </div>
 
         {/* Modal Scrollable Body */}
         <div className="flex-1 overflow-y-auto p-4 sm:p-5 space-y-5 custom-scrollbar">
           {paymentError && (
-            <div className="p-3.5 rounded-xl bg-pos-danger/10 border border-pos-danger/30 text-pos-danger text-xs flex items-center gap-2">
-              <AlertCircle size={16} className="shrink-0" />
-              <span>{paymentError}</span>
+            <div className="p-3 rounded-lg bg-pos-danger-soft border border-[#FECACA] text-pos-danger text-xs flex items-center gap-2">
+              <AlertCircle size={15} className="shrink-0" />
+              <span className="font-medium">{paymentError}</span>
             </div>
           )}
 
           {/* Amount Due Summary Banner */}
-          <div className="p-4 rounded-xl bg-pos-bg border border-pos-border flex items-center justify-between">
+          <div className="p-4 rounded-lg bg-pos-surface-subtle border border-pos-border flex items-center justify-between shadow-xs">
             <div>
-              <span className="text-xs font-bold uppercase tracking-wider text-pos-text-muted">
+              <span className="text-[11px] font-semibold uppercase tracking-wider text-pos-text-muted">
                 Total Amount Due
               </span>
-              <p className="text-2xl font-black text-pos-text mt-0.5">
+              <p className="text-2xl font-black text-pos-primary font-mono mt-0.5">
                 {formatPrice(grandTotal)}
               </p>
             </div>
@@ -188,15 +188,15 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                   ? `Dine-In • ${order.table?.name || 'Table'}`
                   : order.orderType}
               </Badge>
-              <p className="text-[11px] text-pos-text-muted mt-1">
-                {order.items.length} items
+              <p className="text-xs text-pos-text-muted mt-1 font-mono">
+                {order.items.length} item(s)
               </p>
             </div>
           </div>
 
           {/* 1. Payment Method Pills */}
           <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-pos-text mb-2">
+            <label className="block text-xs font-semibold uppercase tracking-wider text-pos-text-secondary mb-2">
               Select Payment Method
             </label>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
@@ -212,14 +212,14 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                       setPaymentError(null);
                     }}
                     className={cn(
-                      'p-3 rounded-xl border text-center transition-all flex flex-col items-center justify-center gap-1.5 min-h-[70px]',
+                      'p-3 rounded-lg border text-center transition-colors flex flex-col items-center justify-center gap-1.5 min-h-[70px] shadow-xs',
                       isSelected
-                        ? 'border-pos-accent bg-pos-accent/15 ring-2 ring-pos-accent text-pos-text shadow-sm'
-                        : 'border-pos-border bg-pos-bg/80 text-pos-text-muted hover:border-pos-border-focus hover:text-pos-text'
+                        ? 'border-pos-primary bg-pos-primary-soft text-pos-primary font-semibold ring-1 ring-pos-primary'
+                        : 'border-pos-border bg-pos-surface text-pos-text-secondary hover:border-pos-border-strong hover:bg-pos-surface-subtle hover:text-pos-text'
                     )}
                   >
-                    <Icon size={20} className={isSelected ? 'text-pos-accent' : ''} />
-                    <span className="text-xs font-semibold">{pm.label}</span>
+                    <Icon size={20} className={isSelected ? 'text-pos-primary' : ''} />
+                    <span className="text-xs">{pm.label}</span>
                   </button>
                 );
               })}
@@ -229,17 +229,17 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
           {/* 2. Mode Specific Tender Inputs */}
           {paymentMethod === 'CASH' ? (
             /* Cash Tender Section */
-            <div className="space-y-4 pt-2 border-t border-pos-border/60">
+            <div className="space-y-4 pt-2 border-t border-pos-border">
               {/* Quick Cash Amount Pills */}
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-pos-text-muted mb-1.5">
+                <label className="block text-xs font-semibold uppercase tracking-wider text-pos-text-muted mb-1.5">
                   Quick Cash Tender
                 </label>
                 <div className="flex flex-wrap gap-2">
                   <button
                     type="button"
                     onClick={() => handleQuickCash(grandTotal)}
-                    className="px-3 py-1.5 rounded-lg border border-pos-accent/40 bg-pos-accent/10 text-pos-accent text-xs font-bold hover:bg-pos-accent/20 transition-colors"
+                    className="px-3 py-1.5 rounded-md border border-[#FED7AA] bg-pos-primary-soft text-pos-primary text-xs font-semibold hover:bg-pos-primary hover:text-white transition-colors"
                   >
                     Exact ({formatPrice(grandTotal)})
                   </button>
@@ -248,7 +248,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                       key={amt}
                       type="button"
                       onClick={() => handleQuickCash(amt)}
-                      className="px-3 py-1.5 rounded-lg border border-pos-border bg-pos-bg text-pos-text text-xs font-bold hover:bg-pos-surface transition-colors"
+                      className="px-3 py-1.5 rounded-md border border-pos-border bg-pos-surface text-pos-text text-xs font-semibold hover:bg-pos-surface-subtle transition-colors"
                     >
                       {formatPrice(amt)}
                     </button>
@@ -258,8 +258,8 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
 
               {/* Tendered Input & Change Due Display */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div className="p-3.5 rounded-xl bg-pos-bg border border-pos-border">
-                  <span className="text-xs font-bold uppercase tracking-wider text-pos-text-muted">
+                <div className="p-3.5 rounded-lg bg-pos-surface-subtle border border-pos-border">
+                  <span className="text-[11px] font-semibold uppercase tracking-wider text-pos-text-muted">
                     Amount Tendered
                   </span>
                   <div className="text-xl font-bold font-mono text-pos-text mt-1">
@@ -269,13 +269,13 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
 
                 <div
                   className={cn(
-                    'p-3.5 rounded-xl border flex flex-col justify-between',
+                    'p-3.5 rounded-lg border flex flex-col justify-between',
                     changeDue > 0
-                      ? 'bg-pos-success/10 border-pos-success/30 text-pos-success'
-                      : 'bg-pos-bg border-pos-border text-pos-text-muted'
+                      ? 'bg-pos-success-soft border-[#BBF7D0] text-pos-success'
+                      : 'bg-pos-surface-subtle border-pos-border text-pos-text-muted'
                   )}
                 >
-                  <span className="text-xs font-bold uppercase tracking-wider">
+                  <span className="text-[11px] font-semibold uppercase tracking-wider">
                     Change Due
                   </span>
                   <div className="text-xl font-bold font-mono mt-1">
@@ -291,7 +291,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                     key={digit}
                     type="button"
                     onClick={() => handleNumpadDigit(digit)}
-                    className="h-11 rounded-xl bg-pos-bg hover:bg-pos-surface border border-pos-border font-bold text-lg text-pos-text active:scale-95 transition-all shadow-sm flex items-center justify-center select-none"
+                    className="h-11 rounded-lg bg-pos-surface hover:bg-pos-surface-subtle border border-pos-border font-bold text-base text-pos-text active:scale-95 transition-colors shadow-xs flex items-center justify-center select-none font-mono"
                   >
                     {digit}
                   </button>
@@ -299,28 +299,29 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                 <button
                   type="button"
                   onClick={handleNumpadDot}
-                  className="h-11 rounded-xl bg-pos-bg hover:bg-pos-surface border border-pos-border font-bold text-lg text-pos-text active:scale-95 transition-all shadow-sm flex items-center justify-center select-none"
+                  className="h-11 rounded-lg bg-pos-surface hover:bg-pos-surface-subtle border border-pos-border font-bold text-base text-pos-text active:scale-95 transition-colors shadow-xs flex items-center justify-center select-none font-mono"
                 >
                   .
                 </button>
                 <button
                   type="button"
                   onClick={() => handleNumpadDigit('0')}
-                  className="h-11 rounded-xl bg-pos-bg hover:bg-pos-surface border border-pos-border font-bold text-lg text-pos-text active:scale-95 transition-all shadow-sm flex items-center justify-center select-none"
+                  className="h-11 rounded-lg bg-pos-surface hover:bg-pos-surface-subtle border border-pos-border font-bold text-base text-pos-text active:scale-95 transition-colors shadow-xs flex items-center justify-center select-none font-mono"
                 >
                   0
                 </button>
                 <button
                   type="button"
                   onClick={handleNumpadBackspace}
-                  className="h-11 rounded-xl bg-pos-bg/60 hover:bg-pos-surface border border-pos-border text-pos-text-muted active:scale-95 flex items-center justify-center select-none"
+                  aria-label="Backspace"
+                  className="h-11 rounded-lg bg-pos-surface-subtle hover:bg-pos-surface border border-pos-border text-pos-text-muted active:scale-95 flex items-center justify-center select-none"
                 >
                   <Delete size={18} />
                 </button>
                 <button
                   type="button"
                   onClick={handleNumpadClear}
-                  className="col-span-3 h-9 rounded-xl bg-pos-bg/60 hover:bg-pos-danger/10 hover:text-pos-danger border border-pos-border text-pos-text-muted active:scale-95 text-xs font-bold flex items-center justify-center gap-1 select-none mt-1"
+                  className="col-span-3 h-9 rounded-lg bg-pos-surface hover:bg-pos-danger-soft hover:text-pos-danger hover:border-pos-danger border border-pos-border text-pos-text-muted active:scale-95 text-xs font-semibold flex items-center justify-center gap-1 select-none mt-1 transition-colors"
                 >
                   <RotateCcw size={14} /> Clear Amount
                 </button>
@@ -328,17 +329,17 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
             </div>
           ) : (
             /* Card / Electronic Payment Details */
-            <div className="space-y-3 pt-2 border-t border-pos-border/60">
+            <div className="space-y-3 pt-2 border-t border-pos-border">
               {paymentMethod === 'CARD' && (
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-pos-text mb-1.5">
+                    <label className="block text-xs font-semibold uppercase tracking-wider text-pos-text-secondary mb-1.5">
                       Card Brand
                     </label>
                     <select
                       value={cardBrand}
                       onChange={e => setCardBrand(e.target.value)}
-                      className="w-full px-3 py-2 rounded-xl bg-pos-bg border border-pos-border text-pos-text text-xs focus:outline-none focus:ring-2 focus:ring-pos-accent font-semibold"
+                      className="w-full px-3 py-2 rounded-lg bg-pos-surface border border-pos-border text-pos-text text-xs focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary font-medium"
                     >
                       <option value="VISA">Visa</option>
                       <option value="MASTERCARD">Mastercard</option>
@@ -348,7 +349,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                     </select>
                   </div>
                   <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-pos-text mb-1.5">
+                    <label className="block text-xs font-semibold uppercase tracking-wider text-pos-text-secondary mb-1.5">
                       Card Last 4 Digits
                     </label>
                     <input
@@ -357,14 +358,14 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                       value={cardLast4}
                       onChange={e => setCardLast4(e.target.value.replace(/\D/g, ''))}
                       placeholder="e.g. 4242"
-                      className="w-full px-3.5 py-2 rounded-xl bg-pos-bg border border-pos-border text-pos-text placeholder-pos-text-muted/60 text-xs font-mono focus:outline-none focus:ring-2 focus:ring-pos-accent font-semibold"
+                      className="w-full px-3.5 py-2 rounded-lg bg-pos-surface border border-pos-border text-pos-text placeholder-pos-text-muted/60 text-xs font-mono focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary font-medium"
                     />
                   </div>
                 </div>
               )}
 
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-pos-text mb-1.5">
+                <label className="block text-xs font-semibold uppercase tracking-wider text-pos-text-secondary mb-1.5">
                   Approval / Transaction Reference
                 </label>
                 <input
@@ -372,12 +373,12 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                   value={reference}
                   onChange={e => setReference(e.target.value)}
                   placeholder="e.g. AUTH-98234 / POS Terminal Ref"
-                  className="w-full px-3.5 py-2 rounded-xl bg-pos-bg border border-pos-border text-pos-text placeholder-pos-text-muted/60 text-xs font-mono focus:outline-none focus:ring-2 focus:ring-pos-accent font-semibold"
+                  className="w-full px-3.5 py-2 rounded-lg bg-pos-surface border border-pos-border text-pos-text placeholder-pos-text-muted/60 text-xs font-mono focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary font-medium"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-pos-text mb-1.5">
+                <label className="block text-xs font-semibold uppercase tracking-wider text-pos-text-secondary mb-1.5">
                   Payment Notes
                 </label>
                 <input
@@ -385,7 +386,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                   value={notes}
                   onChange={e => setNotes(e.target.value)}
                   placeholder="Optional tender notes..."
-                  className="w-full px-3.5 py-2 rounded-xl bg-pos-bg border border-pos-border text-pos-text placeholder-pos-text-muted/60 text-xs focus:outline-none focus:ring-2 focus:ring-pos-accent font-medium"
+                  className="w-full px-3.5 py-2 rounded-lg bg-pos-surface border border-pos-border text-pos-text placeholder-pos-text-muted/60 text-xs focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary font-medium"
                 />
               </div>
             </div>
@@ -393,7 +394,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
         </div>
 
         {/* Footer Actions */}
-        <div className="p-4 sm:p-5 border-t border-pos-border bg-pos-header flex items-center justify-between gap-3 shrink-0">
+        <div className="p-4 sm:p-5 border-t border-pos-border bg-pos-surface flex items-center justify-between gap-3 shrink-0">
           <Button
             type="button"
             variant="secondary"
@@ -411,7 +412,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
             onClick={handleSubmitPayment}
             isLoading={processPaymentMutation.isPending}
             disabled={!isTenderSufficient}
-            className="font-bold flex items-center gap-2 min-w-[200px]"
+            className="font-semibold flex items-center gap-2 min-w-[200px] shadow-xs"
           >
             <CheckCircle2 size={18} />
             <span>Confirm & Complete {formatPrice(grandTotal)}</span>

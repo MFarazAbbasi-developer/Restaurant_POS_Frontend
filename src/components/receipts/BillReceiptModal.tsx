@@ -46,7 +46,8 @@ export const BillReceiptModal: React.FC<BillReceiptModalProps> = ({
         }
       } catch (err) {
         if (isMounted) {
-          const msg = err instanceof Error ? err.message : 'Failed to load bill receipt data';
+          const msg =
+            err instanceof Error ? err.message : 'Failed to load bill receipt data';
           setError(msg);
         }
       } finally {
@@ -82,18 +83,18 @@ export const BillReceiptModal: React.FC<BillReceiptModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-3 sm:p-4 animate-in fade-in duration-150 select-none">
-      <div className="w-full max-w-xl bg-pos-surface border border-pos-border rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[92vh]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-3 sm:p-4 animate-in fade-in duration-150 select-none">
+      <div className="w-full max-w-xl bg-pos-surface border border-pos-border rounded-xl shadow-modal overflow-hidden flex flex-col max-h-[92vh]">
         {/* Modal Header */}
-        <div className="p-3.5 sm:p-4 border-b border-pos-border bg-pos-header flex items-center justify-between shrink-0">
+        <div className="p-3.5 sm:p-4 border-b border-pos-border bg-pos-surface flex items-center justify-between shrink-0">
           <div className="flex items-center gap-2">
-            <div className="h-8 w-8 rounded-lg bg-pos-accent/15 text-pos-accent flex items-center justify-center">
+            <div className="h-8 w-8 rounded-lg bg-pos-primary-soft text-pos-primary flex items-center justify-center">
               <Receipt size={18} />
             </div>
             <div>
-              <h3 className="text-sm font-bold text-pos-text leading-tight flex items-center gap-2">
+              <h3 className="text-sm font-semibold text-pos-text leading-tight flex items-center gap-2">
                 <span>Customer Bill & Receipt</span>
-                <span className="font-mono text-pos-accent text-xs font-semibold">
+                <span className="font-mono text-pos-primary text-xs font-semibold">
                   #{orderCode || receipt?.metadata.orderCode || 'BILL'}
                 </span>
               </h3>
@@ -105,15 +106,15 @@ export const BillReceiptModal: React.FC<BillReceiptModalProps> = ({
 
           <div className="flex items-center gap-2">
             {/* View Mode Toggle */}
-            <div className="hidden sm:flex items-center bg-pos-bg p-0.5 rounded-lg border border-pos-border text-xs">
+            <div className="hidden sm:flex items-center bg-pos-surface-subtle p-0.5 rounded-md border border-pos-border text-xs">
               <button
                 type="button"
                 onClick={() => setViewMode('VISUAL')}
                 className={cn(
-                  'px-2.5 py-1 rounded-md text-[11px] font-bold transition-all',
+                  'px-2.5 py-1 rounded text-[11px] font-semibold transition-colors',
                   viewMode === 'VISUAL'
-                    ? 'bg-pos-accent text-white shadow-xs'
-                    : 'text-pos-text-muted hover:text-pos-text'
+                    ? 'bg-pos-primary text-white shadow-xs'
+                    : 'text-pos-text-secondary hover:text-pos-text'
                 )}
               >
                 Visual Bill
@@ -122,10 +123,10 @@ export const BillReceiptModal: React.FC<BillReceiptModalProps> = ({
                 type="button"
                 onClick={() => setViewMode('MONOSPACE')}
                 className={cn(
-                  'px-2.5 py-1 rounded-md text-[11px] font-bold transition-all',
+                  'px-2.5 py-1 rounded text-[11px] font-semibold transition-colors',
                   viewMode === 'MONOSPACE'
-                    ? 'bg-pos-accent text-white shadow-xs'
-                    : 'text-pos-text-muted hover:text-pos-text'
+                    ? 'bg-pos-primary text-white shadow-xs'
+                    : 'text-pos-text-secondary hover:text-pos-text'
                 )}
               >
                 Raw Thermal
@@ -136,7 +137,7 @@ export const BillReceiptModal: React.FC<BillReceiptModalProps> = ({
               type="button"
               onClick={onClose}
               aria-label="Close bill preview"
-              className="p-1.5 rounded-lg text-pos-text-muted hover:text-pos-text hover:bg-pos-surface-hover transition-colors"
+              className="p-1.5 rounded-lg text-pos-text-muted hover:text-pos-text hover:bg-pos-surface-subtle transition-colors"
             >
               <X size={18} />
             </button>
@@ -146,7 +147,9 @@ export const BillReceiptModal: React.FC<BillReceiptModalProps> = ({
         {/* Modal Controls Bar */}
         <div className="px-4 py-2 border-b border-pos-border bg-pos-surface-subtle/50 flex flex-wrap items-center justify-between gap-2 shrink-0 text-xs">
           <div className="flex items-center gap-2">
-            <span className="text-pos-text-muted font-medium text-[11px]">Paper Width:</span>
+            <span className="text-pos-text-muted font-medium text-[11px]">
+              Paper Width:
+            </span>
             <div className="flex items-center gap-1">
               <button
                 type="button"
@@ -183,7 +186,11 @@ export const BillReceiptModal: React.FC<BillReceiptModalProps> = ({
               className="px-2.5 py-1 rounded-lg border border-pos-border bg-pos-surface hover:bg-pos-surface-hover text-pos-text text-[11px] font-semibold flex items-center gap-1 transition-colors"
               title="Copy receipt text to clipboard"
             >
-              {copied ? <Check size={13} className="text-pos-success" /> : <Copy size={13} />}
+              {copied ? (
+                <Check size={13} className="text-pos-success" />
+              ) : (
+                <Copy size={13} />
+              )}
               <span>{copied ? 'Copied!' : 'Copy Text'}</span>
             </button>
 
@@ -216,7 +223,9 @@ export const BillReceiptModal: React.FC<BillReceiptModalProps> = ({
             <div
               className={cn(
                 'bg-white text-zinc-900 rounded-xl shadow-2xl border border-zinc-200 transition-all font-mono',
-                paperWidth === '80mm' ? 'w-full max-w-[420px] p-5 sm:p-6' : 'w-full max-w-[320px] p-4 text-[11px]'
+                paperWidth === '80mm'
+                  ? 'w-full max-w-[420px] p-5 sm:p-6'
+                  : 'w-full max-w-[320px] p-4 text-[11px]'
               )}
             >
               {viewMode === 'MONOSPACE' ? (
@@ -257,7 +266,9 @@ export const BillReceiptModal: React.FC<BillReceiptModalProps> = ({
                     <div className="flex justify-between font-bold">
                       <span>ORDER: #{receipt.metadata.orderCode}</span>
                       <span className="uppercase text-zinc-900 font-black">
-                        {receipt.metadata.paymentStatus === 'PAID' ? 'PAID BILL' : 'BILL ESTIMATE'}
+                        {receipt.metadata.paymentStatus === 'PAID'
+                          ? 'PAID BILL'
+                          : 'BILL ESTIMATE'}
                       </span>
                     </div>
                     <div className="flex justify-between text-zinc-600">
@@ -266,7 +277,10 @@ export const BillReceiptModal: React.FC<BillReceiptModalProps> = ({
                     </div>
                     <div className="flex justify-between">
                       <span>
-                        Type: <strong className="uppercase">{receipt.metadata.orderType}</strong>
+                        Type:{' '}
+                        <strong className="uppercase">
+                          {receipt.metadata.orderType}
+                        </strong>
                         {receipt.metadata.tableName && ` (${receipt.metadata.tableName})`}
                       </span>
                       <span>Cashier: {receipt.metadata.cashierName}</span>
@@ -310,7 +324,12 @@ export const BillReceiptModal: React.FC<BillReceiptModalProps> = ({
                               <div key={idx} className="flex justify-between">
                                 <span>+ {m.modifierOptionName}</span>
                                 {m.priceAdjustment > 0 && (
-                                  <span>{formatCurrency(m.priceAdjustment, receipt.restaurant.currency)}</span>
+                                  <span>
+                                    {formatCurrency(
+                                      m.priceAdjustment,
+                                      receipt.restaurant.currency
+                                    )}
+                                  </span>
                                 )}
                               </div>
                             ))}
@@ -330,35 +349,59 @@ export const BillReceiptModal: React.FC<BillReceiptModalProps> = ({
                     <div className="flex justify-between text-zinc-700">
                       <span>Subtotal:</span>
                       <span className="font-bold">
-                        {formatCurrency(receipt.totals.subtotal, receipt.restaurant.currency)}
+                        {formatCurrency(
+                          receipt.totals.subtotal,
+                          receipt.restaurant.currency
+                        )}
                       </span>
                     </div>
 
                     {receipt.totals.totalDiscount > 0 && (
                       <div className="flex justify-between text-emerald-600 font-medium">
                         <span>Discount:</span>
-                        <span>- {formatCurrency(receipt.totals.totalDiscount, receipt.restaurant.currency)}</span>
+                        <span>
+                          -{' '}
+                          {formatCurrency(
+                            receipt.totals.totalDiscount,
+                            receipt.restaurant.currency
+                          )}
+                        </span>
                       </div>
                     )}
 
                     {receipt.totals.taxAmount > 0 && (
                       <div className="flex justify-between text-zinc-700">
                         <span>PRA Sales Tax ({receipt.totals.taxRate || 16}%):</span>
-                        <span>{formatCurrency(receipt.totals.taxAmount, receipt.restaurant.currency)}</span>
+                        <span>
+                          {formatCurrency(
+                            receipt.totals.taxAmount,
+                            receipt.restaurant.currency
+                          )}
+                        </span>
                       </div>
                     )}
 
                     {receipt.totals.serviceChargeAmount > 0 && (
                       <div className="flex justify-between text-zinc-700">
                         <span>Service Charge:</span>
-                        <span>{formatCurrency(receipt.totals.serviceChargeAmount, receipt.restaurant.currency)}</span>
+                        <span>
+                          {formatCurrency(
+                            receipt.totals.serviceChargeAmount,
+                            receipt.restaurant.currency
+                          )}
+                        </span>
                       </div>
                     )}
 
                     {receipt.totals.deliveryCharge > 0 && (
                       <div className="flex justify-between text-zinc-700">
                         <span>Delivery Fee:</span>
-                        <span>{formatCurrency(receipt.totals.deliveryCharge, receipt.restaurant.currency)}</span>
+                        <span>
+                          {formatCurrency(
+                            receipt.totals.deliveryCharge,
+                            receipt.restaurant.currency
+                          )}
+                        </span>
                       </div>
                     )}
 
@@ -366,7 +409,10 @@ export const BillReceiptModal: React.FC<BillReceiptModalProps> = ({
                     <div className="flex justify-between items-center text-sm font-black text-zinc-950 pt-2 border-t-2 border-zinc-900 mt-2">
                       <span>TOTAL AMOUNT:</span>
                       <span className="text-base font-mono">
-                        {formatCurrency(receipt.totals.grandTotal, receipt.restaurant.currency)}
+                        {formatCurrency(
+                          receipt.totals.grandTotal,
+                          receipt.restaurant.currency
+                        )}
                       </span>
                     </div>
 
@@ -384,7 +430,12 @@ export const BillReceiptModal: React.FC<BillReceiptModalProps> = ({
                         {receipt.totals.changeAmount > 0 && (
                           <div className="flex justify-between text-emerald-700 font-bold">
                             <span>Change Given:</span>
-                            <span>{formatCurrency(receipt.totals.changeAmount, receipt.restaurant.currency)}</span>
+                            <span>
+                              {formatCurrency(
+                                receipt.totals.changeAmount,
+                                receipt.restaurant.currency
+                              )}
+                            </span>
                           </div>
                         )}
                       </div>
@@ -417,13 +468,13 @@ export const BillReceiptModal: React.FC<BillReceiptModalProps> = ({
         </div>
 
         {/* Modal Footer Actions */}
-        <div className="p-3 sm:p-4 border-t border-pos-border bg-pos-header flex flex-wrap items-center justify-between gap-3 shrink-0">
+        <div className="p-3 sm:p-4 border-t border-pos-border bg-pos-surface flex flex-wrap items-center justify-between gap-3 shrink-0">
           <Button
             type="button"
             variant="secondary"
             size="md"
             onClick={onClose}
-            className="font-semibold text-xs"
+            className="font-medium text-xs"
           >
             Close Preview
           </Button>
@@ -434,7 +485,7 @@ export const BillReceiptModal: React.FC<BillReceiptModalProps> = ({
               variant="outline"
               size="md"
               onClick={handleBrowserPrint}
-              className="font-semibold text-xs flex items-center gap-1.5"
+              className="font-medium text-xs flex items-center gap-1.5"
             >
               <Printer size={15} />
               <span>Browser Print / PDF</span>
@@ -449,7 +500,7 @@ export const BillReceiptModal: React.FC<BillReceiptModalProps> = ({
                   onClose();
                   onSettleBill();
                 }}
-                className="font-black text-xs flex items-center gap-1.5 bg-pos-success hover:bg-pos-success/90 text-white shadow-md shadow-pos-success/20"
+                className="font-semibold text-xs flex items-center gap-1.5 bg-pos-success hover:bg-pos-success/90 text-white"
               >
                 <CreditCard size={15} />
                 <span>Settle & Pay Bill</span>

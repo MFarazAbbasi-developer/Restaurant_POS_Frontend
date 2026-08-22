@@ -113,10 +113,9 @@ export class ReceiptsApi {
     orderId: string,
     paperWidth: '80mm' | '58mm' = '80mm'
   ): Promise<FormattedCustomerReceipt> {
-    const response = await apiClient.get<ApiResponse<{ receipt: FormattedCustomerReceipt }>>(
-      `/receipts/orders/${orderId}/customer`,
-      { params: { paperWidth } }
-    );
+    const response = await apiClient.get<
+      ApiResponse<{ receipt: FormattedCustomerReceipt }>
+    >(`/receipts/orders/${orderId}/customer`, { params: { paperWidth } });
     return response.data.receipt;
   }
 }

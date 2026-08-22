@@ -200,9 +200,7 @@ export const StaffLoginForm: React.FC = () => {
                   : 'border-pos-border bg-pos-surface text-pos-text-secondary hover:border-pos-border-strong hover:text-pos-text'
               )}
             >
-              <p className="truncate font-semibold text-pos-text">
-                {staff.label}
-              </p>
+              <p className="truncate font-semibold text-pos-text">{staff.label}</p>
               <p className="text-[11px] text-pos-text-muted">
                 {staff.role} • PIN: {staff.defaultPin}
               </p>

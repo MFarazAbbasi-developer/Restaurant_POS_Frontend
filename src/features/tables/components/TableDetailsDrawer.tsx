@@ -28,6 +28,7 @@ import {
   ChefHat,
   Printer,
   FileText,
+  AlertTriangle,
 } from 'lucide-react';
 import { cn } from '@/utils/cn';
 
@@ -56,7 +57,10 @@ export const TableDetailsDrawer: React.FC<TableDetailsDrawerProps> = ({
   const [isTransferModalOpen, setIsTransferModalOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [payingOrder, setPayingOrder] = useState<OrderRecord | null>(null);
-  const [viewingReceiptOrderId, setViewingReceiptOrderId] = useState<{ id: string; code: string } | null>(null);
+  const [viewingReceiptOrderId, setViewingReceiptOrderId] = useState<{
+    id: string;
+    code: string;
+  } | null>(null);
   const [isLoadingOrder, setIsLoadingOrder] = useState(false);
 
   const formatPrice = (val: number) => {
@@ -70,17 +74,66 @@ export const TableDetailsDrawer: React.FC<TableDetailsDrawerProps> = ({
   const getStatusBadge = (status: PosTable['status']) => {
     switch (status) {
       case 'AVAILABLE':
-        return <Badge variant="success">Available</Badge>;
+        return (
+          <Badge
+            variant="success"
+            size="sm"
+            className="flex items-center gap-1 font-semibold"
+          >
+            <CheckCircle2 size={11} />
+            <span>Available</span>
+          </Badge>
+        );
       case 'OCCUPIED':
-        return <Badge variant="warning">Occupied</Badge>;
+        return (
+          <Badge
+            variant="warning"
+            size="sm"
+            className="flex items-center gap-1 font-semibold"
+          >
+            <UtensilsCrossed size={11} />
+            <span>Occupied</span>
+          </Badge>
+        );
       case 'BILL_PRINTED':
-        return <Badge variant="info">Bill Printed</Badge>;
+        return (
+          <Badge
+            variant="info"
+            size="sm"
+            className="flex items-center gap-1 font-semibold"
+          >
+            <Printer size={11} />
+            <span>Bill Printed</span>
+          </Badge>
+        );
       case 'RESERVED':
-        return <Badge variant="default">Reserved</Badge>;
+        return (
+          <Badge
+            variant="default"
+            size="sm"
+            className="flex items-center gap-1 font-semibold"
+          >
+            <Users size={11} />
+            <span>Reserved</span>
+          </Badge>
+        );
       case 'CLEANING':
-        return <Badge variant="danger">Cleaning</Badge>;
+        return (
+          <Badge
+            variant="danger"
+            size="sm"
+            className="flex items-center gap-1 font-semibold"
+          >
+            <AlertTriangle size={11} />
+            <span>Needs Cleaning</span>
+          </Badge>
+        );
       default:
-        return <Badge variant="default">{status}</Badge>;
+        return (
+          <Badge variant="default" size="sm">
+            {status}
+          </Badge>
+        );
     }
   };
 
@@ -88,25 +141,41 @@ export const TableDetailsDrawer: React.FC<TableDetailsDrawerProps> = ({
     switch (status) {
       case 'SERVED':
         return (
-          <Badge variant="success" size="sm" className="flex items-center gap-1">
+          <Badge
+            variant="success"
+            size="sm"
+            className="flex items-center gap-1 font-semibold"
+          >
             <CheckCircle2 size={11} /> Food Served
           </Badge>
         );
       case 'READY':
         return (
-          <Badge variant="info" size="sm" className="flex items-center gap-1 bg-purple-500/15 text-purple-600 border-purple-300">
+          <Badge
+            variant="info"
+            size="sm"
+            className="flex items-center gap-1 bg-purple-50 text-purple-700 border-purple-200 font-semibold"
+          >
             <Sparkles size={11} /> Ready
           </Badge>
         );
       case 'PREPARING':
         return (
-          <Badge variant="warning" size="sm" className="flex items-center gap-1">
+          <Badge
+            variant="warning"
+            size="sm"
+            className="flex items-center gap-1 font-semibold"
+          >
             <ChefHat size={11} /> In Kitchen
           </Badge>
         );
       case 'BILL_PRINTED':
         return (
-          <Badge variant="info" size="sm" className="flex items-center gap-1">
+          <Badge
+            variant="info"
+            size="sm"
+            className="flex items-center gap-1 font-semibold"
+          >
             <Printer size={11} /> Bill Printed
           </Badge>
         );
@@ -134,7 +203,10 @@ export const TableDetailsDrawer: React.FC<TableDetailsDrawerProps> = ({
       const response = await OrdersApi.getOrder(orderId);
       setPayingOrder(response.order);
     } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Failed to fetch order details for settlement';
+      const msg =
+        err instanceof Error
+          ? err.message
+          : 'Failed to fetch order details for settlement';
       setErrorMessage(msg);
     } finally {
       setIsLoadingOrder(false);
@@ -193,15 +265,15 @@ export const TableDetailsDrawer: React.FC<TableDetailsDrawerProps> = ({
 
   return (
     <>
-      <div className="w-full lg:w-96 flex flex-col bg-pos-surface border border-pos-border rounded-lg shadow-dropdown overflow-hidden shrink-0">
+      <div className="w-full xl:w-[390px] flex flex-col bg-pos-surface border border-pos-border rounded-lg shadow-dropdown overflow-hidden shrink-0">
         {/* Drawer Header */}
-        <div className="p-4 border-b border-pos-border bg-pos-surface flex items-center justify-between shrink-0">
+        <div className="p-3.5 sm:p-4 border-b border-pos-border bg-pos-surface flex items-center justify-between shrink-0">
           <div>
             <div className="flex items-center gap-2">
-              <h3 className="text-base font-semibold text-pos-text">{table.name}</h3>
+              <h3 className="text-base font-bold text-pos-text">{table.name}</h3>
               {getStatusBadge(table.status)}
             </div>
-            <p className="text-xs text-pos-text-muted mt-0.5">
+            <p className="text-xs text-pos-text-muted mt-0.5 font-medium">
               {zone?.name || 'Floor Zone'} • {table.capacity} Seats Capacity
             </p>
           </div>
@@ -228,19 +300,21 @@ export const TableDetailsDrawer: React.FC<TableDetailsDrawerProps> = ({
         )}
 
         {/* Drawer Scrollable Content */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar">
+        <div className="flex-1 overflow-y-auto p-3.5 sm:p-4 space-y-4 custom-scrollbar">
           {/* Table Summary Financial Card */}
-          <div className="p-3.5 rounded-xl bg-pos-surface-subtle border border-pos-border flex items-center justify-between shadow-xs">
+          <div className="p-3.5 rounded-lg bg-pos-surface-subtle border border-pos-border flex items-center justify-between shadow-xs">
             <div>
-              <span className="text-[11px] font-semibold uppercase tracking-wider text-pos-text-muted">
-                Active Table Bill
+              <span className="text-[10px] font-bold uppercase tracking-wider text-pos-text-muted">
+                Active Table Total
               </span>
               <p className="text-xl font-black text-pos-primary font-mono mt-0.5">
                 {formatPrice(totalAmount)}
               </p>
             </div>
             <div className="text-right text-xs">
-              <span className="text-pos-text-muted">Guests Seated:</span>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-pos-text-muted">
+                Guests Seated
+              </span>
               <p className="font-bold text-pos-text mt-0.5 font-mono">
                 {totalGuests > 0 ? totalGuests : table.capacity} Persons
               </p>
@@ -252,10 +326,10 @@ export const TableDetailsDrawer: React.FC<TableDetailsDrawerProps> = ({
             variant="primary"
             size="lg"
             onClick={handleOpenPOSRegister}
-            className="w-full font-semibold flex items-center justify-center gap-2 shadow-xs"
+            className="w-full font-bold flex items-center justify-center gap-2 shadow-xs min-h-[42px]"
           >
             <ShoppingBag size={18} />
-            <span>Add Items in POS Register</span>
+            <span>Open in POS Register</span>
           </Button>
 
           {/* Active Orders List */}
@@ -270,7 +344,7 @@ export const TableDetailsDrawer: React.FC<TableDetailsDrawerProps> = ({
                 disabled={createTableOrderMutation.isPending}
                 className="text-xs text-pos-primary hover:underline font-semibold flex items-center gap-1"
               >
-                <Plus size={12} /> New Sub-Bill
+                <Plus size={13} /> New Sub-Bill
               </button>
             </div>
 
@@ -279,7 +353,7 @@ export const TableDetailsDrawer: React.FC<TableDetailsDrawerProps> = ({
                 {table.activeOrders.map(ord => (
                   <div
                     key={ord.id}
-                    className="p-3.5 rounded-xl bg-pos-surface border border-pos-border text-xs space-y-2.5 shadow-sm"
+                    className="p-3.5 rounded-lg bg-pos-surface border border-pos-border text-xs space-y-2.5 shadow-xs"
                   >
                     <div className="flex items-center justify-between">
                       <span className="font-bold text-pos-text flex items-center gap-1.5 font-mono">
@@ -290,7 +364,7 @@ export const TableDetailsDrawer: React.FC<TableDetailsDrawerProps> = ({
 
                     {/* Items preview if available */}
                     {ord.items && ord.items.length > 0 && (
-                      <div className="bg-pos-surface-subtle/70 rounded-lg p-2 space-y-1 border border-pos-border/60 text-[11px]">
+                      <div className="bg-pos-surface-subtle rounded-md p-2 space-y-1 border border-pos-border text-[11px]">
                         {ord.items.map(it => (
                           <div key={it.id} className="flex justify-between text-pos-text">
                             <span className="font-medium">
@@ -343,7 +417,7 @@ export const TableDetailsDrawer: React.FC<TableDetailsDrawerProps> = ({
                 ))}
               </div>
             ) : (
-              <div className="py-6 text-center text-xs text-pos-text-muted bg-pos-surface-subtle/50 rounded-lg border border-dashed border-pos-border">
+              <div className="py-6 text-center text-xs text-pos-text-muted bg-pos-surface-subtle rounded-lg border border-dashed border-pos-border">
                 No active orders on this table.
               </div>
             )}

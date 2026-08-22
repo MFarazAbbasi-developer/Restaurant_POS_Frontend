@@ -67,11 +67,7 @@ export class KitchenApi {
     const response = await apiClient.get<
       ApiResponse<KitchenTicket | { ticket: KitchenTicket }>
     >(`/kitchen/orders/${id}`);
-    if (
-      response.data &&
-      typeof response.data === 'object' &&
-      'ticket' in response.data
-    ) {
+    if (response.data && typeof response.data === 'object' && 'ticket' in response.data) {
       return response.data.ticket;
     }
     return response.data as KitchenTicket;
@@ -89,11 +85,7 @@ export class KitchenApi {
       ApiResponse<KitchenTicket | { ticket: KitchenTicket }>,
       UpdateOrderKitchenStatusInput
     >(`/kitchen/orders/${id}/status`, payload);
-    if (
-      response.data &&
-      typeof response.data === 'object' &&
-      'ticket' in response.data
-    ) {
+    if (response.data && typeof response.data === 'object' && 'ticket' in response.data) {
       return response.data.ticket;
     }
     return response.data as KitchenTicket;
@@ -112,11 +104,7 @@ export class KitchenApi {
       ApiResponse<KitchenTicket | { ticket: KitchenTicket }>,
       UpdateItemKitchenStatusInput
     >(`/kitchen/orders/${orderId}/items/${itemId}/status`, payload);
-    if (
-      response.data &&
-      typeof response.data === 'object' &&
-      'ticket' in response.data
-    ) {
+    if (response.data && typeof response.data === 'object' && 'ticket' in response.data) {
       return response.data.ticket;
     }
     return response.data as KitchenTicket;
@@ -134,11 +122,7 @@ export class KitchenApi {
       ApiResponse<KitchenTicket | { ticket: KitchenTicket }>,
       RecallKitchenInput | undefined
     >(`/kitchen/orders/${id}/recall`, payload);
-    if (
-      response.data &&
-      typeof response.data === 'object' &&
-      'ticket' in response.data
-    ) {
+    if (response.data && typeof response.data === 'object' && 'ticket' in response.data) {
       return response.data.ticket;
     }
     return response.data as KitchenTicket;
@@ -157,11 +141,7 @@ export class KitchenApi {
       ApiResponse<KitchenTicket | { ticket: KitchenTicket }>,
       RecallKitchenInput | undefined
     >(`/kitchen/orders/${orderId}/items/${itemId}/recall`, payload);
-    if (
-      response.data &&
-      typeof response.data === 'object' &&
-      'ticket' in response.data
-    ) {
+    if (response.data && typeof response.data === 'object' && 'ticket' in response.data) {
       return response.data.ticket;
     }
     return response.data as KitchenTicket;

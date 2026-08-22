@@ -30,6 +30,8 @@ import {
   User,
   AlertCircle,
   FileText,
+  MapPin,
+  LayoutGrid,
 } from 'lucide-react';
 import { cn } from '@/utils/cn';
 
@@ -49,11 +51,14 @@ export const OrdersPage: React.FC = () => {
     guestCount,
     customer,
     items: cartItems,
+    notes: orderNotes,
     addItem,
     updateQuantity,
     removeItem,
     setOrderType,
     setSelectedTable,
+    setGuestCount,
+    setNotes: setOrderNotes,
     clearCart,
     resetAll,
   } = useCartStore();
@@ -89,6 +94,7 @@ export const OrdersPage: React.FC = () => {
     useState<PaymentResponseData | null>(null);
   const [savedReceiptOrder, setSavedReceiptOrder] = useState<OrderRecord | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [isNotesExpanded, setIsNotesExpanded] = useState<boolean>(false);
 
   // Filter Categories & Items
   const categories = useMemo(() => menuData?.categories || [], [menuData]);
@@ -116,6 +122,11 @@ export const OrdersPage: React.FC = () => {
 
     return itemsToFilter;
   }, [categories, allItems, selectedCategoryId, searchQuery]);
+
+  const currentCategoryName = useMemo(() => {
+    if (selectedCategoryId === 'ALL') return 'All Menu Items';
+    return categories.find(c => c.id === selectedCategoryId)?.name || 'Category';
+  }, [categories, selectedCategoryId]);
 
   // Click on menu item card
   const handleItemCardClick = (item: PosMenuItem) => {
@@ -148,6 +159,7 @@ export const OrdersPage: React.FC = () => {
       deliveryAddress: customer?.address || undefined,
       flatDeliveryFee: orderType === 'DELIVERY' ? deliveryCharge : undefined,
       packagingCharge: orderType === 'TAKEAWAY' ? packagingCharge : undefined,
+      notes: orderNotes.trim() || undefined,
       items: cartItems.map(item => ({
         menuItemId: item.menuItemId,
         variantId: item.variantId,
@@ -162,7 +174,7 @@ export const OrdersPage: React.FC = () => {
   const handleSaveOrder = async () => {
     if (cartItems.length === 0) return;
     if (orderType === 'DINE_IN' && !selectedTable) {
-      setErrorMessage('Please select a dine-in table before saving the order.');
+      setErrorMessage('Please select a dining table before saving the order.');
       setIsTableModalOpen(true);
       return;
     }
@@ -170,7 +182,6 @@ export const OrdersPage: React.FC = () => {
     setErrorMessage(null);
     try {
       const response = await createOrderMutation.mutateAsync(buildOrderPayload());
-      // Order created successfully
       resetAll();
       setSavedReceiptOrder(response.order);
     } catch (err) {
@@ -183,7 +194,7 @@ export const OrdersPage: React.FC = () => {
   const handleCheckoutPayment = async () => {
     if (cartItems.length === 0) return;
     if (orderType === 'DINE_IN' && !selectedTable) {
-      setErrorMessage('Please select a dine-in table before proceeding to payment.');
+      setErrorMessage('Please select a dining table before proceeding to payment.');
       setIsTableModalOpen(true);
       return;
     }
@@ -210,15 +221,17 @@ export const OrdersPage: React.FC = () => {
   ];
 
   return (
-    <div className="h-[calc(100vh-5rem)] flex flex-col lg:flex-row gap-4 overflow-hidden select-none -m-4 md:-m-6 p-3 sm:p-4 bg-pos-bg">
+    <div className="h-[calc(100vh-5rem)] flex flex-col xl:flex-row gap-3 overflow-hidden select-none -m-4 md:-m-6 p-2 sm:p-3 bg-pos-bg">
       {/* =========================================================================
-          LEFT / CENTER SECTION: Menu Catalog, Channels, & Item Grid
+          ZONE 1 (LEFT): Order Channel & Category Navigation (~210px)
       ========================================================================= */}
-      <div className="flex-1 flex flex-col min-w-0 bg-pos-surface/50 border border-pos-border rounded-2xl overflow-hidden shadow-sm">
-        {/* Top Control Bar: Channels, Table/Customer Picker, Search */}
-        <div className="p-3 border-b border-pos-border bg-pos-header/90 flex flex-wrap items-center justify-between gap-2.5 shrink-0">
-          {/* Order Channel Selector Pills */}
-          <div className="flex items-center gap-1 bg-pos-bg p-1 rounded-xl border border-pos-border">
+      <div className="w-full xl:w-[215px] flex flex-col bg-pos-surface border border-pos-border rounded-lg overflow-hidden shrink-0 shadow-xs">
+        {/* Order Channel Selector (Dine-In / Takeaway / Delivery) */}
+        <div className="p-2 border-b border-pos-border bg-pos-surface shrink-0">
+          <label className="block text-[10px] font-bold uppercase tracking-wider text-pos-text-muted mb-1.5 px-0.5">
+            Order Channel
+          </label>
+          <div className="grid grid-cols-3 gap-1 bg-pos-surface-subtle p-1 rounded-md border border-pos-border">
             {channelOptions.map(ch => {
               const Icon = ch.icon;
               const isSelected = orderType === ch.id;
@@ -227,67 +240,223 @@ export const OrdersPage: React.FC = () => {
                   key={ch.id}
                   type="button"
                   onClick={() => setOrderType(ch.id)}
+                  title={ch.label}
                   className={cn(
-                    'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all min-h-[36px]',
+                    'flex flex-col items-center justify-center py-1.5 px-1 rounded transition-colors text-center min-h-[44px]',
                     isSelected
-                      ? 'bg-pos-accent text-white shadow-sm'
-                      : 'text-pos-text-muted hover:text-pos-text hover:bg-pos-surface'
+                      ? 'bg-pos-primary text-white font-semibold shadow-xs'
+                      : 'text-pos-text-secondary hover:text-pos-text hover:bg-pos-surface'
                   )}
                 >
-                  <Icon size={15} />
-                  <span>{ch.label}</span>
+                  <Icon size={16} />
+                  <span className="text-[10px] mt-0.5 leading-tight">{ch.label}</span>
                 </button>
               );
             })}
           </div>
+        </div>
 
-          {/* Context Target: Table (Dine-In) or Customer (Takeaway/Delivery) */}
-          <div className="flex items-center gap-2">
-            {orderType === 'DINE_IN' && (
+        {/* Channel Context Summary Card (Dynamic based on selected channel) */}
+        <div className="p-2 border-b border-pos-border bg-pos-surface-subtle/50 shrink-0">
+          {orderType === 'DINE_IN' && (
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-semibold uppercase tracking-wider text-pos-text-muted">
+                  Table Context
+                </span>
+                {selectedTable && (
+                  <button
+                    type="button"
+                    onClick={() => setIsTableModalOpen(true)}
+                    className="text-[10px] font-semibold text-pos-primary hover:underline"
+                  >
+                    Change
+                  </button>
+                )}
+              </div>
               <button
                 type="button"
                 onClick={() => setIsTableModalOpen(true)}
                 className={cn(
-                  'flex items-center gap-2 px-3 py-1.5 rounded-xl border text-xs font-bold transition-all min-h-[38px]',
+                  'w-full p-2 rounded-md border text-left transition-colors flex items-center justify-between min-h-[40px]',
                   selectedTable
-                    ? 'border-pos-accent bg-pos-accent/15 text-pos-text ring-1 ring-pos-accent'
-                    : 'border-pos-warning/50 bg-pos-warning/10 text-pos-warning hover:bg-pos-warning/20'
+                    ? 'border-pos-primary/40 bg-pos-primary-soft/40 text-pos-text'
+                    : 'border-dashed border-pos-warning bg-pos-warning-soft text-pos-warning font-medium'
                 )}
               >
-                <UtensilsCrossed size={15} className="shrink-0" />
-                <span className="truncate max-w-[120px]">
-                  {selectedTable ? selectedTable.name : 'Choose Table *'}
-                </span>
-                {guestCount > 1 && (
-                  <span className="text-[10px] bg-pos-bg px-1.5 py-0.5 rounded font-mono">
+                <div className="flex items-center gap-1.5 min-w-0">
+                  <UtensilsCrossed size={14} className="shrink-0 text-pos-primary" />
+                  <span className="text-xs font-semibold truncate">
+                    {selectedTable ? selectedTable.name : 'Select Table *'}
+                  </span>
+                </div>
+                {selectedTable && (
+                  <span className="text-[11px] font-bold font-mono text-pos-primary bg-pos-surface px-1.5 py-0.5 rounded border border-pos-border">
                     {guestCount}p
                   </span>
                 )}
               </button>
-            )}
 
-            {/* Customer Details Pill */}
-            <button
-              type="button"
-              onClick={() => setIsCustomerModalOpen(true)}
-              className={cn(
-                'flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-semibold transition-all min-h-[38px]',
-                customer?.name || customer?.phone
-                  ? 'border-pos-accent/50 bg-pos-accent/10 text-pos-text'
-                  : 'border-pos-border bg-pos-bg text-pos-text-muted hover:text-pos-text'
+              {/* Guest Count Stepper (if table selected) */}
+              {selectedTable && (
+                <div className="flex items-center justify-between text-xs px-0.5 pt-0.5">
+                  <span className="text-[11px] text-pos-text-muted">Guests:</span>
+                  <div className="flex items-center gap-1 bg-pos-surface border border-pos-border rounded p-0.5">
+                    <button
+                      type="button"
+                      onClick={() => setGuestCount(Math.max(1, guestCount - 1))}
+                      className="h-5 w-5 rounded hover:bg-pos-surface-subtle text-pos-text-muted hover:text-pos-text flex items-center justify-center"
+                      title="Decrease guest count"
+                    >
+                      <Minus size={11} />
+                    </button>
+                    <span className="w-5 text-center font-bold text-[11px] font-mono text-pos-text">
+                      {guestCount}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setGuestCount(guestCount + 1)}
+                      className="h-5 w-5 rounded hover:bg-pos-surface-subtle text-pos-text-muted hover:text-pos-text flex items-center justify-center"
+                      title="Increase guest count"
+                    >
+                      <Plus size={11} />
+                    </button>
+                  </div>
+                </div>
               )}
-            >
-              <User size={15} className="shrink-0 text-pos-accent" />
-              <span className="truncate max-w-[120px]">
-                {customer?.name ||
-                  customer?.phone ||
-                  (orderType === 'DELIVERY' ? 'Recipient *' : 'Customer')}
+            </div>
+          )}
+
+          {orderType === 'TAKEAWAY' && (
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-semibold uppercase tracking-wider text-pos-text-muted">
+                  Takeaway Order
+                </span>
+                <Badge variant="warning" size="sm">
+                  Pickup
+                </Badge>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsCustomerModalOpen(true)}
+                className="w-full p-2 rounded-md border border-pos-border bg-pos-surface text-left transition-colors hover:border-pos-border-strong flex items-center justify-between min-h-[40px]"
+              >
+                <div className="flex items-center gap-1.5 min-w-0">
+                  <User size={14} className="shrink-0 text-pos-primary" />
+                  <span className="text-xs font-medium truncate text-pos-text">
+                    {customer?.name || 'Customer Name (Optional)'}
+                  </span>
+                </div>
+              </button>
+            </div>
+          )}
+
+          {orderType === 'DELIVERY' && (
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-semibold uppercase tracking-wider text-pos-text-muted">
+                  Delivery Details
+                </span>
+                <span className="text-[10px] font-bold font-mono text-pos-primary">
+                  +{formatPrice(deliveryCharge)}
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsCustomerModalOpen(true)}
+                className={cn(
+                  'w-full p-2 rounded-md border text-left transition-colors flex items-center justify-between min-h-[40px]',
+                  customer?.name || customer?.address
+                    ? 'border-pos-primary/40 bg-pos-primary-soft/40 text-pos-text'
+                    : 'border-dashed border-pos-warning bg-pos-warning-soft text-pos-warning font-medium'
+                )}
+              >
+                <div className="flex items-center gap-1.5 min-w-0">
+                  <MapPin size={14} className="shrink-0 text-pos-primary" />
+                  <span className="text-xs font-medium truncate">
+                    {customer?.name || 'Set Recipient & Address *'}
+                  </span>
+                </div>
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* Categories Header */}
+        <div className="px-3 py-2 border-b border-pos-border flex items-center justify-between shrink-0">
+          <span className="text-[11px] font-semibold uppercase tracking-wider text-pos-text-secondary">
+            Categories
+          </span>
+          <span className="text-[10px] font-mono text-pos-text-muted">
+            {categories.length} total
+          </span>
+        </div>
+
+        {/* Vertical Categories List (Scrollable) */}
+        <div className="flex-1 overflow-y-auto p-1.5 space-y-1 custom-scrollbar">
+          {/* All Categories Option */}
+          <button
+            type="button"
+            onClick={() => setSelectedCategoryId('ALL')}
+            className={cn(
+              'w-full px-2.5 py-2 rounded-md text-left text-xs font-medium transition-colors flex items-center justify-between min-h-[42px]',
+              selectedCategoryId === 'ALL'
+                ? 'bg-pos-primary-soft text-pos-primary font-semibold border-l-4 border-pos-primary'
+                : 'text-pos-text-secondary hover:text-pos-text hover:bg-pos-surface-subtle border-l-4 border-transparent'
+            )}
+          >
+            <div className="flex items-center gap-2 truncate">
+              <LayoutGrid size={15} className="shrink-0" />
+              <span className="truncate">All Items</span>
+            </div>
+            <span className="text-[11px] font-mono opacity-80 shrink-0 ml-1">
+              {allItems.length}
+            </span>
+          </button>
+
+          {/* Individual Categories */}
+          {categories.map(cat => {
+            const isSelected = selectedCategoryId === cat.id;
+            return (
+              <button
+                key={cat.id}
+                type="button"
+                onClick={() => setSelectedCategoryId(cat.id)}
+                className={cn(
+                  'w-full px-2.5 py-2 rounded-md text-left text-xs font-medium transition-colors flex items-center justify-between min-h-[42px]',
+                  isSelected
+                    ? 'bg-pos-primary-soft text-pos-primary font-semibold border-l-4 border-pos-primary'
+                    : 'text-pos-text-secondary hover:text-pos-text hover:bg-pos-surface-subtle border-l-4 border-transparent'
+                )}
+              >
+                <span className="truncate">{cat.name}</span>
+                <span className="text-[11px] font-mono opacity-80 shrink-0 ml-1">
+                  {cat.items.length}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* =========================================================================
+          ZONE 2 (CENTER): Menu Items Catalog Grid (flex-1)
+      ========================================================================= */}
+      <div className="flex-1 flex flex-col min-w-0 bg-pos-surface border border-pos-border rounded-lg overflow-hidden shadow-xs">
+        {/* Center Header: Search, Category Title, Item Count */}
+        <div className="p-3 border-b border-pos-border bg-pos-surface flex flex-wrap items-center justify-between gap-3 shrink-0">
+          <div>
+            <h2 className="text-base font-semibold text-pos-text leading-tight flex items-center gap-2">
+              <span>{currentCategoryName}</span>
+              <span className="text-xs font-normal text-pos-text-muted">
+                ({filteredItems.length} items)
               </span>
-            </button>
+            </h2>
           </div>
 
-          {/* Search Input Bar */}
-          <div className="relative flex-1 min-w-[180px] max-w-xs">
+          {/* Search Bar */}
+          <div className="relative flex-1 min-w-[200px] max-w-sm">
             <Search
               size={15}
               className="absolute left-3 top-1/2 -translate-y-1/2 text-pos-text-muted"
@@ -296,8 +465,8 @@ export const OrdersPage: React.FC = () => {
               type="text"
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
-              placeholder="Search items or #code..."
-              className="w-full pl-8 pr-7 py-1.5 rounded-xl bg-pos-bg border border-pos-border text-pos-text placeholder-pos-text-muted/60 text-xs focus:outline-none focus:ring-2 focus:ring-pos-accent font-medium min-h-[38px]"
+              placeholder="Search by item name or #code..."
+              className="w-full pl-8 pr-7 py-1.5 rounded-md bg-pos-surface border border-pos-border text-pos-text placeholder-pos-text-muted/60 text-xs focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary font-medium min-h-[38px]"
             />
             {searchQuery && (
               <button
@@ -312,38 +481,7 @@ export const OrdersPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Horizontal Categories Bar */}
-        <div className="px-3 py-2 border-b border-pos-border bg-pos-bg/40 flex items-center gap-2 overflow-x-auto custom-scrollbar shrink-0">
-          <button
-            type="button"
-            onClick={() => setSelectedCategoryId('ALL')}
-            className={cn(
-              'px-3.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all min-h-[36px]',
-              selectedCategoryId === 'ALL'
-                ? 'bg-pos-accent text-white shadow-sm'
-                : 'bg-pos-surface text-pos-text-muted hover:text-pos-text hover:bg-pos-surface-hover border border-pos-border'
-            )}
-          >
-            All Items ({allItems.length})
-          </button>
-          {categories.map(cat => (
-            <button
-              key={cat.id}
-              type="button"
-              onClick={() => setSelectedCategoryId(cat.id)}
-              className={cn(
-                'px-3.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all min-h-[36px]',
-                selectedCategoryId === cat.id
-                  ? 'bg-pos-accent text-white shadow-sm'
-                  : 'bg-pos-surface text-pos-text-muted hover:text-pos-text hover:bg-pos-surface-hover border border-pos-border'
-              )}
-            >
-              {cat.name} ({cat.items.length})
-            </button>
-          ))}
-        </div>
-
-        {/* Menu Items Grid */}
+        {/* Menu Items Grid Viewport */}
         <div className="flex-1 overflow-y-auto p-3 sm:p-4 custom-scrollbar">
           {isMenuLoading && (
             <div className="py-24 flex flex-col items-center justify-center gap-3 text-pos-text-muted text-xs">
@@ -353,20 +491,22 @@ export const OrdersPage: React.FC = () => {
           )}
 
           {menuError && (
-            <div className="p-4 rounded-xl bg-pos-danger/10 border border-pos-danger/30 text-pos-danger text-xs flex items-center gap-2">
-              <AlertCircle size={16} />
-              <span>Failed to load menu items. Please verify network connection.</span>
+            <div className="p-3.5 rounded-lg bg-pos-danger-soft border border-[#FECACA] text-pos-danger text-xs flex items-center gap-2">
+              <AlertCircle size={16} className="shrink-0" />
+              <span className="font-medium">
+                Failed to load menu items. Please verify network connection.
+              </span>
             </div>
           )}
 
           {!isMenuLoading && filteredItems.length === 0 && (
             <div className="py-24 text-center text-xs text-pos-text-muted">
-              No menu items found matching current category or search.
+              No menu items found matching "{searchQuery || currentCategoryName}".
             </div>
           )}
 
           {!isMenuLoading && (
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2.5">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-2.5">
               {filteredItems.map(item => {
                 const hasCustomizations =
                   item.variants.length > 0 || item.modifierGroups.length > 0;
@@ -375,20 +515,20 @@ export const OrdersPage: React.FC = () => {
                     key={item.id}
                     type="button"
                     onClick={() => handleItemCardClick(item)}
-                    className="p-3 rounded-xl border border-pos-border bg-pos-surface hover:bg-pos-surface-hover hover:border-pos-accent/40 active:scale-[0.98] transition-all text-left flex flex-col justify-between min-h-[105px] shadow-sm relative group"
+                    className="p-3 rounded-lg border border-pos-border bg-pos-surface hover:border-pos-border-strong hover:bg-pos-surface-subtle transition-colors text-left flex flex-col justify-between min-h-[110px] shadow-xs relative group"
                   >
                     <div>
                       <div className="flex items-start justify-between gap-1">
-                        <span className="text-[10px] font-mono text-pos-accent font-bold bg-pos-accent/10 px-1.5 py-0.5 rounded">
+                        <span className="text-[10px] font-mono text-pos-primary font-bold bg-pos-primary-soft px-1.5 py-0.5 rounded">
                           #{item.itemCode}
                         </span>
                         {hasCustomizations && (
-                          <span className="text-[9px] uppercase font-bold text-pos-text-muted bg-pos-bg px-1.5 py-0.5 rounded border border-pos-border/60">
+                          <span className="text-[9px] font-semibold text-pos-text-muted bg-pos-surface-subtle px-1.5 py-0.5 rounded border border-pos-border">
                             Custom
                           </span>
                         )}
                       </div>
-                      <h4 className="text-xs font-bold text-pos-text mt-1.5 line-clamp-2 leading-tight">
+                      <h4 className="text-xs font-semibold text-pos-text mt-1.5 line-clamp-2 leading-snug">
                         {item.name}
                       </h4>
                       {item.urduName && (
@@ -398,11 +538,11 @@ export const OrdersPage: React.FC = () => {
                       )}
                     </div>
 
-                    <div className="flex items-center justify-between pt-2 border-t border-pos-border/40 mt-2">
-                      <span className="text-xs font-black text-pos-text group-hover:text-pos-accent transition-colors">
+                    <div className="flex items-center justify-between pt-2 border-t border-pos-border mt-2">
+                      <span className="text-xs font-bold font-mono text-pos-primary">
                         {formatPrice(item.basePrice)}
                       </span>
-                      <div className="h-6 w-6 rounded-lg bg-pos-accent/10 group-hover:bg-pos-accent group-hover:text-white text-pos-accent flex items-center justify-center transition-all">
+                      <div className="h-6 w-6 rounded bg-pos-primary-soft group-hover:bg-pos-primary group-hover:text-white text-pos-primary flex items-center justify-center transition-colors">
                         <Plus size={14} />
                       </div>
                     </div>
@@ -415,20 +555,20 @@ export const OrdersPage: React.FC = () => {
       </div>
 
       {/* =========================================================================
-          RIGHT SECTION: Active Order Cart, Line Items, & Tender Checkout
+          ZONE 3 (RIGHT): Persistent Cart & Tender Checkout (~390px)
       ========================================================================= */}
-      <div className="w-full lg:w-96 flex flex-col bg-pos-surface border border-pos-border rounded-2xl shadow-xl overflow-hidden shrink-0">
+      <div className="w-full xl:w-[390px] flex flex-col bg-pos-surface border border-pos-border rounded-lg overflow-hidden shrink-0 shadow-xs">
         {/* Cart Header */}
-        <div className="p-3.5 border-b border-pos-border bg-pos-header flex items-center justify-between shrink-0">
+        <div className="p-3 border-b border-pos-border bg-pos-surface flex items-center justify-between shrink-0">
           <div className="flex items-center gap-2">
-            <div className="h-8 w-8 rounded-lg bg-pos-accent/15 text-pos-accent flex items-center justify-center">
+            <div className="h-8 w-8 rounded-lg bg-pos-primary-soft text-pos-primary flex items-center justify-center">
               <ShoppingBag size={16} />
             </div>
             <div>
-              <h3 className="text-xs font-bold text-pos-text leading-tight">
+              <h3 className="text-xs font-semibold text-pos-text leading-tight">
                 Active Order Cart
               </h3>
-              <p className="text-[10px] text-pos-text-muted uppercase font-semibold">
+              <p className="text-[10px] text-pos-text-muted uppercase font-medium">
                 {orderType === 'DINE_IN'
                   ? selectedTable
                     ? `Dine-In • ${selectedTable.name}`
@@ -439,13 +579,15 @@ export const OrdersPage: React.FC = () => {
           </div>
 
           <div className="flex items-center gap-2">
-            <Badge variant="default">{itemCount} items</Badge>
+            <Badge variant="default" size="sm">
+              {itemCount} {itemCount === 1 ? 'item' : 'items'}
+            </Badge>
             {cartItems.length > 0 && (
               <button
                 type="button"
                 onClick={clearCart}
                 aria-label="Clear cart"
-                className="p-1.5 rounded-lg text-pos-text-muted hover:text-pos-danger hover:bg-pos-danger/10 transition-colors"
+                className="p-1 rounded text-pos-text-muted hover:text-pos-danger hover:bg-pos-danger-soft transition-colors"
                 title="Clear all cart items"
               >
                 <Trash2 size={15} />
@@ -456,9 +598,9 @@ export const OrdersPage: React.FC = () => {
 
         {/* Global Error Banner */}
         {errorMessage && (
-          <div className="p-3 bg-pos-danger/10 border-b border-pos-danger/30 text-pos-danger text-xs flex items-center gap-2 shrink-0">
+          <div className="p-2.5 bg-pos-danger-soft border-b border-[#FECACA] text-pos-danger text-xs flex items-center gap-2 shrink-0">
             <AlertCircle size={15} className="shrink-0" />
-            <span className="flex-1">{errorMessage}</span>
+            <span className="flex-1 font-medium">{errorMessage}</span>
             <button
               type="button"
               onClick={() => setErrorMessage(null)}
@@ -469,29 +611,29 @@ export const OrdersPage: React.FC = () => {
           </div>
         )}
 
-        {/* Cart Line Items List */}
+        {/* Cart Line Items List (Scrollable) */}
         <div className="flex-1 overflow-y-auto p-3 space-y-2 custom-scrollbar">
           {cartItems.length === 0 ? (
-            <div className="py-20 text-center flex flex-col items-center justify-center gap-3 text-pos-text-muted text-xs">
-              <div className="h-12 w-12 rounded-2xl bg-pos-bg border border-pos-border flex items-center justify-center text-pos-text-muted/60">
-                <ShoppingBag size={24} />
+            <div className="py-20 text-center flex flex-col items-center justify-center gap-2.5 text-pos-text-muted text-xs">
+              <div className="h-10 w-10 rounded-lg bg-pos-surface-subtle border border-pos-border flex items-center justify-center text-pos-text-muted">
+                <ShoppingBag size={20} />
               </div>
-              <p className="font-medium">Cart is empty</p>
-              <p className="text-[11px] max-w-[200px]">
-                Tap items on the left catalog to add them to this sale
+              <p className="font-semibold text-pos-text">Cart is empty</p>
+              <p className="text-[11px] text-pos-text-muted max-w-[200px]">
+                Tap any menu item to add it to this order
               </p>
             </div>
           ) : (
             cartItems.map(item => (
               <div
                 key={item.id}
-                className="p-2.5 rounded-xl bg-pos-bg/80 border border-pos-border/80 text-xs space-y-1.5"
+                className="p-2.5 rounded-lg bg-pos-surface border border-pos-border text-xs space-y-1.5 shadow-xs"
               >
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0">
-                    <span className="font-bold text-pos-text">{item.itemName}</span>
+                    <span className="font-semibold text-pos-text">{item.itemName}</span>
                     {item.variantName && (
-                      <span className="text-[11px] text-pos-accent font-semibold ml-1.5">
+                      <span className="text-[11px] text-pos-primary font-medium ml-1.5">
                         ({item.variantName})
                       </span>
                     )}
@@ -507,7 +649,7 @@ export const OrdersPage: React.FC = () => {
                     {item.selectedModifiers.map((mod, idx) => (
                       <span
                         key={idx}
-                        className="text-[10px] bg-pos-surface border border-pos-border px-1.5 py-0.5 rounded text-pos-text-muted font-medium"
+                        className="text-[10px] bg-pos-surface-subtle border border-pos-border px-1.5 py-0.5 rounded text-pos-text-secondary font-medium"
                       >
                         +{mod.name}
                         {mod.priceAdjustment > 0 &&
@@ -519,14 +661,14 @@ export const OrdersPage: React.FC = () => {
 
                 {/* Special Instructions */}
                 {item.specialInstructions && (
-                  <p className="text-[10px] text-pos-text-muted italic flex items-center gap-1">
-                    <FileText size={10} /> {item.specialInstructions}
+                  <p className="text-[11px] text-pos-text-muted italic flex items-center gap-1">
+                    <FileText size={11} /> {item.specialInstructions}
                   </p>
                 )}
 
                 {/* Stepper Quantity & Remove */}
-                <div className="flex items-center justify-between pt-1 border-t border-pos-border/40">
-                  <span className="text-[10px] text-pos-text-muted font-mono">
+                <div className="flex items-center justify-between pt-1 border-t border-pos-border">
+                  <span className="text-[11px] text-pos-text-muted font-mono">
                     {formatPrice(item.unitPrice + item.modifiersPrice)} / unit
                   </span>
 
@@ -535,18 +677,18 @@ export const OrdersPage: React.FC = () => {
                       type="button"
                       onClick={() => updateQuantity(item.id, item.quantity - 1)}
                       aria-label="Decrease quantity"
-                      className="h-6 w-6 rounded bg-pos-surface hover:bg-pos-surface-hover border border-pos-border text-pos-text flex items-center justify-center active:scale-95"
+                      className="h-7 w-7 rounded border border-pos-border bg-pos-surface hover:bg-pos-surface-subtle text-pos-text flex items-center justify-center active:scale-95 transition-colors"
                     >
                       <Minus size={12} />
                     </button>
-                    <span className="w-6 text-center font-bold font-mono text-pos-text">
+                    <span className="w-6 text-center font-bold font-mono text-xs text-pos-text">
                       {item.quantity}
                     </span>
                     <button
                       type="button"
                       onClick={() => updateQuantity(item.id, item.quantity + 1)}
                       aria-label="Increase quantity"
-                      className="h-6 w-6 rounded bg-pos-surface hover:bg-pos-surface-hover border border-pos-border text-pos-text flex items-center justify-center active:scale-95"
+                      className="h-7 w-7 rounded border border-pos-border bg-pos-surface hover:bg-pos-surface-subtle text-pos-text flex items-center justify-center active:scale-95 transition-colors"
                     >
                       <Plus size={12} />
                     </button>
@@ -554,9 +696,9 @@ export const OrdersPage: React.FC = () => {
                       type="button"
                       onClick={() => removeItem(item.id)}
                       aria-label="Remove item"
-                      className="h-6 w-6 ml-1 rounded hover:bg-pos-danger/10 text-pos-text-muted hover:text-pos-danger flex items-center justify-center"
+                      className="h-7 w-7 ml-1 rounded hover:bg-pos-danger-soft text-pos-text-muted hover:text-pos-danger flex items-center justify-center transition-colors"
                     >
-                      <Trash2 size={12} />
+                      <Trash2 size={13} />
                     </button>
                   </div>
                 </div>
@@ -565,8 +707,46 @@ export const OrdersPage: React.FC = () => {
           )}
         </div>
 
+        {/* Optional Order Notes (Collapsible) */}
+        {cartItems.length > 0 && (
+          <div className="px-3 py-1.5 border-t border-pos-border bg-pos-surface shrink-0">
+            {isNotesExpanded ? (
+              <div className="space-y-1">
+                <div className="flex items-center justify-between text-[11px]">
+                  <span className="font-semibold text-pos-text-secondary">
+                    Order Kitchen Notes
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setIsNotesExpanded(false)}
+                    className="text-pos-text-muted hover:text-pos-text"
+                  >
+                    Close
+                  </button>
+                </div>
+                <input
+                  type="text"
+                  value={orderNotes}
+                  onChange={e => setOrderNotes(e.target.value)}
+                  placeholder="e.g. Table request, quick prep..."
+                  className="w-full px-2.5 py-1.5 rounded-md bg-pos-surface border border-pos-border text-xs text-pos-text placeholder-pos-text-muted/60 focus:outline-none focus:ring-1 focus:ring-pos-primary"
+                />
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setIsNotesExpanded(true)}
+                className="text-[11px] text-pos-text-muted hover:text-pos-text flex items-center gap-1 font-medium"
+              >
+                <FileText size={12} />
+                <span>{orderNotes ? `Note: ${orderNotes}` : '+ Add order note'}</span>
+              </button>
+            )}
+          </div>
+        )}
+
         {/* Financial Summary Calculation Panel */}
-        <div className="p-3.5 border-t border-pos-border bg-pos-header/70 space-y-2 shrink-0 text-xs">
+        <div className="p-3 border-t border-pos-border bg-pos-surface space-y-1.5 shrink-0 text-xs">
           <div className="flex justify-between text-pos-text-muted">
             <span>Subtotal:</span>
             <span className="font-mono text-pos-text font-semibold">
@@ -597,15 +777,23 @@ export const OrdersPage: React.FC = () => {
             </div>
           )}
 
-          <div className="flex justify-between items-center pt-2 border-t border-pos-border font-bold text-sm">
-            <span className="text-pos-text">Grand Total:</span>
-            <span className="text-xl font-black text-pos-accent font-mono">
-              {formatPrice(grandTotal)}
-            </span>
+          {/* Prominent Grand Total Container */}
+          <div className="p-3 rounded-lg bg-pos-surface-subtle border border-pos-border flex items-center justify-between mt-1 shadow-xs">
+            <div>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-pos-text-muted">
+                Grand Total
+              </span>
+              <p className="text-xl font-black text-pos-primary font-mono leading-tight mt-0.5">
+                {formatPrice(grandTotal)}
+              </p>
+            </div>
+            <Badge variant="default" size="sm">
+              {itemCount} Items
+            </Badge>
           </div>
 
           {/* Action Buttons */}
-          <div className="grid grid-cols-2 gap-2 pt-2">
+          <div className="grid grid-cols-2 gap-2 pt-1">
             <Button
               type="button"
               variant="secondary"
@@ -613,7 +801,7 @@ export const OrdersPage: React.FC = () => {
               onClick={handleSaveOrder}
               disabled={cartItems.length === 0 || createOrderMutation.isPending}
               isLoading={createOrderMutation.isPending}
-              className="text-xs font-bold flex items-center justify-center gap-1.5"
+              className="text-xs font-semibold flex items-center justify-center gap-1.5 min-h-[42px]"
             >
               <Send size={14} />
               <span>Save Order</span>
@@ -626,7 +814,7 @@ export const OrdersPage: React.FC = () => {
               onClick={handleCheckoutPayment}
               disabled={cartItems.length === 0 || createOrderMutation.isPending}
               isLoading={createOrderMutation.isPending}
-              className="text-xs font-black flex items-center justify-center gap-1.5 shadow-md shadow-pos-accent/20"
+              className="text-xs font-bold flex items-center justify-center gap-1.5 min-h-[42px] shadow-xs"
             >
               <CreditCard size={15} />
               <span>Pay Tender</span>

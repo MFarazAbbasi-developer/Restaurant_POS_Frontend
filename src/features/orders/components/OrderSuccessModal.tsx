@@ -37,28 +37,30 @@ export const OrderSuccessModal: React.FC<OrderSuccessModalProps> = ({
 
   return (
     <>
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm p-4 animate-in fade-in duration-150 select-none">
-        <div className="w-full max-w-lg bg-pos-surface border border-pos-border rounded-2xl shadow-2xl p-6 sm:p-8 text-center space-y-6">
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 animate-in fade-in duration-150 select-none">
+        <div className="w-full max-w-lg bg-pos-surface border border-pos-border rounded-xl shadow-modal p-6 sm:p-7 text-center space-y-5">
           {/* Success Icon */}
-          <div className="inline-flex items-center justify-center h-20 w-20 rounded-full bg-pos-success/15 border border-pos-success/30 text-pos-success shadow-lg shadow-pos-success/20 animate-in zoom-in-50 duration-200">
-            <CheckCircle size={44} />
+          <div className="inline-flex items-center justify-center h-16 w-16 rounded-full bg-pos-success-soft border border-[#BBF7D0] text-pos-success shadow-xs animate-in zoom-in-50 duration-200">
+            <CheckCircle size={36} />
           </div>
 
           <div>
             <Badge variant="success" className="mb-2">
               Payment Completed
             </Badge>
-            <h2 className="text-2xl font-black text-pos-text">Order Paid & Closed</h2>
+            <h2 className="text-xl font-bold text-pos-text">Order Paid & Closed</h2>
             <p className="text-xs text-pos-text-muted mt-1">
-              Order has been processed and saved in the central restaurant database
+              Transaction has been recorded and active ticket closed
             </p>
           </div>
 
           {/* Order Details Receipt Box */}
-          <div className="bg-pos-bg border border-pos-border rounded-xl p-4 text-xs space-y-2.5 text-left font-mono">
-            <div className="flex justify-between items-center pb-2 border-b border-pos-border/60">
+          <div className="bg-pos-surface-subtle border border-pos-border rounded-lg p-4 text-xs space-y-2 text-left font-mono">
+            <div className="flex justify-between items-center pb-2 border-b border-pos-border">
               <span className="text-pos-text-muted">Order Code:</span>
-              <span className="font-bold text-pos-accent text-sm">#{order.orderCode}</span>
+              <span className="font-bold text-pos-primary text-sm">
+                #{order.orderCode}
+              </span>
             </div>
 
             <div className="flex justify-between items-center text-pos-text-muted">
@@ -86,7 +88,7 @@ export const OrderSuccessModal: React.FC<OrderSuccessModalProps> = ({
             </div>
 
             {changeAmount > 0 && (
-              <div className="flex justify-between items-center pt-2 border-t border-pos-border/60 text-pos-success font-bold text-sm">
+              <div className="flex justify-between items-center pt-2 border-t border-pos-border text-pos-success font-bold text-sm">
                 <span>Change Given:</span>
                 <span>{formatPrice(changeAmount)}</span>
               </div>
@@ -99,18 +101,18 @@ export const OrderSuccessModal: React.FC<OrderSuccessModalProps> = ({
               variant="secondary"
               size="lg"
               onClick={() => setIsReceiptModalOpen(true)}
-              className="w-full sm:w-auto font-semibold flex items-center justify-center gap-2"
+              className="w-full sm:w-auto font-medium flex items-center justify-center gap-2"
             >
-              <FileText size={18} /> View Digital Bill
+              <FileText size={16} /> View Digital Bill
             </Button>
 
             <Button
               variant="primary"
               size="lg"
               onClick={onNewSale}
-              className="w-full sm:w-auto font-bold flex items-center justify-center gap-2 shadow-lg shadow-pos-accent/20"
+              className="w-full sm:w-auto font-semibold flex items-center justify-center gap-2 shadow-xs"
             >
-              <PlusCircle size={18} /> Start New Sale <ArrowRight size={16} />
+              <PlusCircle size={16} /> Start New Sale <ArrowRight size={15} />
             </Button>
           </div>
         </div>

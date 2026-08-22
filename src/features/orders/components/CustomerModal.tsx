@@ -33,19 +33,21 @@ export const CustomerModal: React.FC<CustomerModalProps> = ({ onClose }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 animate-in fade-in duration-150 select-none">
-      <div className="w-full max-w-md bg-pos-surface border border-pos-border rounded-2xl shadow-2xl flex flex-col overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 animate-in fade-in duration-150 select-none">
+      <div className="w-full max-w-md bg-pos-surface border border-pos-border rounded-xl shadow-modal flex flex-col overflow-hidden">
         {/* Header */}
-        <div className="p-4 sm:p-5 border-b border-pos-border flex items-center justify-between bg-pos-header shrink-0">
+        <div className="p-4 sm:p-5 border-b border-pos-border flex items-center justify-between bg-pos-surface shrink-0">
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-xl bg-pos-accent/15 border border-pos-accent/30 text-pos-accent flex items-center justify-center">
-              <UserCheck size={20} />
+            <div className="h-10 w-10 rounded-lg bg-pos-primary-soft border border-[#FED7AA] text-pos-primary flex items-center justify-center">
+              <UserCheck size={18} />
             </div>
             <div>
-              <h3 className="text-base font-bold text-pos-text">Customer & Order Info</h3>
+              <h3 className="text-base font-semibold text-pos-text">
+                Customer & Order Info
+              </h3>
               <p className="text-xs text-pos-text-muted">
                 {orderType === 'DELIVERY'
-                  ? 'Delivery recipient and address'
+                  ? 'Delivery recipient and destination address'
                   : 'Customer identification and party size'}
               </p>
             </div>
@@ -54,9 +56,9 @@ export const CustomerModal: React.FC<CustomerModalProps> = ({ onClose }) => {
             type="button"
             onClick={onClose}
             aria-label="Close customer modal"
-            className="p-2 rounded-xl text-pos-text-muted hover:text-pos-text hover:bg-pos-surface-hover transition-colors"
+            className="p-1.5 rounded-lg text-pos-text-muted hover:text-pos-text hover:bg-pos-surface-subtle transition-colors"
           >
-            <X size={20} />
+            <X size={18} />
           </button>
         </div>
 
@@ -64,13 +66,13 @@ export const CustomerModal: React.FC<CustomerModalProps> = ({ onClose }) => {
         <form onSubmit={handleSave} className="p-5 space-y-4">
           {/* Guest Count for Dine-in */}
           {orderType === 'DINE_IN' && (
-            <div className="p-3.5 rounded-xl bg-pos-bg border border-pos-border flex items-center justify-between">
+            <div className="p-3.5 rounded-lg bg-pos-surface-subtle border border-pos-border flex items-center justify-between">
               <div>
-                <label className="text-xs font-bold uppercase tracking-wider text-pos-text">
+                <label className="text-xs font-semibold uppercase tracking-wider text-pos-text">
                   Party / Guest Count
                 </label>
-                <p className="text-[11px] text-pos-text-muted">
-                  Total guests at this table
+                <p className="text-xs text-pos-text-muted">
+                  Total guests seated at this table
                 </p>
               </div>
               <div className="flex items-center bg-pos-surface border border-pos-border rounded-lg p-1">
@@ -78,18 +80,18 @@ export const CustomerModal: React.FC<CustomerModalProps> = ({ onClose }) => {
                   type="button"
                   onClick={() => setGuests(g => Math.max(1, g - 1))}
                   aria-label="Decrease guests"
-                  className="h-8 w-8 rounded hover:bg-pos-surface-hover text-pos-text-muted hover:text-pos-text flex items-center justify-center transition-colors"
+                  className="h-8 w-8 rounded hover:bg-pos-surface-subtle text-pos-text-muted hover:text-pos-text flex items-center justify-center transition-colors"
                 >
                   <Minus size={14} />
                 </button>
-                <span className="w-8 text-center font-bold text-sm text-pos-text">
+                <span className="w-8 text-center font-bold text-sm text-pos-text font-mono">
                   {guests}
                 </span>
                 <button
                   type="button"
                   onClick={() => setGuests(g => g + 1)}
                   aria-label="Increase guests"
-                  className="h-8 w-8 rounded hover:bg-pos-surface-hover text-pos-text-muted hover:text-pos-text flex items-center justify-center transition-colors"
+                  className="h-8 w-8 rounded hover:bg-pos-surface-subtle text-pos-text-muted hover:text-pos-text flex items-center justify-center transition-colors"
                 >
                   <Plus size={14} />
                 </button>
@@ -99,7 +101,7 @@ export const CustomerModal: React.FC<CustomerModalProps> = ({ onClose }) => {
 
           {/* Customer Name */}
           <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-pos-text mb-1.5">
+            <label className="block text-xs font-semibold uppercase tracking-wider text-pos-text-secondary mb-1.5">
               Customer Name
             </label>
             <div className="relative">
@@ -111,15 +113,15 @@ export const CustomerModal: React.FC<CustomerModalProps> = ({ onClose }) => {
                 type="text"
                 value={name}
                 onChange={e => setName(e.target.value)}
-                placeholder="e.g. John Smith"
-                className="w-full pl-10 pr-3.5 py-2.5 rounded-xl bg-pos-bg border border-pos-border text-pos-text placeholder-pos-text-muted/60 text-xs focus:outline-none focus:ring-2 focus:ring-pos-accent focus:border-transparent font-medium"
+                placeholder="e.g. Alex Johnson"
+                className="w-full pl-10 pr-3.5 py-2.5 rounded-lg bg-pos-surface border border-pos-border text-pos-text placeholder-pos-text-muted/60 text-xs focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary font-medium"
               />
             </div>
           </div>
 
           {/* Customer Phone */}
           <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-pos-text mb-1.5">
+            <label className="block text-xs font-semibold uppercase tracking-wider text-pos-text-secondary mb-1.5">
               Phone Number
             </label>
             <div className="relative">
@@ -132,7 +134,7 @@ export const CustomerModal: React.FC<CustomerModalProps> = ({ onClose }) => {
                 value={phone}
                 onChange={e => setPhone(e.target.value)}
                 placeholder="e.g. +1 (555) 019-2834"
-                className="w-full pl-10 pr-3.5 py-2.5 rounded-xl bg-pos-bg border border-pos-border text-pos-text placeholder-pos-text-muted/60 text-xs focus:outline-none focus:ring-2 focus:ring-pos-accent focus:border-transparent font-medium font-mono"
+                className="w-full pl-10 pr-3.5 py-2.5 rounded-lg bg-pos-surface border border-pos-border text-pos-text placeholder-pos-text-muted/60 text-xs focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary font-medium font-mono"
               />
             </div>
           </div>
@@ -140,7 +142,7 @@ export const CustomerModal: React.FC<CustomerModalProps> = ({ onClose }) => {
           {/* Delivery Address (if Delivery order) */}
           {orderType === 'DELIVERY' && (
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-pos-text mb-1.5">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-pos-text-secondary mb-1.5">
                 Delivery Address <span className="text-pos-danger">*</span>
               </label>
               <div className="relative">
@@ -154,7 +156,7 @@ export const CustomerModal: React.FC<CustomerModalProps> = ({ onClose }) => {
                   value={address}
                   onChange={e => setAddress(e.target.value)}
                   placeholder="Street address, building, apartment / suite number..."
-                  className="w-full pl-10 pr-3.5 py-2.5 rounded-xl bg-pos-bg border border-pos-border text-pos-text placeholder-pos-text-muted/60 text-xs focus:outline-none focus:ring-2 focus:ring-pos-accent focus:border-transparent font-medium resize-none"
+                  className="w-full pl-10 pr-3.5 py-2.5 rounded-lg bg-pos-surface border border-pos-border text-pos-text placeholder-pos-text-muted/60 text-xs focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary font-medium resize-none"
                 />
               </div>
             </div>
@@ -169,13 +171,13 @@ export const CustomerModal: React.FC<CustomerModalProps> = ({ onClose }) => {
               onClick={handleClear}
               className="text-xs text-pos-text-muted hover:text-pos-danger"
             >
-              Clear
+              Clear Details
             </Button>
             <div className="flex items-center gap-2">
               <Button type="button" variant="secondary" size="md" onClick={onClose}>
                 Cancel
               </Button>
-              <Button type="submit" variant="primary" size="md" className="font-bold">
+              <Button type="submit" variant="primary" size="md" className="font-semibold">
                 Apply Details
               </Button>
             </div>

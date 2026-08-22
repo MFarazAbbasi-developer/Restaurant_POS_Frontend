@@ -29,18 +29,24 @@ export class MenuApi {
 
   public static async listCategories(): Promise<CategoryWithCount[]> {
     const response =
-      await apiClient.get<ApiResponse<CategoryWithCount[] | { categories: CategoryWithCount[] }>>('/menu/categories');
+      await apiClient.get<
+        ApiResponse<CategoryWithCount[] | { categories: CategoryWithCount[] }>
+      >('/menu/categories');
     if (Array.isArray(response.data)) return response.data;
-    if (response.data && 'categories' in response.data && Array.isArray(response.data.categories)) {
+    if (
+      response.data &&
+      'categories' in response.data &&
+      Array.isArray(response.data.categories)
+    ) {
       return response.data.categories;
     }
     return [];
   }
 
   public static async getCategoryById(id: string): Promise<CategoryWithCount> {
-    const response = await apiClient.get<ApiResponse<CategoryWithCount | { category: CategoryWithCount }>>(
-      `/menu/categories/${id}`
-    );
+    const response = await apiClient.get<
+      ApiResponse<CategoryWithCount | { category: CategoryWithCount }>
+    >(`/menu/categories/${id}`);
     if (response.data && 'category' in response.data) return response.data.category;
     return response.data as CategoryWithCount;
   }
@@ -88,7 +94,11 @@ export class MenuApi {
       ReorderCategoriesInput
     >('/menu/categories/reorder', payload);
     if (Array.isArray(response.data)) return response.data;
-    if (response.data && 'categories' in response.data && Array.isArray(response.data.categories)) {
+    if (
+      response.data &&
+      'categories' in response.data &&
+      Array.isArray(response.data.categories)
+    ) {
       return response.data.categories;
     }
     return [];
@@ -109,9 +119,9 @@ export class MenuApi {
   }
 
   public static async getItemById(id: string): Promise<MenuItemRecord> {
-    const response = await apiClient.get<ApiResponse<MenuItemRecord | { item: MenuItemRecord }>>(
-      `/menu/items/${id}`
-    );
+    const response = await apiClient.get<
+      ApiResponse<MenuItemRecord | { item: MenuItemRecord }>
+    >(`/menu/items/${id}`);
     if (response.data && 'item' in response.data) return response.data.item;
     return response.data as MenuItemRecord;
   }
@@ -169,10 +179,10 @@ export class MenuApi {
     itemId: string,
     payload: CreateVariantInput
   ): Promise<VariantRecord> {
-    const response = await apiClient.post<ApiResponse<VariantRecord | { variant: VariantRecord }>, CreateVariantInput>(
-      `/menu/items/${itemId}/variants`,
-      payload
-    );
+    const response = await apiClient.post<
+      ApiResponse<VariantRecord | { variant: VariantRecord }>,
+      CreateVariantInput
+    >(`/menu/items/${itemId}/variants`, payload);
     if (response.data && 'variant' in response.data) return response.data.variant;
     return response.data as VariantRecord;
   }
@@ -201,21 +211,26 @@ export class MenuApi {
   // ===========================================================================
 
   public static async listModifierGroups(): Promise<ModifierGroupWithCount[]> {
-    const response = await apiClient.get<ApiResponse<ModifierGroupWithCount[] | { modifierGroups: ModifierGroupWithCount[] }>>(
-      '/menu/modifier-groups'
-    );
+    const response = await apiClient.get<
+      ApiResponse<ModifierGroupWithCount[] | { modifierGroups: ModifierGroupWithCount[] }>
+    >('/menu/modifier-groups');
     if (Array.isArray(response.data)) return response.data;
-    if (response.data && 'modifierGroups' in response.data && Array.isArray(response.data.modifierGroups)) {
+    if (
+      response.data &&
+      'modifierGroups' in response.data &&
+      Array.isArray(response.data.modifierGroups)
+    ) {
       return response.data.modifierGroups;
     }
     return [];
   }
 
   public static async getModifierGroupById(id: string): Promise<ModifierGroupWithCount> {
-    const response = await apiClient.get<ApiResponse<ModifierGroupWithCount | { modifierGroup: ModifierGroupWithCount }>>(
-      `/menu/modifier-groups/${id}`
-    );
-    if (response.data && 'modifierGroup' in response.data) return response.data.modifierGroup;
+    const response = await apiClient.get<
+      ApiResponse<ModifierGroupWithCount | { modifierGroup: ModifierGroupWithCount }>
+    >(`/menu/modifier-groups/${id}`);
+    if (response.data && 'modifierGroup' in response.data)
+      return response.data.modifierGroup;
     return response.data as ModifierGroupWithCount;
   }
 
@@ -226,7 +241,8 @@ export class MenuApi {
       ApiResponse<ModifierGroupWithCount | { modifierGroup: ModifierGroupWithCount }>,
       CreateModifierGroupInput
     >('/menu/modifier-groups', payload);
-    if (response.data && 'modifierGroup' in response.data) return response.data.modifierGroup;
+    if (response.data && 'modifierGroup' in response.data)
+      return response.data.modifierGroup;
     return response.data as ModifierGroupWithCount;
   }
 
@@ -238,7 +254,8 @@ export class MenuApi {
       ApiResponse<ModifierGroupWithCount | { modifierGroup: ModifierGroupWithCount }>,
       UpdateModifierGroupInput
     >(`/menu/modifier-groups/${id}`, payload);
-    if (response.data && 'modifierGroup' in response.data) return response.data.modifierGroup;
+    if (response.data && 'modifierGroup' in response.data)
+      return response.data.modifierGroup;
     return response.data as ModifierGroupWithCount;
   }
 
@@ -250,7 +267,8 @@ export class MenuApi {
       ApiResponse<ModifierGroupWithCount | { modifierGroup: ModifierGroupWithCount }>,
       { isActive: boolean }
     >(`/menu/modifier-groups/${id}/status`, { isActive });
-    if (response.data && 'modifierGroup' in response.data) return response.data.modifierGroup;
+    if (response.data && 'modifierGroup' in response.data)
+      return response.data.modifierGroup;
     return response.data as ModifierGroupWithCount;
   }
 

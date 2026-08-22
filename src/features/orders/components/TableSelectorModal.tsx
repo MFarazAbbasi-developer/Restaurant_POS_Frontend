@@ -43,16 +43,18 @@ export const TableSelectorModal: React.FC<TableSelectorModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 animate-in fade-in duration-150 select-none">
-      <div className="w-full max-w-3xl bg-pos-surface border border-pos-border rounded-2xl shadow-2xl flex flex-col max-h-[85vh] overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 animate-in fade-in duration-150 select-none">
+      <div className="w-full max-w-3xl bg-pos-surface border border-pos-border rounded-xl shadow-modal flex flex-col max-h-[85vh] overflow-hidden">
         {/* Header */}
-        <div className="p-4 sm:p-5 border-b border-pos-border flex items-center justify-between bg-pos-header shrink-0">
+        <div className="p-4 sm:p-5 border-b border-pos-border flex items-center justify-between bg-pos-surface shrink-0">
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-xl bg-pos-accent/15 border border-pos-accent/30 text-pos-accent flex items-center justify-center">
-              <UtensilsCrossed size={20} />
+            <div className="h-10 w-10 rounded-lg bg-pos-primary-soft border border-[#FED7AA] text-pos-primary flex items-center justify-center">
+              <UtensilsCrossed size={18} />
             </div>
             <div>
-              <h3 className="text-base font-bold text-pos-text">Select Dine-In Table</h3>
+              <h3 className="text-base font-semibold text-pos-text">
+                Select Dine-In Table
+              </h3>
               <p className="text-xs text-pos-text-muted">
                 Assign an active dining table to this order
               </p>
@@ -62,22 +64,22 @@ export const TableSelectorModal: React.FC<TableSelectorModalProps> = ({
             type="button"
             onClick={onClose}
             aria-label="Close table selector"
-            className="p-2 rounded-xl text-pos-text-muted hover:text-pos-text hover:bg-pos-surface-hover transition-colors"
+            className="p-1.5 rounded-lg text-pos-text-muted hover:text-pos-text hover:bg-pos-surface-subtle transition-colors"
           >
-            <X size={20} />
+            <X size={18} />
           </button>
         </div>
 
         {/* Zone Navigation Filter Pills */}
-        <div className="px-4 py-3 border-b border-pos-border bg-pos-bg/50 flex items-center gap-2 overflow-x-auto custom-scrollbar shrink-0">
+        <div className="px-4 py-2.5 border-b border-pos-border bg-pos-surface-subtle/50 flex items-center gap-2 overflow-x-auto custom-scrollbar shrink-0">
           <button
             type="button"
             onClick={() => setSelectedZoneId('ALL')}
             className={cn(
-              'px-3.5 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors min-h-[36px]',
+              'px-3 py-1.5 rounded-md text-xs font-semibold whitespace-nowrap transition-colors min-h-[34px]',
               selectedZoneId === 'ALL'
-                ? 'bg-pos-accent text-white shadow-sm'
-                : 'bg-pos-surface text-pos-text-muted hover:text-pos-text hover:bg-pos-surface-hover border border-pos-border'
+                ? 'bg-pos-primary text-white shadow-xs'
+                : 'bg-pos-surface text-pos-text-secondary hover:text-pos-text hover:bg-pos-surface-subtle border border-pos-border'
             )}
           >
             All Zones ({floorData?.summary.totalTables || 0})
@@ -88,10 +90,10 @@ export const TableSelectorModal: React.FC<TableSelectorModalProps> = ({
               type="button"
               onClick={() => setSelectedZoneId(zone.id)}
               className={cn(
-                'px-3.5 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors min-h-[36px]',
+                'px-3 py-1.5 rounded-md text-xs font-semibold whitespace-nowrap transition-colors min-h-[34px]',
                 selectedZoneId === zone.id
-                  ? 'bg-pos-accent text-white shadow-sm'
-                  : 'bg-pos-surface text-pos-text-muted hover:text-pos-text hover:bg-pos-surface-hover border border-pos-border'
+                  ? 'bg-pos-primary text-white shadow-xs'
+                  : 'bg-pos-surface text-pos-text-secondary hover:text-pos-text hover:bg-pos-surface-subtle border border-pos-border'
               )}
             >
               {zone.name} ({zone.tables.length})
@@ -109,9 +111,11 @@ export const TableSelectorModal: React.FC<TableSelectorModalProps> = ({
           )}
 
           {error && (
-            <div className="p-4 rounded-xl bg-pos-danger/10 border border-pos-danger/30 text-pos-danger text-xs flex items-center gap-2">
-              <AlertCircle size={16} />
-              <span>Failed to fetch table floor plan. Please retry.</span>
+            <div className="p-3 rounded-lg bg-pos-danger-soft border border-[#FECACA] text-pos-danger text-xs flex items-center gap-2">
+              <AlertCircle size={15} />
+              <span className="font-medium">
+                Failed to fetch table floor plan. Please retry.
+              </span>
             </div>
           )}
 
@@ -125,10 +129,10 @@ export const TableSelectorModal: React.FC<TableSelectorModalProps> = ({
             activeZones.map(zone => (
               <div key={zone.id} className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-pos-text-muted">
+                  <h4 className="text-xs font-semibold uppercase tracking-wider text-pos-text-secondary">
                     {zone.name}
                   </h4>
-                  <span className="text-[11px] text-pos-text-muted">
+                  <span className="text-xs text-pos-text-muted">
                     {zone.tables.length} tables
                   </span>
                 </div>
@@ -145,25 +149,25 @@ export const TableSelectorModal: React.FC<TableSelectorModalProps> = ({
                           onClose();
                         }}
                         className={cn(
-                          'p-3.5 rounded-xl border text-left transition-all relative flex flex-col justify-between min-h-[90px]',
+                          'p-3.5 rounded-lg border text-left transition-colors relative flex flex-col justify-between min-h-[90px] shadow-xs',
                           isSelected
-                            ? 'border-pos-accent bg-pos-accent/15 ring-2 ring-pos-accent shadow-md'
-                            : 'border-pos-border bg-pos-bg hover:border-pos-accent/50 hover:bg-pos-surface'
+                            ? 'border-pos-primary bg-pos-primary-soft/40 ring-1 ring-pos-primary'
+                            : 'border-pos-border bg-pos-surface hover:border-pos-border-strong hover:bg-pos-surface-subtle'
                         )}
                       >
                         <div className="flex items-start justify-between">
-                          <span className="text-sm font-bold text-pos-text truncate">
+                          <span className="text-sm font-semibold text-pos-text truncate">
                             {table.name}
                           </span>
                           {isSelected && (
-                            <span className="h-5 w-5 rounded-full bg-pos-accent text-white flex items-center justify-center shrink-0">
+                            <span className="h-5 w-5 rounded-full bg-pos-primary text-white flex items-center justify-center shrink-0">
                               <Check size={12} strokeWidth={3} />
                             </span>
                           )}
                         </div>
 
-                        <div className="flex items-center justify-between pt-2 mt-2 border-t border-pos-border/40 text-xs">
-                          <span className="text-pos-text-muted flex items-center gap-1 text-[11px]">
+                        <div className="flex items-center justify-between pt-2 mt-2 border-t border-pos-border text-xs">
+                          <span className="text-pos-text-muted flex items-center gap-1">
                             <Users size={12} /> {table.capacity}
                           </span>
                           {getStatusBadge(table.status)}
@@ -177,7 +181,7 @@ export const TableSelectorModal: React.FC<TableSelectorModalProps> = ({
         </div>
 
         {/* Footer Actions */}
-        <div className="p-4 border-t border-pos-border bg-pos-header flex items-center justify-between shrink-0">
+        <div className="p-4 border-t border-pos-border bg-pos-surface flex items-center justify-between shrink-0">
           <Button
             variant="ghost"
             size="sm"
