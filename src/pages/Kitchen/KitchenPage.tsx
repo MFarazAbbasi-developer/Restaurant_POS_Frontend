@@ -54,8 +54,21 @@ export const KitchenPage: React.FC = () => {
     refetch,
   } = useKitchenQueueQuery(queryParams);
 
-  const { data: stations = [] } = useKitchenStationsQuery();
+  const { data: rawStations } = useKitchenStationsQuery();
   const { data: performance } = useKitchenPerformanceQuery();
+
+  const stations = useMemo(() => {
+    if (Array.isArray(rawStations)) return rawStations;
+    if (
+      rawStations &&
+      typeof rawStations === 'object' &&
+      'stations' in rawStations &&
+      Array.isArray((rawStations as { stations?: unknown[] }).stations)
+    ) {
+      return (rawStations as { stations: typeof rawStations }).stations;
+    }
+    return [];
+  }, [rawStations]);
 
   const rawTickets = useMemo(() => queueData?.tickets || [], [queueData]);
 

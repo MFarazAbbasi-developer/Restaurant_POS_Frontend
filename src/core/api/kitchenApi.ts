@@ -32,8 +32,21 @@ export class KitchenApi {
    */
   public static async listStations(): Promise<KitchenStationRecord[]> {
     const response =
-      await apiClient.get<ApiResponse<KitchenStationRecord[]>>('/kitchen/stations');
-    return response.data;
+      await apiClient.get<
+        ApiResponse<KitchenStationRecord[] | { stations: KitchenStationRecord[] }>
+      >('/kitchen/stations');
+    if (Array.isArray(response.data)) {
+      return response.data;
+    }
+    if (
+      response.data &&
+      typeof response.data === 'object' &&
+      'stations' in response.data &&
+      Array.isArray(response.data.stations)
+    ) {
+      return response.data.stations;
+    }
+    return [];
   }
 
   /**
@@ -51,10 +64,17 @@ export class KitchenApi {
    * Retrieve single kitchen ticket details
    */
   public static async getKitchenOrderById(id: string): Promise<KitchenTicket> {
-    const response = await apiClient.get<ApiResponse<KitchenTicket>>(
-      `/kitchen/orders/${id}`
-    );
-    return response.data;
+    const response = await apiClient.get<
+      ApiResponse<KitchenTicket | { ticket: KitchenTicket }>
+    >(`/kitchen/orders/${id}`);
+    if (
+      response.data &&
+      typeof response.data === 'object' &&
+      'ticket' in response.data
+    ) {
+      return response.data.ticket;
+    }
+    return response.data as KitchenTicket;
   }
 
   /**
@@ -66,10 +86,17 @@ export class KitchenApi {
     payload: UpdateOrderKitchenStatusInput
   ): Promise<KitchenTicket> {
     const response = await apiClient.patch<
-      ApiResponse<KitchenTicket>,
+      ApiResponse<KitchenTicket | { ticket: KitchenTicket }>,
       UpdateOrderKitchenStatusInput
     >(`/kitchen/orders/${id}/status`, payload);
-    return response.data;
+    if (
+      response.data &&
+      typeof response.data === 'object' &&
+      'ticket' in response.data
+    ) {
+      return response.data.ticket;
+    }
+    return response.data as KitchenTicket;
   }
 
   /**
@@ -82,10 +109,17 @@ export class KitchenApi {
     payload: UpdateItemKitchenStatusInput
   ): Promise<KitchenTicket> {
     const response = await apiClient.patch<
-      ApiResponse<KitchenTicket>,
+      ApiResponse<KitchenTicket | { ticket: KitchenTicket }>,
       UpdateItemKitchenStatusInput
     >(`/kitchen/orders/${orderId}/items/${itemId}/status`, payload);
-    return response.data;
+    if (
+      response.data &&
+      typeof response.data === 'object' &&
+      'ticket' in response.data
+    ) {
+      return response.data.ticket;
+    }
+    return response.data as KitchenTicket;
   }
 
   /**
@@ -97,10 +131,17 @@ export class KitchenApi {
     payload?: RecallKitchenInput
   ): Promise<KitchenTicket> {
     const response = await apiClient.post<
-      ApiResponse<KitchenTicket>,
+      ApiResponse<KitchenTicket | { ticket: KitchenTicket }>,
       RecallKitchenInput | undefined
     >(`/kitchen/orders/${id}/recall`, payload);
-    return response.data;
+    if (
+      response.data &&
+      typeof response.data === 'object' &&
+      'ticket' in response.data
+    ) {
+      return response.data.ticket;
+    }
+    return response.data as KitchenTicket;
   }
 
   /**
@@ -113,9 +154,16 @@ export class KitchenApi {
     payload?: RecallKitchenInput
   ): Promise<KitchenTicket> {
     const response = await apiClient.post<
-      ApiResponse<KitchenTicket>,
+      ApiResponse<KitchenTicket | { ticket: KitchenTicket }>,
       RecallKitchenInput | undefined
     >(`/kitchen/orders/${orderId}/items/${itemId}/recall`, payload);
-    return response.data;
+    if (
+      response.data &&
+      typeof response.data === 'object' &&
+      'ticket' in response.data
+    ) {
+      return response.data.ticket;
+    }
+    return response.data as KitchenTicket;
   }
 }

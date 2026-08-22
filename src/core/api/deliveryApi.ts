@@ -27,8 +27,21 @@ export class DeliveryApi {
    */
   public static async listRiders(): Promise<DeliveryRiderRecord[]> {
     const response =
-      await apiClient.get<ApiResponse<DeliveryRiderRecord[]>>('/delivery/riders');
-    return response.data;
+      await apiClient.get<
+        ApiResponse<DeliveryRiderRecord[] | { riders: DeliveryRiderRecord[] }>
+      >('/delivery/riders');
+    if (Array.isArray(response.data)) {
+      return response.data;
+    }
+    if (
+      response.data &&
+      typeof response.data === 'object' &&
+      'riders' in response.data &&
+      Array.isArray(response.data.riders)
+    ) {
+      return response.data.riders;
+    }
+    return [];
   }
 
   /**
@@ -37,8 +50,21 @@ export class DeliveryApi {
    */
   public static async listZones(): Promise<DeliveryZoneRecord[]> {
     const response =
-      await apiClient.get<ApiResponse<DeliveryZoneRecord[]>>('/delivery/zones');
-    return response.data;
+      await apiClient.get<
+        ApiResponse<DeliveryZoneRecord[] | { zones: DeliveryZoneRecord[] }>
+      >('/delivery/zones');
+    if (Array.isArray(response.data)) {
+      return response.data;
+    }
+    if (
+      response.data &&
+      typeof response.data === 'object' &&
+      'zones' in response.data &&
+      Array.isArray(response.data.zones)
+    ) {
+      return response.data.zones;
+    }
+    return [];
   }
 
   /**
