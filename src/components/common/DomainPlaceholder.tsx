@@ -32,7 +32,7 @@ export const DomainPlaceholder: React.FC<DomainPlaceholderProps> = ({
             <div>
               <div className="flex flex-wrap items-center gap-2">
                 <h2 className="text-xl font-bold text-pos-text">{title}</h2>
-                <Badge variant="default">Module Shell Ready</Badge>
+                <Badge variant="default">Module Roadmap</Badge>
               </div>
               <p className="text-xs text-pos-text-muted mt-1 max-w-xl">{subtitle}</p>
             </div>
@@ -56,7 +56,7 @@ export const DomainPlaceholder: React.FC<DomainPlaceholderProps> = ({
         <div className="mt-6 pt-6 border-t border-pos-border">
           <div className="flex items-center gap-1.5 text-xs font-semibold uppercase text-pos-text-secondary tracking-wider mb-3">
             <Layers size={14} className="text-pos-primary" />
-            <span>Target Feature Scope</span>
+            <span>Planned Feature Scope</span>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">

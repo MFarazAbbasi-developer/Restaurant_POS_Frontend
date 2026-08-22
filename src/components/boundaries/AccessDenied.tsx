@@ -20,8 +20,8 @@ export const AccessDenied: React.FC<AccessDeniedProps> = ({
 
   return (
     <div className="min-h-[70vh] flex items-center justify-center p-4">
-      <Card className="w-full max-w-lg bg-pos-surface border-pos-border shadow-2xl p-6 sm:p-8 text-center space-y-6">
-        <div className="inline-flex items-center justify-center h-16 w-16 rounded-2xl bg-pos-danger/10 border border-pos-danger/20 text-pos-danger">
+      <Card className="w-full max-w-lg bg-pos-surface border-pos-border shadow-modal p-6 sm:p-8 text-center space-y-6">
+        <div className="inline-flex items-center justify-center h-16 w-16 rounded-lg bg-pos-danger-soft border border-[#FECACA] text-pos-danger">
           <ShieldAlert size={32} />
         </div>
 

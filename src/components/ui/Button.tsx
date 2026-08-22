@@ -27,7 +27,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       primary: 'bg-pos-primary hover:bg-pos-primary-hover text-white shadow-xs',
       secondary:
         'bg-pos-surface hover:bg-pos-surface-subtle text-pos-text border border-pos-border shadow-xs',
-      danger: 'bg-pos-danger hover:bg-red-700 text-white shadow-xs',
+      danger: 'bg-pos-danger hover:bg-[#B91C1C] text-white shadow-xs',
       ghost: 'hover:bg-pos-surface-subtle text-pos-text-secondary hover:text-pos-text',
       outline:
         'border border-pos-border text-pos-text bg-transparent hover:bg-pos-surface-subtle',

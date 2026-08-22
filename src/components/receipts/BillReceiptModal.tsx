@@ -222,7 +222,7 @@ export const BillReceiptModal: React.FC<BillReceiptModalProps> = ({
           ) : receipt ? (
             <div
               className={cn(
-                'bg-white text-zinc-900 rounded-xl shadow-2xl border border-zinc-200 transition-all font-mono',
+                'bg-white text-zinc-900 rounded-xl shadow-dropdown border border-zinc-200 transition-all font-mono',
                 paperWidth === '80mm'
                   ? 'w-full max-w-[420px] p-5 sm:p-6'
                   : 'w-full max-w-[320px] p-4 text-[11px]'
@@ -357,7 +357,7 @@ export const BillReceiptModal: React.FC<BillReceiptModalProps> = ({
                     </div>
 
                     {receipt.totals.totalDiscount > 0 && (
-                      <div className="flex justify-between text-emerald-600 font-medium">
+                      <div className="flex justify-between text-pos-success font-medium">
                         <span>Discount:</span>
                         <span>
                           -{' '}
@@ -428,7 +428,7 @@ export const BillReceiptModal: React.FC<BillReceiptModalProps> = ({
                           </div>
                         ))}
                         {receipt.totals.changeAmount > 0 && (
-                          <div className="flex justify-between text-emerald-700 font-bold">
+                          <div className="flex justify-between text-pos-success font-bold">
                             <span>Change Given:</span>
                             <span>
                               {formatCurrency(
@@ -441,7 +441,7 @@ export const BillReceiptModal: React.FC<BillReceiptModalProps> = ({
                       </div>
                     ) : (
                       <div className="pt-2 text-center">
-                        <span className="inline-block px-3 py-1 rounded bg-amber-100 text-amber-900 font-bold text-[10px] uppercase tracking-wider">
+                        <span className="inline-block px-3 py-1 rounded bg-pos-warning-soft text-pos-warning border border-[#FED7AA] font-bold text-[10px] uppercase tracking-wider">
                           *** UNPAID BILL - ESTIMATE ONLY ***
                         </span>
                       </div>

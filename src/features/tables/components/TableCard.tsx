@@ -167,7 +167,7 @@ export const TableCard: React.FC<TableCardProps> = ({
                     ● Served
                   </span>
                 ) : primaryOrder?.status === 'READY' ? (
-                  <span className="text-[10px] text-purple-600 font-semibold flex items-center gap-0.5">
+                  <span className="text-[10px] text-pos-success font-semibold flex items-center gap-0.5">
                     ● Ready
                   </span>
                 ) : primaryOrder?.status === 'PREPARING' ? (

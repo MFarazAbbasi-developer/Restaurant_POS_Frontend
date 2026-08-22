@@ -145,7 +145,7 @@ export const DeliveryPage: React.FC = () => {
               <span className="font-bold font-mono">{summary.preparing}</span>
             </div>
 
-            <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md bg-pos-info-soft border border-[#BFDBFE] text-pos-info">
+            <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md bg-pos-success-soft border border-[#BBF7D0] text-pos-success">
               <CheckCircle2 size={13} />
               <span className="font-medium">Ready:</span>
               <span className="font-bold font-mono">{summary.ready}</span>

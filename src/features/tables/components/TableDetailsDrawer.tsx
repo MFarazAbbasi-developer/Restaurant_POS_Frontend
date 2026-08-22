@@ -152,9 +152,9 @@ export const TableDetailsDrawer: React.FC<TableDetailsDrawerProps> = ({
       case 'READY':
         return (
           <Badge
-            variant="info"
+            variant="success"
             size="sm"
-            className="flex items-center gap-1 bg-purple-50 text-purple-700 border-purple-200 font-semibold"
+            className="flex items-center gap-1 font-semibold"
           >
             <Sparkles size={11} /> Ready
           </Badge>
