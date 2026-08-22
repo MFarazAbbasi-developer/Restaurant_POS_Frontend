@@ -8,6 +8,7 @@ import {
 import { useCartStore } from '@/features/orders/store/cartStore';
 import { OrdersApi } from '@/core/api/ordersApi';
 import { PaymentModal } from '@/features/orders/components/PaymentModal';
+import { BillReceiptModal } from '@/components/receipts/BillReceiptModal';
 import { TableTransferModal } from './TableTransferModal';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
@@ -26,6 +27,7 @@ import {
   CheckCircle2,
   ChefHat,
   Printer,
+  FileText,
 } from 'lucide-react';
 import { cn } from '@/utils/cn';
 
@@ -54,6 +56,7 @@ export const TableDetailsDrawer: React.FC<TableDetailsDrawerProps> = ({
   const [isTransferModalOpen, setIsTransferModalOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [payingOrder, setPayingOrder] = useState<OrderRecord | null>(null);
+  const [viewingReceiptOrderId, setViewingReceiptOrderId] = useState<{ id: string; code: string } | null>(null);
   const [isLoadingOrder, setIsLoadingOrder] = useState(false);
 
   const formatPrice = (val: number) => {
@@ -308,17 +311,20 @@ export const TableDetailsDrawer: React.FC<TableDetailsDrawerProps> = ({
                       </span>
                     </div>
 
-                    {/* Settle Bill Button */}
+                    {/* Action Buttons: View Bill & Settle Bill */}
                     <div className="pt-1 grid grid-cols-2 gap-2">
                       <Button
                         type="button"
                         variant="secondary"
                         size="sm"
-                        onClick={() => handleStatusChange('BILL_PRINTED')}
+                        onClick={() => {
+                          handleStatusChange('BILL_PRINTED');
+                          setViewingReceiptOrderId({ id: ord.id, code: ord.orderCode });
+                        }}
                         className="text-xs font-semibold flex items-center justify-center gap-1"
                       >
-                        <Printer size={13} />
-                        <span>Print Bill</span>
+                        <FileText size={13} />
+                        <span>View Bill</span>
                       </Button>
 
                       <Button
@@ -396,6 +402,20 @@ export const TableDetailsDrawer: React.FC<TableDetailsDrawerProps> = ({
             setIsTransferModalOpen(false);
             onRefresh();
             onClose();
+          }}
+        />
+      )}
+
+      {/* View Bill / Receipt Preview Modal */}
+      {viewingReceiptOrderId && (
+        <BillReceiptModal
+          orderId={viewingReceiptOrderId.id}
+          orderCode={viewingReceiptOrderId.code}
+          onClose={() => setViewingReceiptOrderId(null)}
+          onSettleBill={() => {
+            const orderIdToSettle = viewingReceiptOrderId.id;
+            setViewingReceiptOrderId(null);
+            handleSettleOrder(orderIdToSettle);
           }}
         />
       )}

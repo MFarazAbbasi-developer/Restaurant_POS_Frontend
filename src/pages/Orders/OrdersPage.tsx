@@ -11,6 +11,7 @@ import { TableSelectorModal } from '@/features/orders/components/TableSelectorMo
 import { CustomerModal } from '@/features/orders/components/CustomerModal';
 import { PaymentModal } from '@/features/orders/components/PaymentModal';
 import { OrderSuccessModal } from '@/features/orders/components/OrderSuccessModal';
+import { BillReceiptModal } from '@/components/receipts/BillReceiptModal';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { Spinner } from '@/components/ui/Spinner';
@@ -86,6 +87,7 @@ export const OrdersPage: React.FC = () => {
   const [activePaymentOrder, setActivePaymentOrder] = useState<OrderRecord | null>(null);
   const [completedPaymentResult, setCompletedPaymentResult] =
     useState<PaymentResponseData | null>(null);
+  const [savedReceiptOrder, setSavedReceiptOrder] = useState<OrderRecord | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   // Filter Categories & Items
@@ -170,7 +172,7 @@ export const OrdersPage: React.FC = () => {
       const response = await createOrderMutation.mutateAsync(buildOrderPayload());
       // Order created successfully
       resetAll();
-      alert(`Order #${response.order.orderCode} sent successfully.`);
+      setSavedReceiptOrder(response.order);
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Failed to save order';
       setErrorMessage(msg);
@@ -686,6 +688,20 @@ export const OrdersPage: React.FC = () => {
           result={completedPaymentResult}
           currency={currency}
           onNewSale={() => setCompletedPaymentResult(null)}
+        />
+      )}
+
+      {/* 6. Digital Thermal Bill Modal (After Save Order / KOT) */}
+      {savedReceiptOrder && (
+        <BillReceiptModal
+          orderId={savedReceiptOrder.id}
+          orderCode={savedReceiptOrder.orderCode}
+          onClose={() => setSavedReceiptOrder(null)}
+          onSettleBill={() => {
+            const orderToPay = savedReceiptOrder;
+            setSavedReceiptOrder(null);
+            setActivePaymentOrder(orderToPay);
+          }}
         />
       )}
     </div>
