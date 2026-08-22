@@ -43,6 +43,24 @@ const PRESET_STAFF: PresetStaff[] = [
     role: 'Cashier',
     defaultPin: '4321',
   },
+  {
+    label: 'Waiter Alex',
+    username: 'waiter_alex',
+    role: 'Waiter',
+    defaultPin: '1122',
+  },
+  {
+    label: 'Chef Gordon',
+    username: 'chef_gordon',
+    role: 'Kitchen',
+    defaultPin: '7788',
+  },
+  {
+    label: 'Rider Ali',
+    username: 'rider_ali',
+    role: 'Rider',
+    defaultPin: '5566',
+  },
 ];
 
 export const StaffLoginForm: React.FC = () => {
@@ -183,9 +201,11 @@ export const StaffLoginForm: React.FC = () => {
               )}
             >
               <p className="truncate font-semibold text-pos-text">
-                {staff.label.split(' ')[1] || staff.label}
+                {staff.label}
               </p>
-              <p className="text-[11px] text-pos-text-muted capitalize">{staff.role}</p>
+              <p className="text-[11px] text-pos-text-muted">
+                {staff.role} • PIN: {staff.defaultPin}
+              </p>
             </button>
           ))}
         </div>

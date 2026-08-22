@@ -84,11 +84,26 @@ export const TableCard: React.FC<TableCardProps> = ({
                   ? `#${table.activeOrders[0].orderCode}`
                   : `${table.activeOrders.length} Sub-bills`}
               </span>
-              {totalGuestsSeated > 0 && (
-                <span className="text-[11px] text-pos-text-muted">
-                  {totalGuestsSeated} guest(s)
-                </span>
-              )}
+              <div className="flex items-center gap-1.5 mt-0.5">
+                {table.activeOrders[0]?.status === 'SERVED' ? (
+                  <span className="text-[10px] text-pos-success font-semibold flex items-center gap-0.5">
+                    ● Food Served
+                  </span>
+                ) : table.activeOrders[0]?.status === 'READY' ? (
+                  <span className="text-[10px] text-purple-500 font-semibold flex items-center gap-0.5">
+                    ● Ready
+                  </span>
+                ) : table.activeOrders[0]?.status === 'PREPARING' ? (
+                  <span className="text-[10px] text-pos-warning font-semibold flex items-center gap-0.5">
+                    ● In Kitchen
+                  </span>
+                ) : null}
+                {totalGuestsSeated > 0 && (
+                  <span className="text-[11px] text-pos-text-muted">
+                    • {totalGuestsSeated}p
+                  </span>
+                )}
+              </div>
             </div>
 
             <span className="text-sm font-bold font-mono text-pos-primary">

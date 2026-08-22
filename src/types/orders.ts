@@ -58,6 +58,14 @@ export interface PosMenuData {
 export type TableStatus =
   'AVAILABLE' | 'OCCUPIED' | 'BILL_PRINTED' | 'RESERVED' | 'CLEANING';
 
+export interface PosActiveTableOrderItem {
+  id: string;
+  itemName: string;
+  quantity: number;
+  unitPrice: number;
+  kitchenStatus: string;
+}
+
 export interface PosActiveTableOrder {
   id: string;
   orderCode: string;
@@ -66,6 +74,7 @@ export interface PosActiveTableOrder {
   status: string;
   totalAmount: number;
   openedAt: string;
+  items?: PosActiveTableOrderItem[];
 }
 
 export interface PosTable {
