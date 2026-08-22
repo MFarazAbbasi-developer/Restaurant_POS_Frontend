@@ -14,7 +14,6 @@ import {
   Calendar,
   Clock,
   CircleDot,
-  Settings as SettingsIcon,
 } from 'lucide-react';
 import { useSocketStatus } from '@/core/socket/useSocket';
 import { socketManager } from '@/core/socket/socketClient';
@@ -346,24 +345,8 @@ export const POSLayout: React.FC = () => {
             })}
           </nav>
 
-          {/* Sidebar Footer: Settings & Terminal Info */}
-          <div className="p-3 border-t border-pos-border bg-pos-surface-subtle/50 space-y-2">
-            {hasPermission('settings.view') && (
-              <NavLink
-                to="/settings"
-                title={!sidebarOpen ? 'Settings' : undefined}
-                className={cn(
-                  'flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors',
-                  location.pathname === '/settings'
-                    ? 'bg-pos-primary text-white font-semibold'
-                    : 'text-pos-text-secondary hover:bg-pos-surface hover:text-pos-text'
-                )}
-              >
-                <SettingsIcon size={18} className="shrink-0" />
-                {sidebarOpen && <span className="truncate">Settings</span>}
-              </NavLink>
-            )}
-
+          {/* Sidebar Footer: Terminal Info */}
+          <div className="p-3 border-t border-pos-border bg-pos-surface-subtle/50">
             <div
               className={cn(
                 'flex items-center gap-2 text-xs text-pos-text-muted font-mono px-2',

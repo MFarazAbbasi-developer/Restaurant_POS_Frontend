@@ -1,5 +1,5 @@
 import { apiClient } from './client';
-import { ApiResponse, ReceiptPreviewData } from '@/types';
+import { ApiResponse } from '@/types';
 
 export interface FormattedCustomerReceipt {
   title: string;
@@ -97,12 +97,18 @@ export class ReceiptsApi {
    */
   public static async getPreviewReceipt(
     paperWidth: '80mm' | '58mm' = '80mm'
-  ): Promise<ReceiptPreviewData> {
-    const response = await apiClient.get<ApiResponse<ReceiptPreviewData>>(
-      '/receipts/preview',
-      { params: { paperWidth } }
-    );
-    return response.data;
+  ): Promise<FormattedCustomerReceipt> {
+    const response = await apiClient.get<
+      ApiResponse<{ receipt: FormattedCustomerReceipt } | FormattedCustomerReceipt>
+    >('/receipts/preview', { params: { paperWidth } });
+    if (
+      response.data &&
+      typeof response.data === 'object' &&
+      'receipt' in response.data
+    ) {
+      return (response.data as { receipt: FormattedCustomerReceipt }).receipt;
+    }
+    return response.data as FormattedCustomerReceipt;
   }
 
   /**

@@ -749,21 +749,22 @@ export const SettingsPage: React.FC = () => {
                         {/* Store Header */}
                         <div className="text-center space-y-0.5 border-b border-dashed border-pos-border-strong pb-2">
                           <p className="font-bold text-sm uppercase">
-                            {receiptPreview.restaurant.name}
+                            {name || receiptPreview.restaurant?.name || 'Faraz Bistro'}
                           </p>
-                          {receiptPreview.restaurant.address && (
+                          {(address || receiptPreview.restaurant?.address) && (
                             <p className="text-[10px] text-pos-text-secondary">
-                              {receiptPreview.restaurant.address}
+                              {address || receiptPreview.restaurant?.address}
                             </p>
                           )}
-                          {receiptPreview.restaurant.phone && (
+                          {(phone || receiptPreview.restaurant?.phone) && (
                             <p className="text-[10px] text-pos-text-secondary">
-                              Tel: {receiptPreview.restaurant.phone}
+                              Tel: {phone || receiptPreview.restaurant?.phone}
                             </p>
                           )}
-                          {receiptHeader && (
+                          {(receiptHeader ||
+                            receiptPreview.restaurant?.receiptHeader) && (
                             <p className="text-[10px] italic mt-1 text-pos-text-muted">
-                              {receiptHeader}
+                              {receiptHeader || receiptPreview.restaurant?.receiptHeader}
                             </p>
                           )}
                         </div>
@@ -771,27 +772,34 @@ export const SettingsPage: React.FC = () => {
                         {/* Order Info */}
                         <div className="text-[10px] space-y-0.5 border-b border-dashed border-pos-border-strong pb-1.5">
                           <div className="flex justify-between font-bold">
-                            <span>Check #{receiptPreview.order.orderCode}</span>
-                            <span>{receiptPreview.order.orderType}</span>
+                            <span>
+                              Check #{receiptPreview.metadata?.orderCode || 'PREVIEW-001'}
+                            </span>
+                            <span>{receiptPreview.metadata?.orderType || 'DINE_IN'}</span>
                           </div>
                           <div className="flex justify-between text-pos-text-muted">
-                            <span>{receiptPreview.order.formattedDate}</span>
-                            <span>{receiptPreview.order.formattedTime}</span>
+                            <span>
+                              {receiptPreview.metadata?.formattedDate || 'Today'}
+                            </span>
+                            <span>
+                              {receiptPreview.metadata?.formattedTime || '12:00 PM'}
+                            </span>
                           </div>
                           <div className="text-pos-text-muted">
-                            Cashier: {receiptPreview.order.cashierName}
+                            Cashier:{' '}
+                            {receiptPreview.metadata?.cashierName || 'Demo Staff'}
                           </div>
                         </div>
 
                         {/* Items */}
                         <div className="space-y-1 border-b border-dashed border-pos-border-strong pb-2">
-                          {receiptPreview.order.items.map((item, i) => (
+                          {(receiptPreview.items || []).map((item, i) => (
                             <div key={i} className="flex justify-between">
                               <span className="truncate pr-1">
-                                {item.quantity}x {item.name}
+                                {item.quantity}x {item.itemName}
                               </span>
                               <span className="font-bold shrink-0">
-                                {item.totalPrice.toFixed(2)}
+                                {(item.lineTotal ?? item.itemGrossTotal ?? 0).toFixed(2)}
                               </span>
                             </div>
                           ))}
@@ -801,20 +809,27 @@ export const SettingsPage: React.FC = () => {
                         <div className="space-y-0.5 text-[10px] border-b border-dashed border-pos-border-strong pb-1.5">
                           <div className="flex justify-between">
                             <span>Subtotal:</span>
-                            <span>{receiptPreview.order.totals.subtotal.toFixed(2)}</span>
+                            <span>
+                              {(receiptPreview.totals?.subtotal || 0).toFixed(2)}
+                            </span>
                           </div>
                           <div className="flex justify-between font-bold text-xs pt-1">
-                            <span>TOTAL ({receiptPreview.restaurant.currency}):</span>
                             <span>
-                              {receiptPreview.order.totals.grandTotal.toFixed(2)}
+                              TOTAL (
+                              {currency || receiptPreview.restaurant?.currency || 'USD'}):
+                            </span>
+                            <span>
+                              {(receiptPreview.totals?.grandTotal || 0).toFixed(2)}
                             </span>
                           </div>
                         </div>
 
                         {/* Footer Note */}
                         <div className="text-center pt-1 text-[10px] text-pos-text-secondary">
-                          {receiptFooter ? (
-                            <p className="italic">{receiptFooter}</p>
+                          {receiptFooter || receiptPreview.restaurant?.receiptFooter ? (
+                            <p className="italic">
+                              {receiptFooter || receiptPreview.restaurant?.receiptFooter}
+                            </p>
                           ) : (
                             <p>Thank you for your visit!</p>
                           )}

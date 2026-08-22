@@ -228,19 +228,39 @@ export class InventoryApi {
     return response.data;
   }
 
-  // ===========================================================================
-  // 8. Locations & Suppliers
-  // ===========================================================================
-
   public static async listLocations(): Promise<InventoryLocationRecord[]> {
     const response =
-      await apiClient.get<ApiResponse<InventoryLocationRecord[]>>('/inventory/locations');
-    return response.data;
+      await apiClient.get<
+        ApiResponse<InventoryLocationRecord[] | { locations: InventoryLocationRecord[] }>
+      >('/inventory/locations');
+    const data = response.data as unknown;
+    if (Array.isArray(data)) return data;
+    if (
+      data &&
+      typeof data === 'object' &&
+      'locations' in data &&
+      Array.isArray((data as { locations: InventoryLocationRecord[] }).locations)
+    ) {
+      return (data as { locations: InventoryLocationRecord[] }).locations;
+    }
+    return [];
   }
 
   public static async listSuppliers(): Promise<SupplierRecord[]> {
     const response =
-      await apiClient.get<ApiResponse<SupplierRecord[]>>('/inventory/suppliers');
-    return response.data;
+      await apiClient.get<
+        ApiResponse<SupplierRecord[] | { suppliers: SupplierRecord[] }>
+      >('/inventory/suppliers');
+    const data = response.data as unknown;
+    if (Array.isArray(data)) return data;
+    if (
+      data &&
+      typeof data === 'object' &&
+      'suppliers' in data &&
+      Array.isArray((data as { suppliers: SupplierRecord[] }).suppliers)
+    ) {
+      return (data as { suppliers: SupplierRecord[] }).suppliers;
+    }
+    return [];
   }
 }

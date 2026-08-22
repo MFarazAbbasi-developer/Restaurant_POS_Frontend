@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   useInventorySummaryQuery,
   useLowStockQuery,
@@ -98,10 +98,36 @@ export const InventoryPage: React.FC = () => {
     refetch: refetchValuation,
   } = useValuationQuery();
 
-  const { data: locations = [], refetch: refetchLocations } =
+  const { data: rawLocations = [], refetch: refetchLocations } =
     useInventoryLocationsQuery();
 
-  const { data: suppliers = [], refetch: refetchSuppliers } = useSuppliersQuery();
+  const { data: rawSuppliers = [], refetch: refetchSuppliers } = useSuppliersQuery();
+
+  const locations = useMemo(() => {
+    if (Array.isArray(rawLocations)) return rawLocations;
+    if (
+      rawLocations &&
+      typeof rawLocations === 'object' &&
+      'locations' in rawLocations &&
+      Array.isArray((rawLocations as { locations: InventoryItemRecord[] }).locations)
+    ) {
+      return (rawLocations as { locations: typeof rawLocations }).locations;
+    }
+    return [];
+  }, [rawLocations]);
+
+  const suppliers = useMemo(() => {
+    if (Array.isArray(rawSuppliers)) return rawSuppliers;
+    if (
+      rawSuppliers &&
+      typeof rawSuppliers === 'object' &&
+      'suppliers' in rawSuppliers &&
+      Array.isArray((rawSuppliers as { suppliers: unknown[] }).suppliers)
+    ) {
+      return (rawSuppliers as { suppliers: typeof rawSuppliers }).suppliers;
+    }
+    return [];
+  }, [rawSuppliers]);
 
   const {
     data: itemsData,

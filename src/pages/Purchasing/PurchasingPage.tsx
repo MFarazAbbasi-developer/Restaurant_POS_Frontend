@@ -116,7 +116,10 @@ export const PurchasingPage: React.FC = () => {
 
   const { data: inventoryItemsData } = useInventoryItemsQuery();
   const inventoryItems = inventoryItemsData?.items || [];
-  const { data: locations = [] } = useInventoryLocationsQuery();
+  const { data: rawLocations = [] } = useInventoryLocationsQuery();
+  const locations = Array.isArray(rawLocations)
+    ? rawLocations
+    : (rawLocations as { locations?: typeof rawLocations })?.locations || [];
 
   const orderMutation = useOrderPurchasingOrderMutation();
   const deleteSupplierMutation = useDeleteSupplierMutation();
