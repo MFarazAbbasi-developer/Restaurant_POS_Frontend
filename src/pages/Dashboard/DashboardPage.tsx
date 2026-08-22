@@ -3,7 +3,7 @@ import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { useAuthStore } from '@/core/auth/authStore';
 import { usePermissions } from '@/core/auth/usePermissions';
-import { env } from '@/config/env';
+import { PRODUCT_IDENTITY } from '@/config/product';
 import {
   LayoutDashboard,
   ShieldCheck,
@@ -83,12 +83,13 @@ export const DashboardPage: React.FC = () => {
               <Badge variant="success">Authenticated</Badge>
             </div>
             <p className="text-xs text-pos-text-muted mt-1">
-              Terminal register session active • {env.appName} Shell
+              Terminal register session active • {PRODUCT_IDENTITY.name} v
+              {PRODUCT_IDENTITY.version} Shell
             </p>
           </div>
           <div className="flex items-center gap-2">
             <span className="text-xs font-mono bg-pos-surface-subtle border border-pos-border px-3 py-1.5 rounded-lg text-pos-text-secondary font-medium">
-              Terminal: {terminal?.terminalId || env.defaultTerminalId}
+              Terminal: {terminal?.terminalId || PRODUCT_IDENTITY.defaultTerminalId}
             </span>
           </div>
         </div>

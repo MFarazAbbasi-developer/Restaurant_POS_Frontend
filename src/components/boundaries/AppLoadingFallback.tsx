@@ -1,6 +1,6 @@
 import React from 'react';
 import { Spinner } from '@/components/ui/Spinner';
-import { env } from '@/config/env';
+import { PRODUCT_IDENTITY } from '@/config/product';
 
 export const AppLoadingFallback: React.FC = () => {
   return (
@@ -10,7 +10,9 @@ export const AppLoadingFallback: React.FC = () => {
           <Spinner size="lg" />
         </div>
         <div className="text-center">
-          <h2 className="text-lg font-bold text-pos-text tracking-wide">{env.appName}</h2>
+          <h2 className="text-lg font-bold text-pos-text tracking-wide">
+            {PRODUCT_IDENTITY.name}
+          </h2>
           <p className="text-xs text-pos-text-muted mt-1">
             Initializing POS terminal environment...
           </p>

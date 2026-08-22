@@ -25,8 +25,11 @@ import {
   UtensilsCrossed,
   ShoppingBag,
   Flame,
+  Info,
 } from 'lucide-react';
 import { cn } from '@/utils/cn';
+import { useAuthStore } from '@/core/auth/authStore';
+import { PRODUCT_IDENTITY } from '@/config/product';
 
 type SettingsTab = 'profile' | 'taxes' | 'channels' | 'receipts' | 'hardware';
 
@@ -58,6 +61,7 @@ const TIMEZONES = [
 ];
 
 export const SettingsPage: React.FC = () => {
+  const { terminal } = useAuthStore();
   const [activeTab, setActiveTab] = useState<SettingsTab>('profile');
   const [paperWidth, setPaperWidth] = useState<'80mm' | '58mm'>('80mm');
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
@@ -824,14 +828,26 @@ export const SettingsPage: React.FC = () => {
                           </div>
                         </div>
 
-                        {/* Footer Note */}
-                        <div className="text-center pt-1 text-[10px] text-pos-text-secondary">
+                        {/* Footer Note & Subtle Attribution */}
+                        <div className="text-center pt-1 text-[10px] text-pos-text-secondary space-y-1">
                           {receiptFooter || receiptPreview.restaurant?.receiptFooter ? (
                             <p className="italic">
                               {receiptFooter || receiptPreview.restaurant?.receiptFooter}
                             </p>
                           ) : (
                             <p>Thank you for your visit!</p>
+                          )}
+                          {PRODUCT_IDENTITY.receipt.enabled && (
+                            <div className="pt-1.5 text-center text-[8.5px] text-pos-text-muted font-mono leading-tight space-y-0.5">
+                              {PRODUCT_IDENTITY.receipt.lines.map((line, idx) => (
+                                <p
+                                  key={idx}
+                                  className={idx > 0 ? 'text-[8px] opacity-80' : ''}
+                                >
+                                  {line}
+                                </p>
+                              ))}
+                            </div>
                           )}
                         </div>
                       </div>
@@ -943,6 +959,58 @@ export const SettingsPage: React.FC = () => {
                         ))}
                       </div>
                     )}
+                  </div>
+
+                  {/* System & Product Information */}
+                  <div className="p-4 sm:p-5 rounded-lg bg-pos-surface border border-pos-border shadow-xs space-y-3">
+                    <h3 className="text-sm font-bold text-pos-text flex items-center gap-2 border-b border-pos-border pb-3">
+                      <Info size={16} className="text-pos-primary" />
+                      <span>Product Identity & System Information</span>
+                    </h3>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                      <div className="p-3 rounded-md bg-pos-surface-subtle border border-pos-border space-y-0.5">
+                        <span className="text-[10px] font-semibold uppercase tracking-wider text-pos-text-muted">
+                          Product / System
+                        </span>
+                        <p className="font-bold text-xs text-pos-text">
+                          {PRODUCT_IDENTITY.name}
+                        </p>
+                        <p className="text-[11px] text-pos-text-secondary font-mono">
+                          v{PRODUCT_IDENTITY.version}
+                        </p>
+                      </div>
+
+                      <div className="p-3 rounded-md bg-pos-surface-subtle border border-pos-border space-y-0.5">
+                        <span className="text-[10px] font-semibold uppercase tracking-wider text-pos-text-muted">
+                          Runtime Environment
+                        </span>
+                        <p className="font-bold text-xs text-pos-text uppercase">
+                          {PRODUCT_IDENTITY.environment}
+                        </p>
+                        <p className="text-[11px] text-pos-text-secondary font-mono">
+                          Station:{' '}
+                          {terminal?.terminalId || PRODUCT_IDENTITY.defaultTerminalId}
+                        </p>
+                      </div>
+
+                      <div className="p-3 rounded-md bg-pos-surface-subtle border border-pos-border space-y-0.5">
+                        <span className="text-[10px] font-semibold uppercase tracking-wider text-pos-text-muted">
+                          Developer Attribution
+                        </span>
+                        <p className="font-bold text-xs text-pos-text">
+                          {PRODUCT_IDENTITY.developer.name}
+                        </p>
+                        {PRODUCT_IDENTITY.developer.phone && (
+                          <p className="text-[11px] text-pos-text-secondary font-mono">
+                            Tel: {PRODUCT_IDENTITY.developer.phone}
+                          </p>
+                        )}
+                        <p className="text-[11px] text-pos-text-secondary truncate">
+                          {PRODUCT_IDENTITY.developer.website}
+                        </p>
+                      </div>
+                    </div>
                   </div>
                 </div>
               )}

@@ -13,6 +13,7 @@ import {
   AlertCircle,
 } from 'lucide-react';
 import { cn } from '@/utils/cn';
+import { PRODUCT_IDENTITY } from '@/config/product';
 
 interface BillReceiptModalProps {
   orderId: string;
@@ -457,9 +458,18 @@ export const BillReceiptModal: React.FC<BillReceiptModalProps> = ({
                     ) : (
                       <p className="italic">Thank you for dining with us! Shukriya!</p>
                     )}
-                    <p className="text-[9px] text-zinc-400 font-mono pt-1">
-                      Powered by Faraz Cloud POS System
-                    </p>
+                    {PRODUCT_IDENTITY.receipt.enabled && (
+                      <div className="pt-2 text-center text-[8.5px] text-zinc-400 font-mono leading-tight space-y-0.5">
+                        {PRODUCT_IDENTITY.receipt.lines.map((line, idx) => (
+                          <p
+                            key={idx}
+                            className={idx > 0 ? 'text-[8px] text-zinc-400/80' : ''}
+                          >
+                            {line}
+                          </p>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 </div>
               )}

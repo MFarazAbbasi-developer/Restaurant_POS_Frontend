@@ -22,7 +22,7 @@ import { usePermissions } from '@/core/auth/usePermissions';
 import { useCurrentShiftQuery } from '@/features/shifts/hooks/useShiftsData';
 import { StatusIndicator } from '@/components/ui/StatusIndicator';
 import { NAVIGATION_GROUPS } from '@/config/navigation';
-import { env } from '@/config/env';
+import { PRODUCT_IDENTITY } from '@/config/product';
 import { cn } from '@/utils/cn';
 
 export const POSLayout: React.FC = () => {
@@ -139,10 +139,10 @@ export const POSLayout: React.FC = () => {
             </div>
             <div>
               <h1 className="font-semibold text-sm leading-tight text-pos-text">
-                {env.appName}
+                {PRODUCT_IDENTITY.name}
               </h1>
               <p className="text-[11px] text-pos-text-muted font-mono leading-tight">
-                {terminal?.terminalId || env.defaultTerminalId}
+                {terminal?.terminalId || PRODUCT_IDENTITY.defaultTerminalId}
               </p>
             </div>
           </div>
@@ -355,7 +355,9 @@ export const POSLayout: React.FC = () => {
             >
               <Server size={14} className="shrink-0 text-pos-primary" />
               {sidebarOpen && (
-                <span className="truncate text-[11px]">Faraz POS • {env.appEnv}</span>
+                <span className="truncate text-[11px]">
+                  {PRODUCT_IDENTITY.getSystemLabel()}
+                </span>
               )}
             </div>
           </div>

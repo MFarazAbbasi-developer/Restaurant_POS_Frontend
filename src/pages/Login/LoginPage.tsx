@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { env } from '@/config/env';
+import { PRODUCT_IDENTITY } from '@/config/product';
 import { useAuthStore } from '@/core/auth/authStore';
 import { StaffLoginForm } from '@/components/auth/StaffLoginForm';
 import { StatusIndicator } from '@/components/ui/StatusIndicator';
@@ -37,11 +37,11 @@ export const LoginPage: React.FC = () => {
           </div>
           <div>
             <h1 className="text-base font-semibold tracking-tight text-pos-text">
-              {env.appName}
+              {PRODUCT_IDENTITY.name}
             </h1>
             <p className="text-xs text-pos-text-muted flex items-center gap-1 font-mono">
               <Monitor size={12} />
-              {terminal?.terminalId || env.defaultTerminalId} •{' '}
+              {terminal?.terminalId || PRODUCT_IDENTITY.defaultTerminalId} •{' '}
               {terminal?.terminalName || 'Main Station'}
             </p>
           </div>
@@ -67,7 +67,7 @@ export const LoginPage: React.FC = () => {
           <ShieldCheck size={14} className="text-pos-primary" />
           <span>Secure Staff Session Management & RBAC Protected</span>
         </div>
-        <div className="font-mono text-[11px]">v0.1.0 • Environment: {env.appEnv}</div>
+        <div className="font-mono text-[11px]">{PRODUCT_IDENTITY.getSystemLabel()}</div>
       </footer>
     </div>
   );
