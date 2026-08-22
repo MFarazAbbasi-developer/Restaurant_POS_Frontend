@@ -120,47 +120,49 @@ export const TablesPage: React.FC = () => {
   ];
 
   return (
-    <div className="h-[calc(100vh-5rem)] flex flex-col lg:flex-row gap-4 overflow-hidden select-none -m-4 md:-m-6 p-3 sm:p-4 bg-pos-bg">
+    <div className="h-[calc(100vh-5rem)] flex flex-col lg:flex-row gap-4 overflow-hidden select-none -m-4 sm:-m-6 p-4 bg-pos-bg">
       {/* =========================================================================
           LEFT / CENTER: Floor Overview Metrics, Zone Tabs, & Table Grid
       ========================================================================= */}
-      <div className="flex-1 flex flex-col min-w-0 bg-pos-surface/50 border border-pos-border rounded-2xl overflow-hidden shadow-sm">
+      <div className="flex-1 flex flex-col min-w-0 bg-pos-surface border border-pos-border rounded-lg overflow-hidden">
         {/* Top Header Metric Bar */}
-        <div className="p-3.5 border-b border-pos-border bg-pos-header/90 flex flex-wrap items-center justify-between gap-3 shrink-0">
+        <div className="p-3 sm:p-4 border-b border-pos-border bg-pos-surface flex flex-wrap items-center justify-between gap-3 shrink-0">
           {/* Summary Metric Chips */}
           <div className="flex items-center flex-wrap gap-2 text-xs">
-            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-pos-bg border border-pos-border">
-              <UtensilsCrossed size={14} className="text-pos-accent" />
+            <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-pos-surface-subtle border border-pos-border">
+              <UtensilsCrossed size={14} className="text-pos-primary" />
               <span className="text-pos-text-muted">Total:</span>
-              <span className="font-bold text-pos-text font-mono">
+              <span className="font-semibold text-pos-text font-mono">
                 {summary.totalTables} Tables
               </span>
             </div>
 
-            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-pos-success/10 border border-pos-success/30 text-pos-success">
+            <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-pos-success-soft border border-[#BBF7D0] text-pos-success">
               <CheckCircle2 size={14} />
-              <span className="font-semibold">Available:</span>
+              <span className="font-medium">Available:</span>
               <span className="font-bold font-mono">{summary.availableTables}</span>
             </div>
 
-            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-pos-warning/10 border border-pos-warning/30 text-pos-warning">
+            <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-pos-warning-soft border border-[#FDE68A] text-pos-warning">
               <Clock size={14} />
-              <span className="font-semibold">Occupied:</span>
+              <span className="font-medium">Occupied:</span>
               <span className="font-bold font-mono">{summary.occupiedTables}</span>
             </div>
 
-            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-pos-bg border border-pos-border">
-              <Users size={14} className="text-pos-accent" />
+            <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-pos-surface-subtle border border-pos-border">
+              <Users size={14} className="text-pos-primary" />
               <span className="text-pos-text-muted">Guests:</span>
-              <span className="font-bold text-pos-text font-mono">
+              <span className="font-semibold text-pos-text font-mono">
                 {summary.totalGuestsSeated}
               </span>
             </div>
 
-            <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-pos-bg border border-pos-border">
-              <Percent size={14} className="text-pos-accent" />
+            <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-pos-surface-subtle border border-pos-border">
+              <Percent size={14} className="text-pos-primary" />
               <span className="text-pos-text-muted">Occupancy:</span>
-              <span className="font-bold text-pos-text font-mono">{occupancyRate}%</span>
+              <span className="font-semibold text-pos-text font-mono">
+                {occupancyRate}%
+              </span>
             </div>
           </div>
 
@@ -176,7 +178,7 @@ export const TablesPage: React.FC = () => {
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
                 placeholder="Search tables..."
-                className="w-full pl-8 pr-7 py-1.5 rounded-xl bg-pos-bg border border-pos-border text-pos-text placeholder-pos-text-muted/60 text-xs focus:outline-none focus:ring-2 focus:ring-pos-accent font-medium min-h-[36px]"
+                className="w-full pl-8 pr-7 py-1.5 rounded-lg bg-pos-surface border border-pos-border text-pos-text placeholder-pos-text-muted text-xs focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary font-medium min-h-[36px]"
               />
               {searchQuery && (
                 <button
@@ -195,7 +197,7 @@ export const TablesPage: React.FC = () => {
               size="sm"
               onClick={() => refetch()}
               disabled={isRefetching}
-              className="min-h-[36px] px-3 font-semibold flex items-center gap-1.5"
+              className="min-h-[36px] px-3 font-medium flex items-center gap-1.5"
               title="Refresh live floor state"
             >
               <RotateCw size={14} className={isRefetching ? 'animate-spin' : ''} />
@@ -205,15 +207,15 @@ export const TablesPage: React.FC = () => {
         </div>
 
         {/* Zones Horizontal Filter Bar */}
-        <div className="px-3.5 py-2 border-b border-pos-border bg-pos-bg/40 flex items-center gap-2 overflow-x-auto custom-scrollbar shrink-0">
+        <div className="px-3.5 py-2 border-b border-pos-border bg-pos-surface-subtle/40 flex items-center gap-2 overflow-x-auto custom-scrollbar shrink-0">
           <button
             type="button"
             onClick={() => setSelectedZoneId('ALL')}
             className={cn(
-              'px-3.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all min-h-[34px]',
+              'px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors min-h-[32px]',
               selectedZoneId === 'ALL'
-                ? 'bg-pos-accent text-white shadow-sm'
-                : 'bg-pos-surface text-pos-text-muted hover:text-pos-text hover:bg-pos-surface-hover border border-pos-border'
+                ? 'bg-pos-primary text-white shadow-xs'
+                : 'bg-pos-surface text-pos-text-secondary hover:text-pos-text hover:bg-pos-surface-subtle border border-pos-border'
             )}
           >
             All Zones ({allTables.length})
@@ -224,10 +226,10 @@ export const TablesPage: React.FC = () => {
               type="button"
               onClick={() => setSelectedZoneId(zone.id)}
               className={cn(
-                'px-3.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all min-h-[34px]',
+                'px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors min-h-[32px]',
                 selectedZoneId === zone.id
-                  ? 'bg-pos-accent text-white shadow-sm'
-                  : 'bg-pos-surface text-pos-text-muted hover:text-pos-text hover:bg-pos-surface-hover border border-pos-border'
+                  ? 'bg-pos-primary text-white shadow-xs'
+                  : 'bg-pos-surface text-pos-text-secondary hover:text-pos-text hover:bg-pos-surface-subtle border border-pos-border'
               )}
             >
               {zone.name} ({zone.tables.length})
@@ -236,7 +238,7 @@ export const TablesPage: React.FC = () => {
         </div>
 
         {/* Status Filter Pills Sub-bar */}
-        <div className="px-3.5 py-2 border-b border-pos-border bg-pos-surface/30 flex items-center gap-1.5 overflow-x-auto custom-scrollbar shrink-0">
+        <div className="px-3.5 py-2 border-b border-pos-border bg-pos-surface flex items-center gap-1.5 overflow-x-auto custom-scrollbar shrink-0">
           {statusFilters.map(sf => {
             const isSelected = statusFilter === sf.id;
             return (
@@ -245,10 +247,10 @@ export const TablesPage: React.FC = () => {
                 type="button"
                 onClick={() => setStatusFilter(sf.id)}
                 className={cn(
-                  'px-2.5 py-1 rounded-lg text-[11px] font-semibold whitespace-nowrap transition-all',
+                  'px-2.5 py-1 rounded-md text-xs font-medium whitespace-nowrap transition-colors',
                   isSelected
-                    ? 'bg-pos-text text-pos-bg font-bold shadow-xs'
-                    : 'text-pos-text-muted hover:text-pos-text hover:bg-pos-surface'
+                    ? 'bg-pos-text text-white font-semibold'
+                    : 'text-pos-text-secondary hover:text-pos-text hover:bg-pos-surface-subtle'
                 )}
               >
                 {sf.label}
@@ -258,7 +260,7 @@ export const TablesPage: React.FC = () => {
         </div>
 
         {/* Tables Grid Viewport */}
-        <div className="flex-1 overflow-y-auto p-3.5 sm:p-4 custom-scrollbar">
+        <div className="flex-1 overflow-y-auto p-3.5 sm:p-4 custom-scrollbar bg-pos-bg">
           {isLoading && (
             <div className="py-24 flex flex-col items-center justify-center gap-3 text-pos-text-muted text-xs">
               <Spinner size="lg" />
@@ -267,7 +269,7 @@ export const TablesPage: React.FC = () => {
           )}
 
           {error && (
-            <div className="p-4 rounded-xl bg-pos-danger/10 border border-pos-danger/30 text-pos-danger text-xs flex items-center gap-2">
+            <div className="p-4 rounded-lg bg-pos-danger-soft border border-[#FECACA] text-pos-danger text-xs flex items-center gap-2">
               <AlertCircle size={16} />
               <span>Failed to load floor tables. Please check backend connection.</span>
             </div>
@@ -276,8 +278,8 @@ export const TablesPage: React.FC = () => {
           {!isLoading && filteredTables.length === 0 && (
             <div className="py-24 text-center text-xs text-pos-text-muted flex flex-col items-center gap-2">
               <UtensilsCrossed size={28} className="text-pos-text-muted/50" />
-              <p className="font-semibold">No tables found</p>
-              <p className="text-[11px]">Try adjusting your zone or status filter</p>
+              <p className="font-semibold text-pos-text">No tables found</p>
+              <p className="text-xs">Try adjusting your zone or status filter</p>
             </div>
           )}
 

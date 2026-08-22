@@ -75,7 +75,7 @@ export const DashboardPage: React.FC = () => {
 
   return (
     <div className="max-w-5xl mx-auto space-y-6">
-      <Card className="border-pos-accent/30 bg-pos-surface/60 backdrop-blur p-6">
+      <Card className="bg-pos-surface border-pos-border p-6 rounded-lg">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
           <div>
             <div className="flex items-center gap-2">
@@ -87,7 +87,7 @@ export const DashboardPage: React.FC = () => {
             </p>
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-xs font-mono bg-pos-bg/80 border border-pos-border px-3 py-1.5 rounded-lg text-pos-text-muted">
+            <span className="text-xs font-mono bg-pos-surface-subtle border border-pos-border px-3 py-1.5 rounded-lg text-pos-text-secondary font-medium">
               Terminal: {terminal?.terminalId || env.defaultTerminalId}
             </span>
           </div>
@@ -95,9 +95,9 @@ export const DashboardPage: React.FC = () => {
 
         {/* Staff Identity & RBAC Information */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-6">
-          <div className="p-4 rounded-xl bg-pos-bg/80 border border-pos-border">
-            <div className="flex items-center gap-2 text-xs text-pos-text-muted font-semibold uppercase">
-              <UserCheck size={16} className="text-pos-accent" />
+          <div className="p-4 rounded-lg bg-pos-surface-subtle border border-pos-border">
+            <div className="flex items-center gap-2 text-xs text-pos-text-secondary font-semibold uppercase tracking-wider">
+              <UserCheck size={16} className="text-pos-primary" />
               Active Operator
             </div>
             <p className="text-base font-bold text-pos-text mt-2">
@@ -108,9 +108,9 @@ export const DashboardPage: React.FC = () => {
             </p>
           </div>
 
-          <div className="p-4 rounded-xl bg-pos-bg/80 border border-pos-border">
-            <div className="flex items-center gap-2 text-xs text-pos-text-muted font-semibold uppercase">
-              <Lock size={16} className="text-pos-accent" />
+          <div className="p-4 rounded-lg bg-pos-surface-subtle border border-pos-border">
+            <div className="flex items-center gap-2 text-xs text-pos-text-secondary font-semibold uppercase tracking-wider">
+              <Lock size={16} className="text-pos-primary" />
               Assigned Roles
             </div>
             <div className="flex flex-wrap gap-1.5 mt-2">
@@ -123,9 +123,9 @@ export const DashboardPage: React.FC = () => {
             <p className="text-xs text-pos-text-muted mt-2">Multi-tenant RBAC verified</p>
           </div>
 
-          <div className="p-4 rounded-xl bg-pos-bg/80 border border-pos-border">
-            <div className="flex items-center gap-2 text-xs text-pos-text-muted font-semibold uppercase">
-              <Key size={16} className="text-pos-accent" />
+          <div className="p-4 rounded-lg bg-pos-surface-subtle border border-pos-border">
+            <div className="flex items-center gap-2 text-xs text-pos-text-secondary font-semibold uppercase tracking-wider">
+              <Key size={16} className="text-pos-primary" />
               Permissions Catalog
             </div>
             <p className="text-base font-bold text-pos-text mt-2">
@@ -138,9 +138,9 @@ export const DashboardPage: React.FC = () => {
         </div>
 
         {/* Quick Operations Navigation */}
-        <div className="mt-8 pt-6 border-t border-pos-border/60">
+        <div className="mt-8 pt-6 border-t border-pos-border">
           <h3 className="text-xs font-semibold uppercase tracking-wider text-pos-text-muted mb-4 flex items-center gap-2">
-            <LayoutDashboard size={14} className="text-pos-accent" />
+            <LayoutDashboard size={14} className="text-pos-primary" />
             Quick Operational Modules
           </h3>
 
@@ -153,16 +153,16 @@ export const DashboardPage: React.FC = () => {
                   <Link
                     key={shortcut.path}
                     to={shortcut.path}
-                    className="p-3.5 rounded-xl bg-pos-bg/80 hover:bg-pos-surface border border-pos-border hover:border-pos-accent/40 transition-all group flex items-start gap-3"
+                    className="p-3.5 rounded-lg bg-pos-surface hover:bg-pos-surface-subtle border border-pos-border hover:border-pos-border-strong transition-colors group flex items-start gap-3 shadow-xs"
                   >
-                    <div className="h-9 w-9 rounded-lg bg-pos-accent/10 border border-pos-accent/20 flex items-center justify-center text-pos-accent group-hover:scale-105 transition-transform shrink-0">
+                    <div className="h-9 w-9 rounded-lg bg-pos-primary-soft border border-[#FED7AA] flex items-center justify-center text-pos-primary shrink-0">
                       <Icon size={18} />
                     </div>
                     <div className="min-w-0">
-                      <p className="text-xs font-bold text-pos-text group-hover:text-pos-accent transition-colors truncate">
+                      <p className="text-sm font-semibold text-pos-text group-hover:text-pos-primary transition-colors truncate">
                         {shortcut.title}
                       </p>
-                      <p className="text-[11px] text-pos-text-muted mt-0.5 truncate">
+                      <p className="text-xs text-pos-text-muted mt-0.5 truncate">
                         {shortcut.desc}
                       </p>
                     </div>
@@ -173,13 +173,13 @@ export const DashboardPage: React.FC = () => {
         </div>
 
         {/* System & Architecture Integration Card */}
-        <div className="mt-6 p-4 rounded-xl bg-pos-bg/50 border border-pos-border/70 flex items-start gap-3">
+        <div className="mt-6 p-4 rounded-lg bg-pos-surface-subtle border border-pos-border flex items-start gap-3">
           <ShieldCheck size={20} className="text-pos-success shrink-0 mt-0.5" />
           <div className="text-xs">
             <p className="font-semibold text-pos-text">
               Application Shell & Navigation Initialized
             </p>
-            <p className="text-pos-text-muted mt-0.5 leading-relaxed">
+            <p className="text-pos-text-secondary mt-0.5 leading-relaxed">
               Permission-aware routing is active. All major restaurant domains have
               dedicated route placeholders ready for modular feature development.
             </p>

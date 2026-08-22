@@ -54,19 +54,19 @@ export const TableCard: React.FC<TableCardProps> = ({
       type="button"
       onClick={onClick}
       className={cn(
-        'p-4 rounded-2xl border text-left transition-all relative flex flex-col justify-between min-h-[135px] shadow-sm select-none group',
+        'p-3.5 rounded-lg border text-left transition-colors relative flex flex-col justify-between min-h-[130px] select-none shadow-xs group',
         isSelected
-          ? 'border-pos-accent bg-pos-accent/15 ring-2 ring-pos-accent shadow-md'
-          : 'border-pos-border bg-pos-surface hover:border-pos-accent/40 hover:bg-pos-surface-hover active:scale-[0.98]'
+          ? 'border-pos-primary bg-pos-primary-soft/40 ring-1 ring-pos-primary'
+          : 'border-pos-border bg-pos-surface hover:border-pos-border-strong hover:bg-pos-surface-subtle'
       )}
     >
       {/* Top Table Name & Status Badge */}
       <div className="flex items-start justify-between gap-2">
         <div>
-          <h3 className="text-base font-black text-pos-text group-hover:text-pos-accent transition-colors leading-tight">
+          <h3 className="text-base font-semibold text-pos-text group-hover:text-pos-primary transition-colors leading-tight">
             {table.name}
           </h3>
-          <span className="text-[11px] text-pos-text-muted flex items-center gap-1 mt-0.5 font-medium">
+          <span className="text-xs text-pos-text-muted flex items-center gap-1 mt-0.5 font-medium">
             <Users size={12} /> {table.capacity} Seats
           </span>
         </div>
@@ -74,7 +74,7 @@ export const TableCard: React.FC<TableCardProps> = ({
       </div>
 
       {/* Active Orders Info / Empty State */}
-      <div className="pt-2 border-t border-pos-border/40 mt-3 flex items-end justify-between">
+      <div className="pt-2 border-t border-pos-border mt-3 flex items-end justify-between">
         {table.activeOrders && table.activeOrders.length > 0 ? (
           <>
             <div>
@@ -85,18 +85,18 @@ export const TableCard: React.FC<TableCardProps> = ({
                   : `${table.activeOrders.length} Sub-bills`}
               </span>
               {totalGuestsSeated > 0 && (
-                <span className="text-[10px] text-pos-text-muted">
+                <span className="text-[11px] text-pos-text-muted">
                   {totalGuestsSeated} guest(s)
                 </span>
               )}
             </div>
 
-            <span className="text-sm font-black font-mono text-pos-accent">
+            <span className="text-sm font-bold font-mono text-pos-primary">
               {formatPrice(totalAmount)}
             </span>
           </>
         ) : (
-          <div className="flex items-center justify-between w-full text-[11px] text-pos-text-muted">
+          <div className="flex items-center justify-between w-full text-xs text-pos-text-muted">
             <span className="italic">
               {table.status === 'AVAILABLE'
                 ? 'Ready for seating'

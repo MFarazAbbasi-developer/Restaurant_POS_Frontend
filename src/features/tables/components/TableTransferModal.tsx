@@ -56,19 +56,21 @@ export const TableTransferModal: React.FC<TableTransferModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 animate-in fade-in duration-150 select-none">
-      <div className="w-full max-w-lg bg-pos-surface border border-pos-border rounded-2xl shadow-2xl flex flex-col max-h-[85vh] overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 animate-in fade-in duration-150 select-none">
+      <div className="w-full max-w-lg bg-pos-surface border border-pos-border rounded-xl shadow-modal flex flex-col max-h-[85vh] overflow-hidden">
         {/* Header */}
-        <div className="p-4 sm:p-5 border-b border-pos-border flex items-center justify-between bg-pos-header shrink-0">
+        <div className="p-4 sm:p-5 border-b border-pos-border flex items-center justify-between bg-pos-surface shrink-0">
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-xl bg-pos-accent/15 border border-pos-accent/30 text-pos-accent flex items-center justify-center">
-              <ArrowRightLeft size={20} />
+            <div className="h-10 w-10 rounded-lg bg-pos-primary-soft border border-[#FED7AA] text-pos-primary flex items-center justify-center">
+              <ArrowRightLeft size={18} />
             </div>
             <div>
-              <h3 className="text-base font-bold text-pos-text">Transfer Table Orders</h3>
+              <h3 className="text-base font-semibold text-pos-text">
+                Transfer Table Orders
+              </h3>
               <p className="text-xs text-pos-text-muted">
                 Move all active orders from{' '}
-                <span className="font-bold text-pos-text">{sourceTable.name}</span> to
+                <span className="font-semibold text-pos-text">{sourceTable.name}</span> to
                 another table
               </p>
             </div>
@@ -77,22 +79,22 @@ export const TableTransferModal: React.FC<TableTransferModalProps> = ({
             type="button"
             onClick={onClose}
             aria-label="Close transfer modal"
-            className="p-2 rounded-xl text-pos-text-muted hover:text-pos-text hover:bg-pos-surface-hover transition-colors"
+            className="p-1.5 rounded-lg text-pos-text-muted hover:text-pos-text hover:bg-pos-surface-subtle transition-colors"
           >
-            <X size={20} />
+            <X size={18} />
           </button>
         </div>
 
         {/* Scrollable Target Tables List */}
         <div className="flex-1 overflow-y-auto p-4 sm:p-5 space-y-3 custom-scrollbar">
           {errorMessage && (
-            <div className="p-3.5 rounded-xl bg-pos-danger/10 border border-pos-danger/30 text-pos-danger text-xs flex items-center gap-2">
-              <AlertCircle size={16} className="shrink-0" />
-              <span>{errorMessage}</span>
+            <div className="p-3 rounded-lg bg-pos-danger-soft border border-[#FECACA] text-pos-danger text-xs flex items-center gap-2">
+              <AlertCircle size={15} className="shrink-0" />
+              <span className="font-medium">{errorMessage}</span>
             </div>
           )}
 
-          <label className="block text-xs font-bold uppercase tracking-wider text-pos-text mb-2">
+          <label className="block text-xs font-semibold uppercase tracking-wider text-pos-text-secondary mb-2">
             Select Destination Table
           </label>
 
@@ -107,22 +109,24 @@ export const TableTransferModal: React.FC<TableTransferModalProps> = ({
                   type="button"
                   onClick={() => setSelectedTargetId(table.id)}
                   className={cn(
-                    'p-3.5 rounded-xl border text-left transition-all relative flex flex-col justify-between min-h-[75px]',
+                    'p-3.5 rounded-lg border text-left transition-colors relative flex flex-col justify-between min-h-[75px]',
                     isSelected
-                      ? 'border-pos-accent bg-pos-accent/15 ring-2 ring-pos-accent shadow-sm'
-                      : 'border-pos-border bg-pos-bg hover:border-pos-accent/40'
+                      ? 'border-pos-primary bg-pos-primary-soft/40 ring-1 ring-pos-primary shadow-xs'
+                      : 'border-pos-border bg-pos-surface hover:border-pos-border-strong hover:bg-pos-surface-subtle'
                   )}
                 >
                   <div className="flex items-center justify-between">
-                    <span className="font-bold text-xs text-pos-text">{table.name}</span>
+                    <span className="font-semibold text-xs text-pos-text">
+                      {table.name}
+                    </span>
                     {isSelected && (
-                      <span className="h-4 w-4 rounded-full bg-pos-accent text-white flex items-center justify-center">
+                      <span className="h-4 w-4 rounded-full bg-pos-primary text-white flex items-center justify-center">
                         <Check size={10} strokeWidth={3} />
                       </span>
                     )}
                   </div>
 
-                  <div className="flex items-center justify-between text-[11px] text-pos-text-muted mt-2">
+                  <div className="flex items-center justify-between text-xs text-pos-text-muted mt-2">
                     <span>{table.zoneName}</span>
                     <Badge variant={isAvailable ? 'success' : 'default'} size="sm">
                       {table.status}
@@ -135,7 +139,7 @@ export const TableTransferModal: React.FC<TableTransferModalProps> = ({
         </div>
 
         {/* Footer */}
-        <div className="p-4 border-t border-pos-border bg-pos-header flex items-center justify-between shrink-0">
+        <div className="p-4 border-t border-pos-border bg-pos-surface flex items-center justify-between shrink-0">
           <Button
             type="button"
             variant="secondary"
@@ -153,7 +157,7 @@ export const TableTransferModal: React.FC<TableTransferModalProps> = ({
             onClick={handleTransfer}
             isLoading={transferMutation.isPending}
             disabled={!selectedTargetId}
-            className="font-bold flex items-center gap-2"
+            className="font-semibold flex items-center gap-2"
           >
             <ArrowRightLeft size={16} />
             <span>Confirm Transfer</span>

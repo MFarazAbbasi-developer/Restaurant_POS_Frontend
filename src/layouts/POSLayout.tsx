@@ -14,6 +14,7 @@ import {
   Calendar,
   Clock,
   CircleDot,
+  Settings as SettingsIcon,
 } from 'lucide-react';
 import { useSocketStatus } from '@/core/socket/useSocket';
 import { socketManager } from '@/core/socket/socketClient';
@@ -121,56 +122,56 @@ export const POSLayout: React.FC = () => {
 
   return (
     <div className="h-screen w-screen flex flex-col bg-pos-bg text-pos-text overflow-hidden select-none">
-      {/* Header Bar */}
-      <header className="h-16 bg-pos-header border-b border-pos-border px-3 sm:px-4 flex items-center justify-between shrink-0 shadow-pos z-20">
+      {/* Top Bar (Height: 64px) */}
+      <header className="h-16 bg-pos-surface border-b border-pos-border px-3 sm:px-4 flex items-center justify-between shrink-0 z-20">
         {/* Left Side: Brand, Sidebar Toggle, Terminal & Store */}
         <div className="flex items-center gap-2 sm:gap-3">
           <button
             onClick={() => setSidebarOpen(prev => !prev)}
             aria-label="Toggle navigation menu"
-            className="p-2 rounded-lg hover:bg-pos-surface-hover text-pos-text-muted hover:text-pos-text transition-colors min-h-[40px] min-w-[40px] flex items-center justify-center"
+            className="p-2 rounded-lg hover:bg-pos-surface-subtle text-pos-text-muted hover:text-pos-text transition-colors min-h-[40px] min-w-[40px] flex items-center justify-center border border-transparent hover:border-pos-border"
           >
-            {sidebarOpen ? <X size={20} /> : <Menu size={20} />}
+            {sidebarOpen ? <X size={18} /> : <Menu size={18} />}
           </button>
 
-          <div className="flex items-center gap-2">
-            <div className="h-9 w-9 rounded-lg bg-pos-accent flex items-center justify-center font-black text-white text-base shadow-sm shrink-0">
+          <div className="flex items-center gap-2.5">
+            <div className="h-8 w-8 rounded-lg bg-pos-primary flex items-center justify-center font-bold text-white text-sm shadow-xs shrink-0">
               F
             </div>
             <div>
-              <h1 className="font-bold text-sm leading-none text-pos-text">
+              <h1 className="font-semibold text-sm leading-tight text-pos-text">
                 {env.appName}
               </h1>
-              <p className="text-[11px] text-pos-text-muted mt-0.5 font-mono">
+              <p className="text-[11px] text-pos-text-muted font-mono leading-tight">
                 {terminal?.terminalId || env.defaultTerminalId}
               </p>
             </div>
           </div>
 
-          <div className="hidden xl:flex items-center gap-1.5 ml-4 pl-4 border-l border-pos-border/60 text-xs text-pos-text-muted">
-            <Store size={14} className="text-pos-accent" />
-            <span className="font-semibold text-pos-text truncate max-w-[200px]">
+          <div className="hidden xl:flex items-center gap-1.5 ml-4 pl-4 border-l border-pos-border text-xs text-pos-text-secondary">
+            <Store size={14} className="text-pos-primary" />
+            <span className="font-medium text-pos-text truncate max-w-[200px]">
               {restaurantName}
             </span>
           </div>
         </div>
 
         {/* Center: Date, Shift Status Pill, Digital Clock, & Network Status */}
-        <div className="hidden md:flex items-center gap-3">
+        <div className="hidden md:flex items-center gap-2.5">
           {/* Business Date Pill */}
-          <div className="flex items-center gap-1.5 text-xs text-pos-text-muted bg-pos-bg/80 px-2.5 py-1.5 rounded-lg border border-pos-border/50">
-            <Calendar size={13} className="text-pos-accent" />
-            <span className="font-medium text-[11px]">{currentDate}</span>
+          <div className="flex items-center gap-1.5 text-xs text-pos-text-secondary bg-pos-surface-subtle px-2.5 py-1.5 rounded-lg border border-pos-border">
+            <Calendar size={13} className="text-pos-primary" />
+            <span className="font-medium text-xs">{currentDate}</span>
           </div>
 
           {/* Shift Status */}
           <NavLink
             to="/shifts"
             className={cn(
-              'flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-lg border transition-colors hover:border-pos-accent',
+              'flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-lg border transition-colors hover:border-pos-primary',
               currentShift?.status === 'OPEN'
-                ? 'bg-pos-bg/80 border-pos-border/50 text-pos-text'
-                : 'bg-pos-warning/10 border-pos-warning/40 text-pos-warning'
+                ? 'bg-pos-surface-subtle border-pos-border text-pos-text'
+                : 'bg-pos-warning-soft border-[#FDE68A] text-pos-warning'
             )}
             title={
               currentShift?.status === 'OPEN'
@@ -181,18 +182,16 @@ export const POSLayout: React.FC = () => {
             <CircleDot
               size={12}
               className={cn(
-                currentShift?.status === 'OPEN'
-                  ? 'text-pos-success animate-pulse'
-                  : 'text-pos-warning'
+                currentShift?.status === 'OPEN' ? 'text-pos-success' : 'text-pos-warning'
               )}
             />
-            <span className="font-semibold text-[11px]">
+            <span className="font-semibold text-xs">
               {currentShift?.status === 'OPEN' ? 'Shift Open' : 'Open Shift'}
             </span>
           </NavLink>
 
           {/* Digital Clock */}
-          <div className="flex items-center gap-1.5 font-mono text-xs font-semibold text-pos-text bg-pos-bg/80 px-3 py-1.5 rounded-lg border border-pos-border/50 tracking-wider">
+          <div className="flex items-center gap-1.5 font-mono text-xs font-semibold text-pos-text bg-pos-surface-subtle px-3 py-1.5 rounded-lg border border-pos-border tracking-wider">
             <Clock size={13} className="text-pos-text-muted" />
             {currentTime}
           </div>
@@ -208,7 +207,7 @@ export const POSLayout: React.FC = () => {
             type="button"
             onClick={toggleFullscreen}
             aria-label={isFullscreen ? 'Exit Fullscreen' : 'Enter Fullscreen'}
-            className="p-2 rounded-lg hover:bg-pos-surface text-pos-text-muted hover:text-pos-text transition-colors hidden sm:flex items-center justify-center"
+            className="p-2 rounded-lg hover:bg-pos-surface-subtle text-pos-text-muted hover:text-pos-text transition-colors hidden sm:flex items-center justify-center border border-transparent hover:border-pos-border"
             title={isFullscreen ? 'Exit Fullscreen' : 'Fullscreen Kiosk Mode'}
           >
             {isFullscreen ? <Minimize size={18} /> : <Maximize size={18} />}
@@ -220,17 +219,17 @@ export const POSLayout: React.FC = () => {
               onClick={() => setUserMenuOpen(prev => !prev)}
               aria-expanded={userMenuOpen}
               aria-haspopup="true"
-              className="flex items-center gap-2 p-1.5 rounded-xl hover:bg-pos-surface border border-transparent hover:border-pos-border transition-all min-h-[44px]"
+              className="flex items-center gap-2 p-1.5 rounded-lg hover:bg-pos-surface-subtle border border-pos-border transition-all min-h-[40px]"
             >
               <div className="text-right hidden sm:block">
-                <p className="text-xs font-bold text-pos-text leading-tight truncate max-w-[120px]">
+                <p className="text-xs font-semibold text-pos-text leading-tight truncate max-w-[120px]">
                   {user?.name || 'Staff User'}
                 </p>
-                <p className="text-[10px] text-pos-text-muted uppercase tracking-wider font-semibold">
+                <p className="text-[11px] text-pos-text-muted uppercase tracking-wider font-medium">
                   {roles.length > 0 ? roles[0] : 'Staff'}
                 </p>
               </div>
-              <div className="h-9 w-9 rounded-xl bg-pos-accent/15 border border-pos-accent/30 flex items-center justify-center font-bold text-xs text-pos-accent shadow-sm shrink-0">
+              <div className="h-8 w-8 rounded-lg bg-pos-primary-soft border border-[#FED7AA] flex items-center justify-center font-bold text-xs text-pos-primary shrink-0">
                 {user?.name ? user.name.slice(0, 2).toUpperCase() : 'POS'}
               </div>
               <ChevronDown
@@ -244,14 +243,14 @@ export const POSLayout: React.FC = () => {
 
             {/* User Menu Modal / Dropdown */}
             {userMenuOpen && (
-              <div className="absolute right-0 top-12 w-64 rounded-xl bg-pos-surface border border-pos-border shadow-2xl p-2 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
-                <div className="p-3 bg-pos-bg/70 rounded-lg border border-pos-border/60 mb-2">
+              <div className="absolute right-0 top-12 w-64 rounded-xl bg-pos-surface border border-pos-border shadow-dropdown p-2 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
+                <div className="p-3 bg-pos-surface-subtle rounded-lg border border-pos-border mb-2">
                   <p className="text-xs font-bold text-pos-text">{user?.name}</p>
                   <p className="text-[11px] text-pos-text-muted font-mono mt-0.5">
                     @{user?.username}
                   </p>
-                  <div className="flex items-center gap-1.5 mt-2 text-[11px] text-pos-text-muted">
-                    <Shield size={12} className="text-pos-accent" />
+                  <div className="flex items-center gap-1.5 mt-2 text-[11px] text-pos-text-secondary">
+                    <Shield size={12} className="text-pos-primary" />
                     <span>{permissions.length} Active Permissions</span>
                   </div>
                 </div>
@@ -261,7 +260,7 @@ export const POSLayout: React.FC = () => {
                     type="button"
                     onClick={handleLogout}
                     disabled={isLoading}
-                    className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-pos-text hover:bg-pos-surface-hover hover:text-pos-danger rounded-lg transition-colors text-left"
+                    className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-pos-text hover:bg-pos-surface-subtle hover:text-pos-danger rounded-lg transition-colors text-left"
                   >
                     <LogOut size={14} className="text-pos-danger" />
                     <span>Log Out (Lock Station)</span>
@@ -271,7 +270,7 @@ export const POSLayout: React.FC = () => {
                     type="button"
                     onClick={handleLogoutAll}
                     disabled={isLoading}
-                    className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-pos-text-muted hover:bg-pos-danger/10 hover:text-pos-danger rounded-lg transition-colors text-left"
+                    className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-pos-text-muted hover:bg-pos-danger-soft hover:text-pos-danger rounded-lg transition-colors text-left"
                   >
                     <PowerOff size={14} className="text-pos-danger" />
                     <span>Revoke All Sessions</span>
@@ -285,11 +284,11 @@ export const POSLayout: React.FC = () => {
 
       {/* Main View Shell */}
       <div className="flex flex-1 overflow-hidden">
-        {/* Navigation Sidebar */}
+        {/* Navigation Sidebar (Desktop Width: 248px) */}
         <aside
           className={cn(
-            'bg-pos-sidebar border-r border-pos-border transition-all duration-200 ease-in-out flex flex-col shrink-0 z-10 select-none',
-            sidebarOpen ? 'w-60' : 'w-16'
+            'bg-pos-surface border-r border-pos-border transition-all duration-200 ease-in-out flex flex-col shrink-0 z-10 select-none',
+            sidebarOpen ? 'w-[248px]' : 'w-16'
           )}
         >
           <nav className="flex-1 p-2 space-y-4 overflow-y-auto custom-scrollbar">
@@ -304,7 +303,7 @@ export const POSLayout: React.FC = () => {
               return (
                 <div key={group.groupId} className="space-y-1">
                   {sidebarOpen && (
-                    <div className="px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-pos-text-muted/70">
+                    <div className="px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-pos-text-muted">
                       {group.groupLabel}
                     </div>
                   )}
@@ -322,10 +321,10 @@ export const POSLayout: React.FC = () => {
                         to={item.path}
                         title={!sidebarOpen ? item.label : undefined}
                         className={cn(
-                          'flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all min-h-[44px]',
+                          'flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors min-h-[40px]',
                           isActive
-                            ? 'bg-pos-accent text-white shadow-sm'
-                            : 'text-pos-text-muted hover:bg-pos-surface hover:text-pos-text'
+                            ? 'bg-pos-primary text-white font-semibold shadow-xs'
+                            : 'text-pos-text-secondary hover:bg-pos-surface-subtle hover:text-pos-text'
                         )}
                       >
                         <Icon size={18} className="shrink-0" />
@@ -333,7 +332,7 @@ export const POSLayout: React.FC = () => {
                           <div className="flex-1 flex items-center justify-between min-w-0">
                             <span className="truncate">{item.label}</span>
                             {item.badge && (
-                              <span className="text-[10px] font-bold bg-pos-bg/80 px-1.5 py-0.5 rounded text-pos-accent">
+                              <span className="text-[10px] font-bold bg-pos-primary-soft text-pos-primary px-1.5 py-0.5 rounded">
                                 {item.badge}
                               </span>
                             )}
@@ -347,15 +346,31 @@ export const POSLayout: React.FC = () => {
             })}
           </nav>
 
-          {/* Sidebar Footer */}
-          <div className="p-3 border-t border-pos-border bg-pos-surface/30">
+          {/* Sidebar Footer: Settings & Terminal Info */}
+          <div className="p-3 border-t border-pos-border bg-pos-surface-subtle/50 space-y-2">
+            {hasPermission('settings.view') && (
+              <NavLink
+                to="/settings"
+                title={!sidebarOpen ? 'Settings' : undefined}
+                className={cn(
+                  'flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors',
+                  location.pathname === '/settings'
+                    ? 'bg-pos-primary text-white font-semibold'
+                    : 'text-pos-text-secondary hover:bg-pos-surface hover:text-pos-text'
+                )}
+              >
+                <SettingsIcon size={18} className="shrink-0" />
+                {sidebarOpen && <span className="truncate">Settings</span>}
+              </NavLink>
+            )}
+
             <div
               className={cn(
-                'flex items-center gap-2 text-xs text-pos-text-muted font-mono',
-                !sidebarOpen && 'justify-center'
+                'flex items-center gap-2 text-xs text-pos-text-muted font-mono px-2',
+                !sidebarOpen && 'justify-center px-0'
               )}
             >
-              <Server size={14} className="shrink-0 text-pos-accent" />
+              <Server size={14} className="shrink-0 text-pos-primary" />
               {sidebarOpen && (
                 <span className="truncate text-[11px]">Faraz POS • {env.appEnv}</span>
               )}
@@ -363,9 +378,9 @@ export const POSLayout: React.FC = () => {
           </div>
         </aside>
 
-        {/* Content Viewport */}
+        {/* Content Viewport (24px padding default) */}
         <main className="flex-1 flex flex-col overflow-hidden bg-pos-bg relative">
-          <div className="flex-1 overflow-auto p-4 md:p-6 custom-scrollbar">
+          <div className="flex-1 overflow-auto p-4 sm:p-6 custom-scrollbar">
             <Outlet />
           </div>
         </main>

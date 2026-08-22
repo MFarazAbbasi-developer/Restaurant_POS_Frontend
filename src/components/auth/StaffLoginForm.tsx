@@ -150,12 +150,12 @@ export const StaffLoginForm: React.FC = () => {
   };
 
   return (
-    <Card className="w-full max-w-md bg-pos-surface border-pos-border shadow-2xl p-6 sm:p-8">
+    <Card className="w-full max-w-md bg-pos-surface border-pos-border shadow-modal rounded-xl p-6 sm:p-8">
       <div className="text-center mb-6">
-        <div className="inline-flex items-center justify-center h-14 w-14 rounded-2xl bg-pos-accent/10 border border-pos-accent/20 text-pos-accent mb-3">
-          <KeyRound size={28} />
+        <div className="inline-flex items-center justify-center h-12 w-12 rounded-lg bg-pos-primary-soft border border-[#FED7AA] text-pos-primary mb-3">
+          <KeyRound size={24} />
         </div>
-        <h2 className="text-2xl font-bold text-pos-text">Terminal Staff Sign-In</h2>
+        <h2 className="text-xl font-bold text-pos-text">Terminal Staff Sign-In</h2>
         <p className="text-xs text-pos-text-muted mt-1">
           Enter your staff credentials or PIN to access this register
         </p>
@@ -163,9 +163,9 @@ export const StaffLoginForm: React.FC = () => {
 
       {/* Quick Staff Selectors */}
       <div className="mb-5">
-        <div className="flex items-center justify-between text-xs text-pos-text-muted mb-2">
-          <span className="font-medium">Quick Staff Select:</span>
-          <span className="flex items-center gap-1 text-[11px] text-pos-accent font-medium">
+        <div className="flex items-center justify-between text-xs text-pos-text-secondary mb-2">
+          <span className="font-semibold">Quick Staff Select:</span>
+          <span className="flex items-center gap-1 text-[11px] text-pos-primary font-semibold">
             <Sparkles size={12} /> Seeded Users
           </span>
         </div>
@@ -176,23 +176,23 @@ export const StaffLoginForm: React.FC = () => {
               type="button"
               onClick={() => handleSelectPreset(staff)}
               className={cn(
-                'p-2 rounded-lg border text-left transition-all text-xs select-none',
+                'p-2 rounded-lg border text-left transition-colors text-xs select-none',
                 username === staff.username
-                  ? 'border-pos-accent bg-pos-accent/10 text-pos-text font-semibold ring-1 ring-pos-accent'
-                  : 'border-pos-border bg-pos-bg/60 text-pos-text-muted hover:border-pos-border-focus hover:text-pos-text'
+                  ? 'border-pos-primary bg-pos-primary-soft text-pos-primary font-semibold ring-1 ring-pos-primary'
+                  : 'border-pos-border bg-pos-surface text-pos-text-secondary hover:border-pos-border-strong hover:text-pos-text'
               )}
             >
-              <p className="truncate font-medium">
+              <p className="truncate font-semibold text-pos-text">
                 {staff.label.split(' ')[1] || staff.label}
               </p>
-              <p className="text-[10px] text-pos-text-muted capitalize">{staff.role}</p>
+              <p className="text-[11px] text-pos-text-muted capitalize">{staff.role}</p>
             </button>
           ))}
         </div>
       </div>
 
       {error && (
-        <div className="mb-5 p-3.5 rounded-lg bg-pos-danger/10 border border-pos-danger/30 text-pos-danger flex items-start gap-2.5 text-xs animate-shake">
+        <div className="mb-5 p-3 rounded-lg bg-pos-danger-soft border border-[#FECACA] text-pos-danger flex items-start gap-2.5 text-xs">
           <AlertCircle size={16} className="shrink-0 mt-0.5" />
           <div>
             <p className="font-semibold">Authentication Error</p>
@@ -204,13 +204,13 @@ export const StaffLoginForm: React.FC = () => {
       <form onSubmit={handleFormSubmit} autoComplete="off" className="space-y-4">
         {/* Username Input */}
         <div>
-          <label className="block text-xs font-semibold text-pos-text-muted mb-1.5 uppercase tracking-wider">
+          <label className="block text-xs font-semibold text-pos-text-secondary mb-1.5 uppercase tracking-wider">
             Staff Username
           </label>
           <div className="relative">
             <UserIcon
               size={18}
-              className="absolute left-3.5 top-1/2 -translate-y-1/2 text-pos-text-muted"
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-pos-text-muted"
             />
             <input
               type="text"
@@ -219,20 +219,20 @@ export const StaffLoginForm: React.FC = () => {
               value={username}
               onChange={e => setUsername(e.target.value)}
               placeholder="e.g. owner_admin"
-              className="w-full pl-10 pr-3.5 py-2.5 rounded-lg bg-pos-bg border border-pos-border text-pos-text placeholder-pos-text-muted/60 text-sm focus:outline-none focus:ring-2 focus:ring-pos-accent focus:border-transparent font-medium"
+              className="w-full pl-9 pr-3 py-2 rounded-lg bg-pos-surface border border-pos-border text-pos-text placeholder-pos-text-muted text-sm focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary font-medium transition-colors"
             />
           </div>
         </div>
 
         {/* PIN or Password Mode Switcher */}
         <div className="flex items-center justify-between pt-1">
-          <span className="text-xs font-semibold text-pos-text-muted uppercase tracking-wider">
+          <span className="text-xs font-semibold text-pos-text-secondary uppercase tracking-wider">
             {isPasswordMode ? 'Password' : 'Touch PIN Code'}
           </span>
           <button
             type="button"
             onClick={() => setIsPasswordMode(prev => !prev)}
-            className="text-xs text-pos-accent hover:underline font-medium focus:outline-none"
+            className="text-xs text-pos-primary hover:underline font-semibold focus:outline-none"
           >
             {isPasswordMode ? 'Use PIN Numpad' : 'Use Password'}
           </button>
@@ -242,7 +242,7 @@ export const StaffLoginForm: React.FC = () => {
         {!isPasswordMode ? (
           <div className="space-y-3">
             {/* PIN Display Visualizer & Interactive Input */}
-            <div className="relative h-14 rounded-xl bg-pos-bg border border-pos-border flex items-center justify-center px-4">
+            <div className="relative h-12 rounded-lg bg-pos-surface-subtle border border-pos-border flex items-center justify-center px-4">
               <input
                 id="pin-input"
                 type="password"
@@ -257,15 +257,15 @@ export const StaffLoginForm: React.FC = () => {
                   <div
                     key={index}
                     className={cn(
-                      'h-3.5 w-3.5 rounded-full transition-all duration-150',
+                      'h-3 w-3 rounded-full transition-all duration-150',
                       pin.length > index
-                        ? 'bg-pos-accent scale-110 shadow-sm shadow-pos-accent/50'
-                        : 'bg-pos-border'
+                        ? 'bg-pos-primary scale-110'
+                        : 'bg-pos-border-strong'
                     )}
                   />
                 ))}
                 {pin.length > 4 && (
-                  <span className="text-xs font-mono text-pos-accent ml-2">
+                  <span className="text-xs font-mono text-pos-primary font-semibold ml-2">
                     +{pin.length - 4} digits
                   </span>
                 )}
@@ -279,7 +279,7 @@ export const StaffLoginForm: React.FC = () => {
                   key={digit}
                   type="button"
                   onClick={() => handleNumpadPress(digit)}
-                  className="h-13 py-3 rounded-xl bg-pos-bg/80 hover:bg-pos-surface border border-pos-border/80 active:scale-95 font-bold text-xl text-pos-text transition-all duration-100 shadow-sm flex items-center justify-center select-none"
+                  className="h-11 rounded-lg bg-pos-surface hover:bg-pos-surface-subtle border border-pos-border active:bg-pos-border font-semibold text-lg text-pos-text transition-colors shadow-xs flex items-center justify-center select-none"
                 >
                   {digit}
                 </button>
@@ -288,15 +288,15 @@ export const StaffLoginForm: React.FC = () => {
                 type="button"
                 onClick={handleNumpadClear}
                 aria-label="Clear PIN"
-                className="h-13 py-3 rounded-xl bg-pos-bg/50 hover:bg-pos-danger/10 hover:text-pos-danger border border-pos-border text-pos-text-muted active:scale-95 transition-all text-xs font-semibold flex items-center justify-center gap-1 select-none"
+                className="h-11 rounded-lg bg-pos-surface hover:bg-pos-danger-soft hover:text-pos-danger border border-pos-border text-pos-text-muted active:bg-pos-border transition-colors text-xs font-semibold flex items-center justify-center gap-1 select-none"
               >
-                <RotateCcw size={16} />
+                <RotateCcw size={15} />
                 Clear
               </button>
               <button
                 type="button"
                 onClick={() => handleNumpadPress('0')}
-                className="h-13 py-3 rounded-xl bg-pos-bg/80 hover:bg-pos-surface border border-pos-border/80 active:scale-95 font-bold text-xl text-pos-text transition-all duration-100 shadow-sm flex items-center justify-center select-none"
+                className="h-11 rounded-lg bg-pos-surface hover:bg-pos-surface-subtle border border-pos-border active:bg-pos-border font-semibold text-lg text-pos-text transition-colors shadow-xs flex items-center justify-center select-none"
               >
                 0
               </button>
@@ -304,9 +304,9 @@ export const StaffLoginForm: React.FC = () => {
                 type="button"
                 onClick={handleNumpadBackspace}
                 aria-label="Backspace PIN"
-                className="h-13 py-3 rounded-xl bg-pos-bg/50 hover:bg-pos-surface border border-pos-border text-pos-text-muted active:scale-95 transition-all flex items-center justify-center select-none"
+                className="h-11 rounded-lg bg-pos-surface hover:bg-pos-surface-subtle border border-pos-border text-pos-text-muted active:bg-pos-border transition-colors flex items-center justify-center select-none"
               >
-                <Delete size={20} />
+                <Delete size={18} />
               </button>
             </div>
           </div>
@@ -315,7 +315,7 @@ export const StaffLoginForm: React.FC = () => {
           <div className="relative">
             <Lock
               size={18}
-              className="absolute left-3.5 top-1/2 -translate-y-1/2 text-pos-text-muted"
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-pos-text-muted"
             />
             <input
               type="password"
@@ -324,7 +324,7 @@ export const StaffLoginForm: React.FC = () => {
               value={password}
               onChange={e => setPassword(e.target.value)}
               placeholder="Enter account password"
-              className="w-full pl-10 pr-3.5 py-2.5 rounded-lg bg-pos-bg border border-pos-border text-pos-text placeholder-pos-text-muted/60 text-sm focus:outline-none focus:ring-2 focus:ring-pos-accent focus:border-transparent font-medium"
+              className="w-full pl-9 pr-3 py-2 rounded-lg bg-pos-surface border border-pos-border text-pos-text placeholder-pos-text-muted text-sm focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary font-medium transition-colors"
             />
           </div>
         )}
@@ -362,7 +362,7 @@ export const StaffLoginForm: React.FC = () => {
             (!isPasswordMode && pin.length === 0) ||
             (isPasswordMode && password.length === 0)
           }
-          className="w-full mt-2 font-bold tracking-wide shadow-md"
+          className="w-full mt-2 font-semibold shadow-xs"
         >
           Authorize & Open Register
         </Button>

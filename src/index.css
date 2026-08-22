@@ -13,27 +13,53 @@
     height: 100%;
     margin: 0;
     padding: 0;
-    background-color: #0f172a;
-    color: #f8fafc;
+    background-color: #f8fafc;
+    color: #0f172a;
+    font-size: 14px;
+    line-height: 1.5;
     touch-action: manipulation;
+    font-family:
+      'Inter',
+      -apple-system,
+      BlinkMacSystemFont,
+      'Segoe UI',
+      Roboto,
+      sans-serif;
   }
 
-  /* Custom subtle dark scrollbars for POS touch & desktop lists */
+  /* Custom clean subtle scrollbars for POS touch & desktop lists */
   ::-webkit-scrollbar {
     width: 6px;
     height: 6px;
   }
 
   ::-webkit-scrollbar-track {
-    background: #0f172a;
+    background: #f1f5f9;
   }
 
   ::-webkit-scrollbar-thumb {
-    background: #334155;
+    background: #cbd5e1;
     border-radius: 4px;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    background: #475569;
+    background: #94a3b8;
+  }
+}
+
+@layer utilities {
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #e2e8f0;
+    border-radius: 4px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #cbd5e1;
   }
 }

@@ -18,15 +18,15 @@ export const StatusIndicator: React.FC<StatusIndicatorProps> = ({
       case 'connected':
       case 'online':
         return {
-          dotClass: 'bg-emerald-500 animate-pulse',
-          bgClass: 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400',
+          dotClass: 'bg-pos-success',
+          bgClass: 'bg-pos-success-soft border-[#BBF7D0] text-pos-success',
           defaultText: status === 'connected' ? 'Live Sync' : 'Online',
         };
       case 'connecting':
       case 'reconnecting':
         return {
-          dotClass: 'bg-amber-500 animate-ping',
-          bgClass: 'bg-amber-500/10 border-amber-500/20 text-amber-400',
+          dotClass: 'bg-pos-warning animate-pulse',
+          bgClass: 'bg-pos-warning-soft border-[#FDE68A] text-pos-warning',
           defaultText: 'Reconnecting...',
         };
       case 'disconnected':
@@ -34,8 +34,8 @@ export const StatusIndicator: React.FC<StatusIndicatorProps> = ({
       case 'error':
       default:
         return {
-          dotClass: 'bg-rose-500',
-          bgClass: 'bg-rose-500/10 border-rose-500/20 text-rose-400',
+          dotClass: 'bg-pos-danger',
+          bgClass: 'bg-pos-danger-soft border-[#FECACA] text-pos-danger',
           defaultText: status === 'offline' ? 'Offline' : 'Disconnected',
         };
     }
@@ -46,13 +46,13 @@ export const StatusIndicator: React.FC<StatusIndicatorProps> = ({
   return (
     <div
       className={cn(
-        'inline-flex items-center gap-2 px-2.5 py-1 rounded-full border text-xs font-medium tracking-wide transition-all',
+        'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-xs font-medium transition-colors duration-150',
         config.bgClass,
         className
       )}
     >
       <span className={cn('h-2 w-2 rounded-full', config.dotClass)} />
-      <span>{label || config.defaultText}</span>
+      <span className="font-semibold">{label || config.defaultText}</span>
     </div>
   );
 };
