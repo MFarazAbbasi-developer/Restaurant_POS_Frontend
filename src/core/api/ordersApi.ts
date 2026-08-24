@@ -7,9 +7,23 @@ import {
   PaymentResponseData,
   PosFloorViewData,
   PosMenuData,
+  ListOrdersQueryParams,
+  ListOrdersResponseData,
 } from '@/types';
 
 export class OrdersApi {
+  /**
+   * GET /api/v1/orders
+   * List orders with optional filtering and pagination
+   */
+  public static async listOrders(
+    params?: ListOrdersQueryParams
+  ): Promise<ListOrdersResponseData> {
+    const response = await apiClient.get<ApiResponse<ListOrdersResponseData>>('/orders', {
+      params,
+    });
+    return response.data;
+  }
   /**
    * GET /api/v1/menu/pos
    * Retrieve active pre-sorted menu catalog with portion variants and modifier groups

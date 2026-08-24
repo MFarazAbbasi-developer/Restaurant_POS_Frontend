@@ -249,7 +249,27 @@ export interface OrderRecord {
   notes?: string | null;
   items: OrderItemRecord[];
   createdAt: string;
-  updatedAt: string;
+}
+
+export interface ListOrdersQueryParams {
+  status?: OrderStatus;
+  orderType?: OrderType;
+  paymentStatus?: OrderPaymentStatus;
+  tableId?: string;
+  businessDate?: string;
+  search?: string;
+  page?: number;
+  limit?: number;
+}
+
+export interface ListOrdersResponseData {
+  orders: OrderRecord[];
+  pagination: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
 }
 
 /**

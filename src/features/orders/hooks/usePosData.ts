@@ -1,11 +1,23 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { OrdersApi } from '@/core/api/ordersApi';
-import { CreateOrderInput, CreatePaymentInput } from '@/types';
+import { CreateOrderInput, CreatePaymentInput, ListOrdersQueryParams } from '@/types';
 
 export const POS_QUERY_KEYS = {
   MENU: ['pos', 'menu'] as const,
   TABLES: ['pos', 'tables'] as const,
   ORDER: (id: string) => ['pos', 'order', id] as const,
+  LIST: (params?: ListOrdersQueryParams) => ['orders', 'list', params] as const,
+};
+
+/**
+ * Hook to retrieve filtered/paginated order list
+ */
+export const useOrdersListQuery = (params?: ListOrdersQueryParams) => {
+  return useQuery({
+    queryKey: POS_QUERY_KEYS.LIST(params),
+    queryFn: () => OrdersApi.listOrders(params),
+    staleTime: 1000 * 15,
+  });
 };
 
 /**
