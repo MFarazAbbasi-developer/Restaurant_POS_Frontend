@@ -29,11 +29,21 @@ export const POSLayout: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [hoveredNavItem, setHoveredNavItem] = useState<{
+    label: string;
+    badge?: string;
+    top: number;
+  } | null>(null);
   const [currentTime, setCurrentTime] = useState<string>('');
   const [currentDate, setCurrentDate] = useState<string>('');
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const userMenuRef = useRef<HTMLDivElement>(null);
+
+  // Clear hovered tooltip on navigation or sidebar toggle
+  useEffect(() => {
+    setHoveredNavItem(null);
+  }, [location.pathname, sidebarOpen]);
 
   const { status: socketStatus } = useSocketStatus();
   const { data: currentShift } = useCurrentShiftQuery();
@@ -318,12 +328,23 @@ export const POSLayout: React.FC = () => {
                       <NavLink
                         key={item.id}
                         to={item.path}
-                        title={!sidebarOpen ? item.label : undefined}
+                        onMouseEnter={e => {
+                          if (!sidebarOpen) {
+                            const rect = e.currentTarget.getBoundingClientRect();
+                            setHoveredNavItem({
+                              label: item.label,
+                              badge: item.badge,
+                              top: rect.top + rect.height / 2,
+                            });
+                          }
+                        }}
+                        onMouseLeave={() => setHoveredNavItem(null)}
                         className={cn(
                           'flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors min-h-[40px]',
                           isActive
                             ? 'bg-pos-primary text-white font-semibold shadow-xs'
-                            : 'text-pos-text-secondary hover:bg-pos-surface-subtle hover:text-pos-text'
+                            : 'text-pos-text-secondary hover:bg-pos-surface-subtle hover:text-pos-text',
+                          !sidebarOpen && 'justify-center px-0'
                         )}
                       >
                         <Icon size={18} className="shrink-0" />
@@ -344,6 +365,21 @@ export const POSLayout: React.FC = () => {
               );
             })}
           </nav>
+
+          {/* Instant Zero-Delay Tooltip when Sidebar is Closed */}
+          {!sidebarOpen && hoveredNavItem && (
+            <div
+              style={{ top: `${hoveredNavItem.top}px` }}
+              className="fixed left-[72px] -translate-y-1/2 z-[9999] pointer-events-none flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-semibold text-white bg-slate-900 rounded-md shadow-dropdown whitespace-nowrap animate-in fade-in zoom-in-95 duration-75 border border-slate-700/50"
+            >
+              <span>{hoveredNavItem.label}</span>
+              {hoveredNavItem.badge && (
+                <span className="text-[10px] font-bold bg-pos-primary text-white px-1.5 py-0.5 rounded">
+                  {hoveredNavItem.badge}
+                </span>
+              )}
+            </div>
+          )}
 
           {/* Sidebar Footer: Terminal Info */}
           <div className="p-3 border-t border-pos-border bg-pos-surface-subtle/50">
