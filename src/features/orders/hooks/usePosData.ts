@@ -35,12 +35,13 @@ export const usePosMenuQuery = () => {
 /**
  * Hook to retrieve active floor seating zones and table statuses
  */
-export const usePosTablesQuery = () => {
+export const usePosTablesQuery = (options?: { enabled?: boolean }) => {
   return useQuery({
     queryKey: POS_QUERY_KEYS.TABLES,
     queryFn: () => OrdersApi.getPosTables(),
     staleTime: 1000 * 30, // 30 seconds
     refetchInterval: 1000 * 30,
+    enabled: options?.enabled ?? true,
   });
 };
 

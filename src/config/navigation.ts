@@ -54,7 +54,7 @@ export const NAVIGATION_GROUPS: NavGroupConfig[] = [
         path: '/orders',
         icon: ShoppingBag,
         description: 'Create & manage active customer sales orders',
-        permissionKey: 'orders.view',
+        permissionKey: 'orders.create',
       },
       {
         id: 'tables',

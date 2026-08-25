@@ -16,12 +16,13 @@ export const DELIVERY_QUERY_KEYS = {
 /**
  * Hook to retrieve and live-poll the dispatcher delivery queue
  */
-export const useDeliveryQueueQuery = () => {
+export const useDeliveryQueueQuery = (options?: { enabled?: boolean }) => {
   return useQuery({
     queryKey: DELIVERY_QUERY_KEYS.DISPATCHER,
     queryFn: () => DeliveryApi.getDispatcherQueue(),
     staleTime: 1000 * 15,
     refetchInterval: 1000 * 15,
+    enabled: options?.enabled ?? true,
   });
 };
 

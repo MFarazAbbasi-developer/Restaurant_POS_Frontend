@@ -17,12 +17,16 @@ export const KITCHEN_QUERY_KEYS = {
 /**
  * Hook to retrieve and auto-poll active kitchen queue tickets
  */
-export const useKitchenQueueQuery = (params?: KitchenQueueQueryParams) => {
+export const useKitchenQueueQuery = (
+  params?: KitchenQueueQueryParams,
+  options?: { enabled?: boolean }
+) => {
   return useQuery({
     queryKey: KITCHEN_QUERY_KEYS.QUEUE(params),
     queryFn: () => KitchenApi.getKitchenQueue(params),
     staleTime: 1000 * 10,
     refetchInterval: 1000 * 10, // Poll every 10 seconds for real-time kitchen responsiveness
+    enabled: options?.enabled ?? true,
   });
 };
 

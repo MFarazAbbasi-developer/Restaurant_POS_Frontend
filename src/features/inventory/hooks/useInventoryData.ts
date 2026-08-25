@@ -42,11 +42,12 @@ export const useInventorySummaryQuery = () => {
   });
 };
 
-export const useLowStockQuery = () => {
+export const useLowStockQuery = (options?: { enabled?: boolean }) => {
   return useQuery({
     queryKey: INVENTORY_QUERY_KEYS.LOW_STOCK,
     queryFn: () => InventoryApi.getLowStock(),
     staleTime: 1000 * 30,
+    enabled: options?.enabled ?? true,
   });
 };
 

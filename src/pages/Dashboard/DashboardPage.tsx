@@ -172,6 +172,7 @@ export const DashboardPage: React.FC = () => {
   const canViewReports = hasPermission('reports.view');
   const canViewShifts = hasPermission('shifts.view');
   const canViewOrders = hasPermission('orders.view');
+  const canViewTables = hasPermission('tables.view');
   const canViewInventory = hasPermission('inventory.view');
   const canViewReservations = hasPermission('reservations.view');
   const canViewKitchen = hasPermission('kitchen.view');
@@ -189,12 +190,12 @@ export const DashboardPage: React.FC = () => {
   );
 
   // Live Operations queries
-  const tablesQuery = usePosTablesQuery();
-  const kitchenQuery = useKitchenQueueQuery();
+  const tablesQuery = usePosTablesQuery({ enabled: canViewTables });
+  const kitchenQuery = useKitchenQueueQuery(undefined, { enabled: canViewKitchen });
   const takeawayQuery = useTakeawayQueueQuery();
-  const deliveryQuery = useDeliveryQueueQuery();
-  const currentShiftQuery = useCurrentShiftQuery();
-  const lowStockQuery = useLowStockQuery();
+  const deliveryQuery = useDeliveryQueueQuery({ enabled: canViewDelivery });
+  const currentShiftQuery = useCurrentShiftQuery({ enabled: canViewShifts });
+  const lowStockQuery = useLowStockQuery({ enabled: canViewInventory });
   const reservationsQuery = useReservationsQuery(
     canViewReservations ? { reservationDate: todayStr, status: 'CONFIRMED' } : undefined
   );
@@ -671,14 +672,20 @@ export const DashboardPage: React.FC = () => {
             </span>
             <Users size={15} className="text-pos-warning" />
           </div>
-          <div className="mt-1.5">
-            <div className="text-lg sm:text-xl font-bold font-mono text-pos-text">
-              {tablesQuery.isLoading ? '...' : tableStats.seatedGuests}
+          {canViewTables ? (
+            <div className="mt-1.5">
+              <div className="text-lg sm:text-xl font-bold font-mono text-pos-text">
+                {tablesQuery.isLoading ? '...' : tableStats.seatedGuests}
+              </div>
+              <p className="text-[11px] text-pos-text-muted mt-0.5 truncate">
+                {tableStats.occupied} occupied table{tableStats.occupied === 1 ? '' : 's'}
+              </p>
             </div>
-            <p className="text-[11px] text-pos-text-muted mt-0.5 truncate">
-              {tableStats.occupied} occupied table{tableStats.occupied === 1 ? '' : 's'}
-            </p>
-          </div>
+          ) : (
+            <div className="mt-2 text-xs text-pos-text-muted flex items-center gap-1">
+              <EyeOff size={12} /> Restricted
+            </div>
+          )}
         </Card>
 
         {/* Metric 5: Table Occupancy */}
@@ -689,26 +696,32 @@ export const DashboardPage: React.FC = () => {
             </span>
             <UtensilsCrossed size={15} className="text-pos-primary" />
           </div>
-          <div className="mt-1.5">
-            <div className="flex items-baseline gap-1">
-              <span className="text-lg sm:text-xl font-bold font-mono text-pos-text">
-                {tablesQuery.isLoading ? '...' : tableStats.occupied}
-              </span>
-              <span className="text-xs font-mono text-pos-text-muted">
-                /{tableStats.total}
-              </span>
-              <span className="text-[11px] font-medium text-pos-text-secondary ml-auto">
-                {tableStats.occupancyRate}%
-              </span>
+          {canViewTables ? (
+            <div className="mt-1.5">
+              <div className="flex items-baseline gap-1">
+                <span className="text-lg sm:text-xl font-bold font-mono text-pos-text">
+                  {tablesQuery.isLoading ? '...' : tableStats.occupied}
+                </span>
+                <span className="text-xs font-mono text-pos-text-muted">
+                  /{tableStats.total}
+                </span>
+                <span className="text-[11px] font-medium text-pos-text-secondary ml-auto">
+                  {tableStats.occupancyRate}%
+                </span>
+              </div>
+              {/* Clean Progress Bar */}
+              <div className="w-full h-1.5 bg-pos-surface-subtle rounded-full overflow-hidden mt-1.5 border border-pos-border">
+                <div
+                  className="h-full bg-pos-primary rounded-full transition-all duration-300"
+                  style={{ width: `${Math.min(tableStats.occupancyRate, 100)}%` }}
+                />
+              </div>
             </div>
-            {/* Clean Progress Bar */}
-            <div className="w-full h-1.5 bg-pos-surface-subtle rounded-full overflow-hidden mt-1.5 border border-pos-border">
-              <div
-                className="h-full bg-pos-primary rounded-full transition-all duration-300"
-                style={{ width: `${Math.min(tableStats.occupancyRate, 100)}%` }}
-              />
+          ) : (
+            <div className="mt-2 text-xs text-pos-text-muted flex items-center gap-1">
+              <EyeOff size={12} /> Restricted
             </div>
-          </div>
+          )}
         </Card>
 
         {/* Metric 6: Cash Drawer */}

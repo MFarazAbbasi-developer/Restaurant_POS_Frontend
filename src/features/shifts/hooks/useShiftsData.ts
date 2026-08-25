@@ -20,12 +20,13 @@ export const SHIFTS_QUERY_KEYS = {
 /**
  * Hook to retrieve and auto-poll the current active cashier shift
  */
-export const useCurrentShiftQuery = () => {
+export const useCurrentShiftQuery = (options?: { enabled?: boolean }) => {
   return useQuery({
     queryKey: SHIFTS_QUERY_KEYS.CURRENT,
     queryFn: () => ShiftsApi.getCurrentShift(),
     staleTime: 1000 * 15,
     refetchInterval: 1000 * 15,
+    enabled: options?.enabled ?? true,
   });
 };
 

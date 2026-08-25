@@ -7,6 +7,8 @@ import { Spinner } from '@/components/ui/Spinner';
 import { X, Users, UtensilsCrossed, Check, AlertCircle } from 'lucide-react';
 import { cn } from '@/utils/cn';
 
+import { usePermissions } from '@/core/auth/usePermissions';
+
 interface TableSelectorModalProps {
   currentTableId?: string | null;
   onSelectTable: (table: { id: string; name: string } | null) => void;
@@ -18,7 +20,13 @@ export const TableSelectorModal: React.FC<TableSelectorModalProps> = ({
   onSelectTable,
   onClose,
 }) => {
-  const { data: floorData, isLoading, error } = usePosTablesQuery();
+  const { hasPermission } = usePermissions();
+  const canViewTables = hasPermission('tables.view');
+  const {
+    data: floorData,
+    isLoading,
+    error,
+  } = usePosTablesQuery({ enabled: canViewTables });
   const [selectedZoneId, setSelectedZoneId] = useState<string>('ALL');
 
   const zones = floorData?.zones || [];
@@ -110,7 +118,17 @@ export const TableSelectorModal: React.FC<TableSelectorModalProps> = ({
             </div>
           )}
 
-          {error && (
+          {!canViewTables && (
+            <div className="p-3 rounded-lg bg-pos-danger-soft border border-[#FECACA] text-pos-danger text-xs flex items-center gap-2">
+              <AlertCircle size={15} />
+              <span className="font-medium">
+                Your role does not have permission to view or select floor tables
+                (requires tables.view).
+              </span>
+            </div>
+          )}
+
+          {error && canViewTables && (
             <div className="p-3 rounded-lg bg-pos-danger-soft border border-[#FECACA] text-pos-danger text-xs flex items-center gap-2">
               <AlertCircle size={15} />
               <span className="font-medium">

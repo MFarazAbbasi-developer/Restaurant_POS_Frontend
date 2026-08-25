@@ -45,7 +45,7 @@ export const AppRouter: React.FC = () => {
           <Route
             path="orders"
             element={
-              <RequirePermission permissionKey="orders.view" moduleName="POS Register">
+              <RequirePermission permissionKey="orders.create" moduleName="POS Register">
                 <OrdersPage />
               </RequirePermission>
             }
