@@ -74,14 +74,6 @@ export const DashboardPage: React.FC = () => {
     return () => clearInterval(interval);
   }, []);
 
-  const todayStr = useMemo(() => {
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = String(now.getMonth() + 1).padStart(2, '0');
-    const day = String(now.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
-  }, []);
-
   const formattedDate = useMemo(() => {
     return new Intl.DateTimeFormat('en-US', {
       weekday: 'short',
@@ -178,6 +170,24 @@ export const DashboardPage: React.FC = () => {
   const canViewKitchen = hasPermission('kitchen.view');
   const canViewDelivery = hasPermission('delivery.view');
 
+  // Live Operations queries
+  const currentShiftQuery = useCurrentShiftQuery({ enabled: canViewShifts });
+  const tablesQuery = usePosTablesQuery({ enabled: canViewTables });
+  const kitchenQuery = useKitchenQueueQuery(undefined, { enabled: canViewKitchen });
+  const takeawayQuery = useTakeawayQueueQuery();
+  const deliveryQuery = useDeliveryQueueQuery({ enabled: canViewDelivery });
+  const lowStockQuery = useLowStockQuery({ enabled: canViewInventory });
+  const recentOrdersQuery = useOrdersListQuery(canViewOrders ? { limit: 8 } : undefined);
+
+  // Business Date determination:
+  // Priority: 1. Active shift business date -> 2. Consistent ISO date (matches backend sequence/stamping)
+  const todayStr = useMemo(() => {
+    if (currentShiftQuery.data?.businessDate) {
+      return currentShiftQuery.data.businessDate;
+    }
+    return new Date().toISOString().split('T')[0];
+  }, [currentShiftQuery.data?.businessDate]);
+
   // Reports queries (Today's metrics)
   const salesSummaryQuery = useSalesSummaryReportQuery(
     canViewReports ? { startDate: todayStr, endDate: todayStr } : undefined
@@ -188,18 +198,9 @@ export const DashboardPage: React.FC = () => {
   const orderTypeQuery = useSalesByOrderTypeReportQuery(
     canViewReports ? { startDate: todayStr, endDate: todayStr } : undefined
   );
-
-  // Live Operations queries
-  const tablesQuery = usePosTablesQuery({ enabled: canViewTables });
-  const kitchenQuery = useKitchenQueueQuery(undefined, { enabled: canViewKitchen });
-  const takeawayQuery = useTakeawayQueueQuery();
-  const deliveryQuery = useDeliveryQueueQuery({ enabled: canViewDelivery });
-  const currentShiftQuery = useCurrentShiftQuery({ enabled: canViewShifts });
-  const lowStockQuery = useLowStockQuery({ enabled: canViewInventory });
   const reservationsQuery = useReservationsQuery(
     canViewReservations ? { reservationDate: todayStr, status: 'CONFIRMED' } : undefined
   );
-  const recentOrdersQuery = useOrdersListQuery(canViewOrders ? { limit: 8 } : undefined);
 
   // ---------------------------------------------------------------------------
   // Computed Live Operation Statistics
