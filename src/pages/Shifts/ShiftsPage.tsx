@@ -28,13 +28,14 @@ import {
   Building,
 } from 'lucide-react';
 import { cn } from '@/utils/cn';
+import { formatPrice } from '@/utils/format';
 
 export const ShiftsPage: React.FC = () => {
   const { user } = useAuthStore();
   const currency =
     user && 'restaurant' in user && user.restaurant?.currency
       ? user.restaurant.currency
-      : 'USD';
+      : 'PKR';
 
   // Tabs: 'DRAWER' | 'PAYMENTS' | 'HISTORY'
   const [activeTab, setActiveTab] = useState<'DRAWER' | 'PAYMENTS' | 'HISTORY'>('DRAWER');
@@ -63,14 +64,6 @@ export const ShiftsPage: React.FC = () => {
   const { data: paymentsData, isLoading: isPaymentsLoading } = usePaymentsListQuery({
     limit: 50,
   });
-
-  const formatPrice = (val: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: currency || 'USD',
-      minimumFractionDigits: 2,
-    }).format(val);
-  };
 
   const hasActiveShift = Boolean(currentShift && currentShift.status === 'OPEN');
 

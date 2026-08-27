@@ -5,13 +5,13 @@ import { Button } from '@/components/ui/Button';
 import {
   X,
   Lock,
-  DollarSign,
   Calculator,
   CheckCircle2,
   AlertTriangle,
   AlertCircle,
 } from 'lucide-react';
 import { cn } from '@/utils/cn';
+import { formatPrice } from '@/utils/format';
 
 interface CloseShiftModalProps {
   shift: CashierShiftRecord;
@@ -22,7 +22,7 @@ interface CloseShiftModalProps {
 
 export const CloseShiftModal: React.FC<CloseShiftModalProps> = ({
   shift,
-  currency = 'USD',
+  currency = 'PKR',
   onClose,
   onSuccess,
 }) => {
@@ -30,14 +30,6 @@ export const CloseShiftModal: React.FC<CloseShiftModalProps> = ({
   const [actualCash, setActualCash] = useState<string>('');
   const [closingNotes, setClosingNotes] = useState<string>('');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-
-  const formatPrice = (val: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: currency || 'USD',
-      minimumFractionDigits: 2,
-    }).format(val);
-  };
 
   const expectedClosingCash =
     shift.openingCash +
@@ -179,19 +171,18 @@ export const CloseShiftModal: React.FC<CloseShiftModalProps> = ({
               </span>
             </label>
             <div className="relative">
-              <DollarSign
-                size={18}
-                className="absolute left-3 top-1/2 -translate-y-1/2 text-pos-text-muted"
-              />
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm font-bold font-mono text-pos-text-muted">
+                Rs.
+              </span>
               <input
                 type="number"
-                step="0.01"
+                step="1"
                 min="0"
                 required
                 value={actualCash}
                 onChange={e => setActualCash(e.target.value)}
-                placeholder="0.00"
-                className="w-full pl-9 pr-3 py-2.5 rounded-lg bg-pos-surface border border-pos-border text-pos-text font-mono font-black text-base focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary shadow-xs"
+                placeholder="0"
+                className="w-full pl-11 pr-3 py-2.5 rounded-lg bg-pos-surface border border-pos-border text-pos-text font-mono font-black text-base focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary shadow-xs"
               />
             </div>
           </div>

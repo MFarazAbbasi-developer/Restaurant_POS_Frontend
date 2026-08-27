@@ -11,7 +11,7 @@ export const LoyaltyPage: React.FC = () => {
       apiPrefix="/api/v1/loyalty"
       permissionKey="loyalty.view"
       features={[
-        'Configurable points earn rate (e.g. 1 point per $10 spent)',
+        'Configurable points earn rate (e.g. 1 point per Rs. 100 spent)',
         'Tier level benefits (Bronze, Silver, Gold, Platinum) & multipliers',
         'Direct points balance redemption discount during order checkout',
         'Customer points transaction ledger (Earned, Redeemed, Expired)',

@@ -15,6 +15,7 @@ import {
   RotateCcw,
 } from 'lucide-react';
 import { cn } from '@/utils/cn';
+import { formatPrice } from '@/utils/format';
 
 interface PaymentModalProps {
   order: OrderRecord;
@@ -25,7 +26,7 @@ interface PaymentModalProps {
 
 export const PaymentModal: React.FC<PaymentModalProps> = ({
   order,
-  currency = 'USD',
+  currency = 'PKR',
   onClose,
   onPaymentSuccess,
 }) => {
@@ -37,9 +38,9 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
       : order.grandTotal;
 
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('CASH');
-  const [tenderedStr, setTenderedStr] = useState<string>(grandTotal.toFixed(2));
+  const [tenderedStr, setTenderedStr] = useState<string>(Math.round(grandTotal).toString());
   const [cardLast4, setCardLast4] = useState<string>('');
-  const [cardBrand, setCardBrand] = useState<string>('VISA');
+  const [cardBrand, setCardBrand] = useState<string>('PAYPAK');
   const [reference, setReference] = useState<string>('');
   const [notes, setNotes] = useState<string>('');
   const [paymentError, setPaymentError] = useState<string | null>(null);
@@ -49,26 +50,15 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
   const isTenderSufficient =
     paymentMethod !== 'CASH' || amountTendered >= grandTotal - 0.001;
 
-  const formatPrice = (val: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: currency || 'USD',
-      minimumFractionDigits: 2,
-    }).format(val);
-  };
-
   const handleQuickCash = (amount: number) => {
-    setTenderedStr(amount.toFixed(2));
+    setTenderedStr(amount.toString());
   };
 
   const handleNumpadDigit = (digit: string) => {
     setTenderedStr(prev => {
       // If was exact total, overwrite with new typing
-      if (parseFloat(prev) === grandTotal && prev === grandTotal.toFixed(2)) {
+      if (parseFloat(prev) === grandTotal && prev === Math.round(grandTotal).toString()) {
         return digit;
-      }
-      if (prev.includes('.') && prev.split('.')[1].length >= 2) {
-        return prev;
       }
       return prev === '0' ? digit : prev + digit;
     });
@@ -90,7 +80,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
     e.preventDefault();
     if (!isTenderSufficient) {
       setPaymentError(
-        `Tendered cash (${formatPrice(amountTendered)}) is less than total due (${formatPrice(grandTotal)}).`
+        `Tendered cash (${formatPrice(amountTendered, currency)}) is less than total due (${formatPrice(grandTotal, currency)}).`
       );
       return;
     }
@@ -119,21 +109,27 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
   const paymentMethods: Array<{
     id: PaymentMethod;
     label: string;
+    description: string;
     icon: typeof Banknote;
   }> = [
-    { id: 'CASH', label: 'Cash Tender', icon: Banknote },
-    { id: 'CARD', label: 'Credit / Debit Card', icon: CreditCard },
-    { id: 'DIGITAL_WALLET', label: 'Digital / QR Wallet', icon: Smartphone },
-    { id: 'BANK_TRANSFER', label: 'Bank Transfer', icon: Building2 },
+    { id: 'CASH', label: 'Cash (PKR)', description: 'Rupee Banknotes Tender', icon: Banknote },
+    { id: 'CARD', label: 'POS Card', description: 'PayPak / Visa / Mastercard', icon: CreditCard },
+    {
+      id: 'DIGITAL_WALLET',
+      label: 'Digital Wallet / QR',
+      description: 'JazzCash / EasyPaisa / Raast / SadaPay',
+      icon: Smartphone,
+    },
+    { id: 'BANK_TRANSFER', label: 'Bank Transfer', description: '1LINK / IBFT / Raast', icon: Building2 },
   ];
 
-  // Quick cash amounts based on grandTotal
+  // Quick cash amounts in Pakistani Rupee banknote denominations
   const quickCashAmounts = [
     grandTotal,
-    Math.ceil(grandTotal / 5) * 5,
-    Math.ceil(grandTotal / 10) * 10,
-    Math.ceil(grandTotal / 20) * 20,
-    Math.ceil(grandTotal / 50) * 50,
+    Math.ceil(grandTotal / 100) * 100,
+    Math.ceil(grandTotal / 500) * 500,
+    Math.ceil(grandTotal / 1000) * 1000,
+    5000,
   ].filter((v, idx, arr) => arr.indexOf(v) === idx && v >= grandTotal);
 
   return (
@@ -341,10 +337,9 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                       onChange={e => setCardBrand(e.target.value)}
                       className="w-full px-3 py-2 rounded-lg bg-pos-surface border border-pos-border text-pos-text text-xs focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary font-medium"
                     >
+                      <option value="PAYPAK">PayPak (1LINK)</option>
                       <option value="VISA">Visa</option>
                       <option value="MASTERCARD">Mastercard</option>
-                      <option value="AMEX">American Express</option>
-                      <option value="DISCOVER">Discover</option>
                       <option value="UNIONPAY">UnionPay</option>
                     </select>
                   </div>
@@ -366,13 +361,19 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
 
               <div>
                 <label className="block text-xs font-semibold uppercase tracking-wider text-pos-text-secondary mb-1.5">
-                  Approval / Transaction Reference
+                  Approval / Transaction Reference / TID
                 </label>
                 <input
                   type="text"
                   value={reference}
                   onChange={e => setReference(e.target.value)}
-                  placeholder="e.g. AUTH-98234 / POS Terminal Ref"
+                  placeholder={
+                    paymentMethod === 'DIGITAL_WALLET'
+                      ? 'e.g. JazzCash TID / EasyPaisa TRX # / Raast Ref'
+                      : paymentMethod === 'BANK_TRANSFER'
+                      ? 'e.g. 1LINK IBFT Reference #'
+                      : 'e.g. POS Slip # / Auth Code'
+                  }
                   className="w-full px-3.5 py-2 rounded-lg bg-pos-surface border border-pos-border text-pos-text placeholder-pos-text-muted/60 text-xs font-mono focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary font-medium"
                 />
               </div>

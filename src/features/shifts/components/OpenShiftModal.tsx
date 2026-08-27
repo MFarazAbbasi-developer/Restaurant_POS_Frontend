@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useOpenShiftMutation } from '../hooks/useShiftsData';
 import { Button } from '@/components/ui/Button';
-import { X, Wallet, DollarSign, AlertCircle } from 'lucide-react';
+import { X, Wallet, AlertCircle } from 'lucide-react';
 
 interface OpenShiftModalProps {
   currency?: string;
@@ -10,17 +10,18 @@ interface OpenShiftModalProps {
 }
 
 export const OpenShiftModal: React.FC<OpenShiftModalProps> = ({
-  currency = 'USD',
+  currency = 'PKR',
   onClose,
   onSuccess,
 }) => {
   const openShiftMutation = useOpenShiftMutation();
-  const [openingCash, setOpeningCash] = useState<string>('150');
+  const [openingCash, setOpeningCash] = useState<string>('2000');
   const [registerName, setRegisterName] = useState<string>('Main Register');
   const [notes, setNotes] = useState<string>('');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const quickFloats = [50, 100, 150, 200, 300];
+  // Standard Pakistani banknote float presets
+  const quickFloats = [500, 1000, 2000, 5000, 10000];
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -58,7 +59,7 @@ export const OpenShiftModal: React.FC<OpenShiftModalProps> = ({
             <div>
               <h3 className="text-base font-bold text-pos-text">Open Register Shift</h3>
               <p className="text-xs text-pos-text-muted">
-                Start cashier drawer & record opening float
+                Start cashier drawer & record opening float (PKR)
               </p>
             </div>
           </div>
@@ -91,7 +92,7 @@ export const OpenShiftModal: React.FC<OpenShiftModalProps> = ({
               required
               value={registerName}
               onChange={e => setRegisterName(e.target.value)}
-              placeholder="e.g. Main Counter POS-01"
+              placeholder="e.g. Counter Register 01"
               className="w-full px-3 py-2 rounded-lg bg-pos-surface border border-pos-border text-pos-text text-xs font-medium focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary shadow-xs"
             />
           </div>
@@ -99,22 +100,21 @@ export const OpenShiftModal: React.FC<OpenShiftModalProps> = ({
           {/* Opening Float Amount */}
           <div>
             <label className="block text-xs font-semibold uppercase tracking-wider text-pos-text-secondary mb-1.5">
-              Opening Cash Float ({currency})
+              Opening Cash Float ({currency || 'PKR'})
             </label>
             <div className="relative">
-              <DollarSign
-                size={16}
-                className="absolute left-3 top-1/2 -translate-y-1/2 text-pos-text-muted"
-              />
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold font-mono text-pos-text-muted">
+                Rs.
+              </span>
               <input
                 type="number"
-                step="0.01"
+                step="1"
                 min="0"
                 required
                 value={openingCash}
                 onChange={e => setOpeningCash(e.target.value)}
-                placeholder="0.00"
-                className="w-full pl-8 pr-3 py-2 rounded-lg bg-pos-surface border border-pos-border text-pos-text font-mono font-bold text-sm focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary shadow-xs"
+                placeholder="2000"
+                className="w-full pl-10 pr-3 py-2 rounded-lg bg-pos-surface border border-pos-border text-pos-text font-mono font-bold text-sm focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary shadow-xs"
               />
             </div>
 
@@ -127,7 +127,7 @@ export const OpenShiftModal: React.FC<OpenShiftModalProps> = ({
                   onClick={() => setOpeningCash(amt.toString())}
                   className="px-2.5 py-1 rounded-md bg-pos-surface-subtle hover:bg-pos-surface border border-pos-border text-xs font-mono font-semibold text-pos-text transition-colors"
                 >
-                  ${amt}
+                  Rs. {amt.toLocaleString()}
                 </button>
               ))}
             </div>
@@ -142,7 +142,7 @@ export const OpenShiftModal: React.FC<OpenShiftModalProps> = ({
               rows={2}
               value={notes}
               onChange={e => setNotes(e.target.value)}
-              placeholder="e.g. Morning shift, starting float verified by supervisor..."
+              placeholder="e.g. Morning shift opening float verified in drawer..."
               className="w-full p-2.5 rounded-lg bg-pos-surface border border-pos-border text-pos-text placeholder-pos-text-muted text-xs focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary resize-none font-medium shadow-xs"
             />
           </div>

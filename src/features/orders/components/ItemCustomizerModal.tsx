@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { X, Plus, Minus, Check, AlertCircle } from 'lucide-react';
 import { cn } from '@/utils/cn';
+import { formatPrice as centralizedFormatPrice } from '@/utils/format';
 
 interface ItemCustomizerModalProps {
   item: PosMenuItem;
@@ -26,7 +27,7 @@ interface ItemCustomizerModalProps {
 
 export const ItemCustomizerModal: React.FC<ItemCustomizerModalProps> = ({
   item,
-  currency = 'USD',
+  currency = 'PKR',
   onClose,
   onAddToCart,
 }) => {
@@ -59,11 +60,7 @@ export const ItemCustomizerModal: React.FC<ItemCustomizerModalProps> = ({
   const [validationError, setValidationError] = useState<string | null>(null);
 
   const formatPrice = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: currency || 'USD',
-      minimumFractionDigits: 2,
-    }).format(amount);
+    return centralizedFormatPrice(amount, currency || 'PKR');
   };
 
   const handleToggleModifier = (

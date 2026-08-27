@@ -34,30 +34,21 @@ import { PRODUCT_IDENTITY } from '@/config/product';
 type SettingsTab = 'profile' | 'taxes' | 'channels' | 'receipts' | 'hardware';
 
 const CURRENCIES = [
+  { code: 'PKR', name: 'Pakistani Rupee (Rs. / PKR)' },
   { code: 'USD', name: 'US Dollar ($)' },
-  { code: 'PKR', name: 'Pakistani Rupee (Rs)' },
-  { code: 'EUR', name: 'Euro (€)' },
-  { code: 'GBP', name: 'British Pound (£)' },
   { code: 'AED', name: 'UAE Dirham (AED)' },
   { code: 'SAR', name: 'Saudi Riyal (SAR)' },
-  { code: 'CAD', name: 'Canadian Dollar (C$)' },
-  { code: 'AUD', name: 'Australian Dollar (A$)' },
+  { code: 'GBP', name: 'British Pound (£)' },
+  { code: 'EUR', name: 'Euro (€)' },
 ];
 
 const TIMEZONES = [
-  'UTC',
   'Asia/Karachi',
   'Asia/Dubai',
   'Asia/Riyadh',
-  'Asia/Singapore',
-  'Asia/Tokyo',
+  'UTC',
   'Europe/London',
-  'Europe/Paris',
   'America/New_York',
-  'America/Chicago',
-  'America/Denver',
-  'America/Los_Angeles',
-  'Australia/Sydney',
 ];
 
 export const SettingsPage: React.FC = () => {
@@ -84,10 +75,10 @@ export const SettingsPage: React.FC = () => {
   const [phone, setPhone] = useState('');
   const [address, setAddress] = useState('');
   const [logo, setLogo] = useState('');
-  const [currency, setCurrency] = useState('USD');
-  const [timezone, setTimezone] = useState('UTC');
+  const [currency, setCurrency] = useState('PKR');
+  const [timezone, setTimezone] = useState('Asia/Karachi');
   const [taxNumber, setTaxNumber] = useState('');
-  const [taxRate, setTaxRate] = useState('0');
+  const [taxRate, setTaxRate] = useState('16.0');
   const [taxInclusive, setTaxInclusive] = useState(false);
   const [serviceChargeRate, setServiceChargeRate] = useState('0');
   const [serviceChargeEnabled, setServiceChargeEnabled] = useState(false);
@@ -105,10 +96,10 @@ export const SettingsPage: React.FC = () => {
       setPhone(restaurant.phone || '');
       setAddress(restaurant.address || '');
       setLogo(restaurant.logo || '');
-      setCurrency(restaurant.currency || 'USD');
-      setTimezone(restaurant.timezone || 'UTC');
+      setCurrency(restaurant.currency || 'PKR');
+      setTimezone(restaurant.timezone || 'Asia/Karachi');
       setTaxNumber(restaurant.taxNumber || '');
-      setTaxRate((restaurant.taxRate || 0).toString());
+      setTaxRate((restaurant.taxRate !== undefined ? restaurant.taxRate : 16.0).toString());
       setTaxInclusive(Boolean(restaurant.taxInclusive));
       setServiceChargeRate((restaurant.serviceChargeRate || 0).toString());
       setServiceChargeEnabled(Boolean(restaurant.serviceChargeEnabled));
@@ -127,10 +118,10 @@ export const SettingsPage: React.FC = () => {
       setPhone(restaurant.phone || '');
       setAddress(restaurant.address || '');
       setLogo(restaurant.logo || '');
-      setCurrency(restaurant.currency || 'USD');
-      setTimezone(restaurant.timezone || 'UTC');
+      setCurrency(restaurant.currency || 'PKR');
+      setTimezone(restaurant.timezone || 'Asia/Karachi');
       setTaxNumber(restaurant.taxNumber || '');
-      setTaxRate((restaurant.taxRate || 0).toString());
+      setTaxRate((restaurant.taxRate !== undefined ? restaurant.taxRate : 16.0).toString());
       setTaxInclusive(Boolean(restaurant.taxInclusive));
       setServiceChargeRate((restaurant.serviceChargeRate || 0).toString());
       setServiceChargeEnabled(Boolean(restaurant.serviceChargeEnabled));
@@ -497,24 +488,42 @@ export const SettingsPage: React.FC = () => {
                             step="0.1"
                             value={taxRate}
                             onChange={e => setTaxRate(e.target.value)}
-                            placeholder="13.0"
+                            placeholder="16.0"
                             className="w-full px-3 py-2 rounded-md bg-pos-surface border border-pos-border text-pos-text font-mono font-bold text-sm focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary"
                           />
                           <span className="absolute right-3 top-1/2 -translate-y-1/2 font-bold text-pos-text-muted">
                             %
                           </span>
                         </div>
+                        <div className="flex flex-wrap items-center gap-1.5 mt-2">
+                          {[
+                            { label: 'Punjab PRA (16%)', val: '16.0' },
+                            { label: 'Sindh SRB (13%)', val: '13.0' },
+                            { label: 'Islamabad ICT (15%)', val: '15.0' },
+                            { label: 'POS Card Reduced (5%)', val: '5.0' },
+                            { label: '0%', val: '0' },
+                          ].map(preset => (
+                            <button
+                              key={preset.val}
+                              type="button"
+                              onClick={() => setTaxRate(preset.val)}
+                              className="px-2 py-0.5 rounded text-[10px] font-semibold bg-pos-surface-subtle hover:bg-pos-surface border border-pos-border text-pos-text transition-colors"
+                            >
+                              {preset.label}
+                            </button>
+                          ))}
+                        </div>
                       </div>
 
                       <div>
                         <label className="block font-semibold uppercase tracking-wider text-[11px] text-pos-text-secondary mb-1">
-                          Tax Number / NTN / STRN
+                          Tax Number / NTN / STRN / PRA PNTN
                         </label>
                         <input
                           type="text"
                           value={taxNumber}
                           onChange={e => setTaxNumber(e.target.value)}
-                          placeholder="e.g. 1234567-8"
+                          placeholder="e.g. PK-NTN-7491023-8 / PNTN-9941"
                           className="w-full px-3 py-2 rounded-md bg-pos-surface border border-pos-border text-pos-text font-mono font-bold focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary"
                         />
                       </div>

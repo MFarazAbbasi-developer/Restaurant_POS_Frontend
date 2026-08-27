@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { CartItem, CartModifierSelection, OrderType } from '@/types';
+import { formatPrice as centralizedFormatPrice } from '@/utils/format';
 
 interface CartCustomer {
   id?: string;
@@ -211,12 +212,7 @@ export const useCartTotals = (taxRate: number = 0, currency: string = 'USD') => 
 
   const formatPrice = (val: number | string) => {
     const num = typeof val === 'string' ? parseFloat(val) : val;
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: currency || 'USD',
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    }).format(isNaN(num) ? 0 : num);
+    return centralizedFormatPrice(num, currency || 'PKR');
   };
 
   return {

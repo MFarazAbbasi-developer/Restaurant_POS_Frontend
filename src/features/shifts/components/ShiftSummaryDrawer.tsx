@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { X, Printer, Calendar, User, CreditCard, Building } from 'lucide-react';
 import { cn } from '@/utils/cn';
+import { formatPrice } from '@/utils/format';
 
 interface ShiftSummaryDrawerProps {
   summary: ShiftSummaryData;
@@ -13,19 +14,12 @@ interface ShiftSummaryDrawerProps {
 
 export const ShiftSummaryDrawer: React.FC<ShiftSummaryDrawerProps> = ({
   summary,
-  currency = 'USD',
+  currency = 'PKR',
   onClose,
 }) => {
-  const formatPrice = (val: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: currency || 'USD',
-      minimumFractionDigits: 2,
-    }).format(val);
-  };
-
   const isClosed = summary.status === 'CLOSED';
   const variance = summary.cashDrawer.variance;
+  const formatMoney = (val: number) => formatPrice(val, currency);
 
   return (
     <div className="w-full lg:w-96 flex flex-col bg-pos-surface border border-pos-border rounded-xl shadow-dropdown overflow-hidden shrink-0 animate-in slide-in-from-right-4 duration-150">
@@ -96,7 +90,7 @@ export const ShiftSummaryDrawer: React.FC<ShiftSummaryDrawerProps> = ({
           <div className="flex justify-between text-pos-text-muted">
             <span>Gross Sales ({summary.totals.transactionsCount} txs):</span>
             <span className="font-mono text-pos-text">
-              {formatPrice(summary.totals.totalSales)}
+              {formatMoney(summary.totals.totalSales)}
             </span>
           </div>
 
@@ -104,7 +98,7 @@ export const ShiftSummaryDrawer: React.FC<ShiftSummaryDrawerProps> = ({
             <div className="flex justify-between text-pos-danger">
               <span>Total Refunds:</span>
               <span className="font-mono">
-                -{formatPrice(summary.totals.totalRefunds)}
+                -{formatMoney(summary.totals.totalRefunds)}
               </span>
             </div>
           )}
@@ -114,7 +108,7 @@ export const ShiftSummaryDrawer: React.FC<ShiftSummaryDrawerProps> = ({
               Net Sales:
             </span>
             <span className="text-base font-black text-pos-primary font-mono">
-              {formatPrice(summary.totals.netSales)}
+              {formatMoney(summary.totals.netSales)}
             </span>
           </div>
         </div>
@@ -128,12 +122,12 @@ export const ShiftSummaryDrawer: React.FC<ShiftSummaryDrawerProps> = ({
           <div className="p-3 rounded-lg bg-pos-surface border border-pos-border space-y-1.5 font-mono text-xs shadow-xs">
             <div className="flex justify-between text-pos-text-muted">
               <span>(+) Opening Float:</span>
-              <span>{formatPrice(summary.cashDrawer.openingCash)}</span>
+              <span>{formatMoney(summary.cashDrawer.openingCash)}</span>
             </div>
 
             <div className="flex justify-between text-pos-success font-medium">
               <span>(+) Cash Sales:</span>
-              <span>+{formatPrice(summary.cashDrawer.cashSales)}</span>
+              <span>+{formatMoney(summary.cashDrawer.cashSales)}</span>
             </div>
 
             {summary.cashDrawer.cashAdjustments !== 0 && (
@@ -141,7 +135,7 @@ export const ShiftSummaryDrawer: React.FC<ShiftSummaryDrawerProps> = ({
                 <span>(±) Cash Adjustments:</span>
                 <span>
                   {summary.cashDrawer.cashAdjustments >= 0 ? '+' : ''}
-                  {formatPrice(summary.cashDrawer.cashAdjustments)}
+                  {formatMoney(summary.cashDrawer.cashAdjustments)}
                 </span>
               </div>
             )}
@@ -149,33 +143,33 @@ export const ShiftSummaryDrawer: React.FC<ShiftSummaryDrawerProps> = ({
             {summary.cashDrawer.cashDrops > 0 && (
               <div className="flex justify-between text-pos-warning">
                 <span>(-) Safe Drops:</span>
-                <span>-{formatPrice(summary.cashDrawer.cashDrops)}</span>
+                <span>-{formatMoney(summary.cashDrawer.cashDrops)}</span>
               </div>
             )}
 
             {summary.cashDrawer.cashExpenses > 0 && (
               <div className="flex justify-between text-pos-danger">
                 <span>(-) Cash Expenses:</span>
-                <span>-{formatPrice(summary.cashDrawer.cashExpenses)}</span>
+                <span>-{formatMoney(summary.cashDrawer.cashExpenses)}</span>
               </div>
             )}
 
             {summary.cashDrawer.cashRefunds > 0 && (
               <div className="flex justify-between text-pos-danger">
                 <span>(-) Cash Refunds:</span>
-                <span>-{formatPrice(summary.cashDrawer.cashRefunds)}</span>
+                <span>-{formatMoney(summary.cashDrawer.cashRefunds)}</span>
               </div>
             )}
 
             <div className="flex justify-between items-center font-bold pt-1.5 border-t border-pos-border text-pos-text">
               <span>Expected Closing Cash:</span>
-              <span>{formatPrice(summary.cashDrawer.expectedClosingCash)}</span>
+              <span>{formatMoney(summary.cashDrawer.expectedClosingCash)}</span>
             </div>
 
             {summary.cashDrawer.actualClosingCash !== null && (
               <div className="flex justify-between items-center font-bold text-pos-primary">
                 <span>Actual Counted Cash:</span>
-                <span>{formatPrice(summary.cashDrawer.actualClosingCash)}</span>
+                <span>{formatMoney(summary.cashDrawer.actualClosingCash)}</span>
               </div>
             )}
 
@@ -193,7 +187,7 @@ export const ShiftSummaryDrawer: React.FC<ShiftSummaryDrawerProps> = ({
                 <span>Reconciliation Variance:</span>
                 <span>
                   {variance >= 0 ? '+' : ''}
-                  {formatPrice(variance)}
+                  {formatMoney(variance)}
                 </span>
               </div>
             )}
@@ -220,7 +214,7 @@ export const ShiftSummaryDrawer: React.FC<ShiftSummaryDrawerProps> = ({
                   </span>
                 </div>
                 <span className="font-mono font-bold text-pos-text">
-                  {formatPrice(data.totalAmount)}
+                  {formatMoney(data.totalAmount)}
                 </span>
               </div>
             ))}

@@ -3,7 +3,8 @@ import { PaymentRecord, PaymentMethod } from '@/types';
 import { useRefundPaymentMutation } from '../hooks/useShiftsData';
 import { usePermissions } from '@/core/auth/usePermissions';
 import { Button } from '@/components/ui/Button';
-import { X, RotateCcw, DollarSign, KeyRound, AlertCircle } from 'lucide-react';
+import { X, RotateCcw, KeyRound, AlertCircle } from 'lucide-react';
+import { formatPrice } from '@/utils/format';
 
 interface RefundModalProps {
   payment: PaymentRecord;
@@ -14,7 +15,7 @@ interface RefundModalProps {
 
 export const RefundModal: React.FC<RefundModalProps> = ({
   payment,
-  currency = 'USD',
+  currency = 'PKR',
   onClose,
   onSuccess,
 }) => {
@@ -32,14 +33,6 @@ export const RefundModal: React.FC<RefundModalProps> = ({
   const [reference, setReference] = useState<string>('');
   const [managerPin, setManagerPin] = useState<string>('');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-
-  const formatPrice = (val: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: currency || 'USD',
-      minimumFractionDigits: 2,
-    }).format(val);
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -152,20 +145,19 @@ export const RefundModal: React.FC<RefundModalProps> = ({
               Refund Amount ({currency}) <span className="text-pos-danger">*</span>
             </label>
             <div className="relative">
-              <DollarSign
-                size={16}
-                className="absolute left-3 top-1/2 -translate-y-1/2 text-pos-text-muted"
-              />
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold font-mono text-pos-text-muted">
+                Rs.
+              </span>
               <input
                 type="number"
-                step="0.01"
-                min="0.01"
+                step="1"
+                min="1"
                 max={maxRefundable}
                 required
                 value={amount}
                 onChange={e => setAmount(e.target.value)}
-                placeholder="0.00"
-                className="w-full pl-8 pr-3 py-2 rounded-lg bg-pos-surface border border-pos-border text-pos-text font-mono font-bold text-sm focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary shadow-xs"
+                placeholder="0"
+                className="w-full pl-10 pr-3 py-2 rounded-lg bg-pos-surface border border-pos-border text-pos-text font-mono font-bold text-sm focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary shadow-xs"
               />
             </div>
           </div>

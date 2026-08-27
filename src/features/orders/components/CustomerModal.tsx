@@ -113,7 +113,7 @@ export const CustomerModal: React.FC<CustomerModalProps> = ({ onClose }) => {
                 type="text"
                 value={name}
                 onChange={e => setName(e.target.value)}
-                placeholder="e.g. Alex Johnson"
+                placeholder="e.g. Tariq Mehmood"
                 className="w-full pl-10 pr-3.5 py-2.5 rounded-lg bg-pos-surface border border-pos-border text-pos-text placeholder-pos-text-muted/60 text-xs focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary font-medium"
               />
             </div>
@@ -133,7 +133,7 @@ export const CustomerModal: React.FC<CustomerModalProps> = ({ onClose }) => {
                 type="tel"
                 value={phone}
                 onChange={e => setPhone(e.target.value)}
-                placeholder="e.g. +1 (555) 019-2834"
+                placeholder="e.g. 0300 1234567 or +92 300 1234567"
                 className="w-full pl-10 pr-3.5 py-2.5 rounded-lg bg-pos-surface border border-pos-border text-pos-text placeholder-pos-text-muted/60 text-xs focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary font-medium font-mono"
               />
             </div>
@@ -155,7 +155,7 @@ export const CustomerModal: React.FC<CustomerModalProps> = ({ onClose }) => {
                   required
                   value={address}
                   onChange={e => setAddress(e.target.value)}
-                  placeholder="Street address, building, apartment / suite number..."
+                  placeholder="e.g. House #14, Street 8, Phase 5 DHA / MM Alam Road Gulberg..."
                   className="w-full pl-10 pr-3.5 py-2.5 rounded-lg bg-pos-surface border border-pos-border text-pos-text placeholder-pos-text-muted/60 text-xs focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary font-medium resize-none"
                 />
               </div>
