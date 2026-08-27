@@ -4,6 +4,7 @@ import {
   usePastShiftsQuery,
   usePaymentsListQuery,
 } from '@/features/shifts/hooks/useShiftsData';
+import { ShiftsApi } from '@/core/api/shiftsApi';
 import { useAuthStore } from '@/core/auth/authStore';
 import { ShiftSummaryData, PaymentRecord, CashierShiftRecord } from '@/types';
 import { OpenShiftModal } from '@/features/shifts/components/OpenShiftModal';
@@ -73,36 +74,41 @@ export const ShiftsPage: React.FC = () => {
 
   const hasActiveShift = Boolean(currentShift && currentShift.status === 'OPEN');
 
-  const handleOpenSummaryForPastShift = (shift: CashierShiftRecord) => {
-    const summary: ShiftSummaryData = {
-      shiftId: shift.id,
-      businessDate: shift.businessDate,
-      registerName: shift.registerName,
-      status: shift.status,
-      openedAt: shift.openedAt,
-      closedAt: shift.closedAt || null,
-      cashier: shift.cashier,
-      cashDrawer: {
-        openingCash: shift.openingCash,
-        cashSales: shift.cashSales,
-        cashRefunds: shift.cashRefunds,
-        cashDrops: shift.cashDrops,
-        cashAdjustments: shift.cashAdjustments,
-        cashExpenses: shift.cashExpenses,
-        expectedClosingCash: shift.expectedClosingCash ?? 0,
-        actualClosingCash: shift.actualClosingCash,
-        variance: shift.variance,
-      },
-      paymentsByMethod: {},
-      refundsByMethod: {},
-      totals: {
-        totalSales: shift.cashSales,
-        totalRefunds: shift.cashRefunds,
-        netSales: shift.cashSales - shift.cashRefunds,
-        transactionsCount: 0,
-      },
-    };
-    setSelectedShiftSummary(summary);
+  const handleOpenSummaryForPastShift = async (shift: CashierShiftRecord) => {
+    try {
+      const fullSummary = await ShiftsApi.getShiftSummary(shift.id);
+      setSelectedShiftSummary(fullSummary);
+    } catch {
+      const summary: ShiftSummaryData = {
+        shiftId: shift.id,
+        businessDate: shift.businessDate,
+        registerName: shift.registerName,
+        status: shift.status,
+        openedAt: shift.openedAt,
+        closedAt: shift.closedAt || null,
+        cashier: shift.cashier,
+        cashDrawer: {
+          openingCash: shift.openingCash,
+          cashSales: shift.cashSales,
+          cashRefunds: shift.cashRefunds,
+          cashDrops: shift.cashDrops,
+          cashAdjustments: shift.cashAdjustments,
+          cashExpenses: shift.cashExpenses,
+          expectedClosingCash: shift.expectedClosingCash ?? 0,
+          actualClosingCash: shift.actualClosingCash,
+          variance: shift.variance,
+        },
+        paymentsByMethod: {},
+        refundsByMethod: {},
+        totals: {
+          totalSales: shift.cashSales,
+          totalRefunds: shift.cashRefunds,
+          netSales: shift.cashSales - shift.cashRefunds,
+          transactionsCount: 0,
+        },
+      };
+      setSelectedShiftSummary(summary);
+    }
   };
 
   return (

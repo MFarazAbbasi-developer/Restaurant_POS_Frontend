@@ -22,9 +22,10 @@ export class ShiftsApi {
    */
   public static async getCurrentShift(): Promise<CashierShiftRecord | null> {
     try {
-      const response =
-        await apiClient.get<ApiResponse<CashierShiftRecord>>('/shifts/current');
-      return response.data;
+      const response = await apiClient.get<ApiResponse<{ shift: CashierShiftRecord }>>(
+        '/shifts/current'
+      );
+      return response.data?.shift ?? null;
     } catch (err: unknown) {
       // 404 means no active open shift
       if (
@@ -45,10 +46,10 @@ export class ShiftsApi {
    */
   public static async openShift(payload: OpenShiftInput): Promise<CashierShiftRecord> {
     const response = await apiClient.post<
-      ApiResponse<CashierShiftRecord>,
+      ApiResponse<{ shift: CashierShiftRecord }>,
       OpenShiftInput
     >('/shifts/open', payload);
-    return response.data;
+    return response.data.shift;
   }
 
   /**
@@ -58,11 +59,11 @@ export class ShiftsApi {
   public static async recordCashDrop(
     payload: CashDropInput
   ): Promise<CashierShiftRecord> {
-    const response = await apiClient.post<ApiResponse<CashierShiftRecord>, CashDropInput>(
-      '/shifts/current/cash-drop',
-      payload
-    );
-    return response.data;
+    const response = await apiClient.post<
+      ApiResponse<{ shift: CashierShiftRecord }>,
+      CashDropInput
+    >('/shifts/current/cash-drop', payload);
+    return response.data.shift;
   }
 
   /**
@@ -73,10 +74,10 @@ export class ShiftsApi {
     payload: CashAdjustmentInput
   ): Promise<CashierShiftRecord> {
     const response = await apiClient.post<
-      ApiResponse<CashierShiftRecord>,
+      ApiResponse<{ shift: CashierShiftRecord }>,
       CashAdjustmentInput
     >('/shifts/current/adjustment', payload);
-    return response.data;
+    return response.data.shift;
   }
 
   /**
@@ -98,10 +99,10 @@ export class ShiftsApi {
    * Get shift settlement summary breakdown
    */
   public static async getShiftSummary(id: string): Promise<ShiftSummaryData> {
-    const response = await apiClient.get<ApiResponse<ShiftSummaryData>>(
+    const response = await apiClient.get<ApiResponse<{ summary: ShiftSummaryData }>>(
       `/shifts/${id}/summary`
     );
-    return response.data;
+    return response.data.summary;
   }
 
   /**
@@ -109,10 +110,10 @@ export class ShiftsApi {
    * Get shift details by ID
    */
   public static async getShiftById(id: string): Promise<CashierShiftRecord> {
-    const response = await apiClient.get<ApiResponse<CashierShiftRecord>>(
+    const response = await apiClient.get<ApiResponse<{ shift: CashierShiftRecord }>>(
       `/shifts/${id}`
     );
-    return response.data;
+    return response.data.shift;
   }
 
   /**
