@@ -7,6 +7,7 @@ import {
 } from '@/features/expenses/hooks/useExpensesData';
 import { useSuppliersQuery } from '@/features/purchasing/hooks/usePurchasingData';
 import { useAuthStore } from '@/core/auth/authStore';
+import { formatPrice as centralizedFormatPrice } from '@/utils/format';
 import {
   ExpenseRecord,
   ExpenseCategoryRecord,
@@ -45,7 +46,7 @@ export const ExpensesPage: React.FC = () => {
   const currency =
     user && 'restaurant' in user && user.restaurant?.currency
       ? user.restaurant.currency
-      : 'USD';
+      : 'PKR';
 
   // Navigation tabs
   const [activeTab, setActiveTab] = useState<ActiveTab>('expenses');
@@ -116,11 +117,7 @@ export const ExpensesPage: React.FC = () => {
   };
 
   const formatPrice = (val: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: currency || 'USD',
-      minimumFractionDigits: 2,
-    }).format(val);
+    return centralizedFormatPrice(val, currency);
   };
 
   const handleDeleteCategory = async (cat: ExpenseCategoryRecord) => {

@@ -20,7 +20,7 @@ export const ModifierOptionModal: React.FC<ModifierOptionModalProps> = ({
   groupId,
   groupName,
   modifier,
-  currency = 'USD',
+  currency = 'PKR',
   onClose,
   onSuccess,
 }) => {

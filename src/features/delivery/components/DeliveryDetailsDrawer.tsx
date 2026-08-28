@@ -20,6 +20,7 @@ import {
   FileText,
   AlertCircle,
 } from 'lucide-react';
+import { formatPrice as centralizedFormatPrice } from '@/utils/format';
 
 interface DeliveryDetailsDrawerProps {
   order: DeliveryOrderRecord;
@@ -30,7 +31,7 @@ interface DeliveryDetailsDrawerProps {
 
 export const DeliveryDetailsDrawer: React.FC<DeliveryDetailsDrawerProps> = ({
   order,
-  currency = 'USD',
+  currency = 'PKR',
   onClose,
   onRefresh,
 }) => {
@@ -40,11 +41,7 @@ export const DeliveryDetailsDrawer: React.FC<DeliveryDetailsDrawerProps> = ({
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const formatPrice = (val: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: currency || 'USD',
-      minimumFractionDigits: 2,
-    }).format(val);
+    return centralizedFormatPrice(val, currency);
   };
 
   const getStatusBadge = (status: DeliveryOrderRecord['status']) => {

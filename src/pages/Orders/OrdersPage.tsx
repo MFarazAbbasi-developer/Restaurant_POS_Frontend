@@ -71,7 +71,7 @@ export const OrdersPage: React.FC = () => {
   const currency =
     user && 'restaurant' in user && user.restaurant?.currency
       ? user.restaurant.currency
-      : 'USD';
+      : 'PKR';
 
   const {
     subtotal,

@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import {
   useCategoriesQuery,
   useMenuItemsQuery,
@@ -9,6 +9,7 @@ import {
   useDeleteModifierMutation,
 } from '@/features/menu/hooks/useMenuData';
 import { useAuthStore } from '@/core/auth/authStore';
+import { formatPrice as centralizedFormatPrice } from '@/utils/format';
 import {
   MenuItemRecord,
   CategoryWithCount,
@@ -44,7 +45,7 @@ export const MenuPage: React.FC = () => {
   const currency =
     user && 'restaurant' in user && user.restaurant?.currency
       ? user.restaurant.currency
-      : 'USD';
+      : 'PKR';
 
   // Active Tab: 'ITEMS' | 'CATEGORIES' | 'MODIFIERS'
   const [activeTab, setActiveTab] = useState<'ITEMS' | 'CATEGORIES' | 'MODIFIERS'>(
@@ -128,13 +129,9 @@ export const MenuPage: React.FC = () => {
   const toggleGroupStatusMutation = useToggleModifierGroupStatusMutation();
   const deleteModifierMutation = useDeleteModifierMutation();
 
-  const formatPrice = (val: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: currency || 'USD',
-      minimumFractionDigits: 2,
-    }).format(val);
-  };
+  const formatPrice = useCallback((val: number | string | null | undefined) => {
+    return centralizedFormatPrice(val, currency);
+  }, [currency]);
 
   const handleRefreshAll = () => {
     refetchCategories();

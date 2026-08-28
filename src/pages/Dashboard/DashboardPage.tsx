@@ -5,6 +5,7 @@ import { useAuthStore } from '@/core/auth/authStore';
 import { usePermissions } from '@/core/auth/usePermissions';
 import { useSocketStatus, useSocketEvent } from '@/core/socket/useSocket';
 import { PRODUCT_IDENTITY } from '@/config/product';
+import { formatPrice as centralizedFormatPrice } from '@/utils/format';
 import {
   usePosTablesQuery,
   useOrdersListQuery,
@@ -86,17 +87,11 @@ export const DashboardPage: React.FC = () => {
   const currency =
     user && 'restaurant' in user && user.restaurant?.currency
       ? user.restaurant.currency
-      : 'USD';
+      : 'PKR';
 
   const formatPrice = useCallback(
     (val: number | string | null | undefined) => {
-      const num = Number(val || 0);
-      return new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: currency,
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      }).format(num);
+      return centralizedFormatPrice(val, currency);
     },
     [currency]
   );

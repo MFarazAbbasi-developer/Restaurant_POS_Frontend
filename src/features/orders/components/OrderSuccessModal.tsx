@@ -4,6 +4,7 @@ import { BillReceiptModal } from '@/components/receipts/BillReceiptModal';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { CheckCircle, PlusCircle, ArrowRight, FileText } from 'lucide-react';
+import { formatPrice as centralizedFormatPrice } from '@/utils/format';
 
 interface OrderSuccessModalProps {
   result: PaymentResponseData;
@@ -13,7 +14,7 @@ interface OrderSuccessModalProps {
 
 export const OrderSuccessModal: React.FC<OrderSuccessModalProps> = ({
   result,
-  currency = 'USD',
+  currency = 'PKR',
   onNewSale,
 }) => {
   const { order, payment, changeAmount = 0 } = result;
@@ -28,11 +29,7 @@ export const OrderSuccessModal: React.FC<OrderSuccessModalProps> = ({
     typeof payment.amount === 'string' ? parseFloat(payment.amount) : payment.amount;
 
   const formatPrice = (val: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: currency || 'USD',
-      minimumFractionDigits: 2,
-    }).format(val);
+    return centralizedFormatPrice(val, currency);
   };
 
   return (

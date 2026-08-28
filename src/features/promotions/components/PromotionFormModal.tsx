@@ -42,7 +42,7 @@ const DAYS_OF_WEEK = [
 
 export const PromotionFormModal: React.FC<PromotionFormModalProps> = ({
   promotion,
-  currency = 'USD',
+  currency = 'PKR',
   onClose,
   onSuccess,
 }) => {

@@ -20,7 +20,7 @@ export const InventoryItemModal: React.FC<InventoryItemModalProps> = ({
   item,
   locations,
   suppliers,
-  currency = 'USD',
+  currency = 'PKR',
   onClose,
   onSuccess,
 }) => {

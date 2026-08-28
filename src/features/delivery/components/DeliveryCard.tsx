@@ -15,6 +15,7 @@ import {
   Building,
 } from 'lucide-react';
 import { cn } from '@/utils/cn';
+import { formatPrice as centralizedFormatPrice } from '@/utils/format';
 
 interface DeliveryCardProps {
   order: DeliveryOrderRecord;
@@ -26,7 +27,7 @@ interface DeliveryCardProps {
 
 export const DeliveryCard: React.FC<DeliveryCardProps> = ({
   order,
-  currency = 'USD',
+  currency = 'PKR',
   isSelected = false,
   onClick,
   onAssignRiderClick,
@@ -34,11 +35,7 @@ export const DeliveryCard: React.FC<DeliveryCardProps> = ({
   const updateStatusMutation = useUpdateDeliveryStatusMutation();
 
   const formatPrice = (val: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: currency || 'USD',
-      minimumFractionDigits: 2,
-    }).format(val);
+    return centralizedFormatPrice(val, currency);
   };
 
   const getStatusBadge = (status: DeliveryOrderRecord['status']) => {

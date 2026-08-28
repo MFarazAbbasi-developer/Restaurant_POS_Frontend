@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import {
   useSalesSummaryReportQuery,
   useSalesByOrderTypeReportQuery,
@@ -13,6 +13,7 @@ import {
 } from '@/features/reports/hooks/useReportsData';
 import { useCategoriesQuery } from '@/features/menu/hooks/useMenuData';
 import { useAuthStore } from '@/core/auth/authStore';
+import { formatPrice as centralizedFormatPrice } from '@/utils/format';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { Spinner } from '@/components/ui/Spinner';
@@ -48,7 +49,7 @@ export const ReportsPage: React.FC = () => {
   const currency =
     user && 'restaurant' in user && user.restaurant?.currency
       ? user.restaurant.currency
-      : 'USD';
+      : 'PKR';
 
   // Navigation tab
   const [activeTab, setActiveTab] = useState<ReportTab>('summary');
@@ -132,13 +133,9 @@ export const ReportsPage: React.FC = () => {
     if (activeTab === 'operations') operationsQuery.refetch();
   };
 
-  const formatPrice = (val: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: currency || 'USD',
-      minimumFractionDigits: 2,
-    }).format(val || 0);
-  };
+  const formatPrice = useCallback((val: number | string | null | undefined) => {
+    return centralizedFormatPrice(val, currency);
+  }, [currency]);
 
   // CSV Export utility
   const handleExportCSV = () => {

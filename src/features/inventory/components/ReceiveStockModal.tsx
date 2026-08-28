@@ -3,6 +3,7 @@ import { InventoryItemRecord, InventoryLocationRecord, SupplierRecord } from '@/
 import { useCreatePurchaseMutation } from '../hooks/useInventoryData';
 import { Button } from '@/components/ui/Button';
 import { X, Truck, Plus, Trash2, AlertCircle, ReceiptText } from 'lucide-react';
+import { formatPrice as centralizedFormatPrice } from '@/utils/format';
 
 interface ReceiveStockModalProps {
   allItems: InventoryItemRecord[];
@@ -23,7 +24,7 @@ export const ReceiveStockModal: React.FC<ReceiveStockModalProps> = ({
   allItems,
   locations,
   suppliers,
-  currency = 'USD',
+  currency = 'PKR',
   onClose,
   onSuccess,
 }) => {
@@ -44,11 +45,7 @@ export const ReceiveStockModal: React.FC<ReceiveStockModalProps> = ({
   ]);
 
   const formatPrice = (val: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: currency || 'USD',
-      minimumFractionDigits: 2,
-    }).format(val);
+    return centralizedFormatPrice(val, currency);
   };
 
   const handleAddLine = () => {

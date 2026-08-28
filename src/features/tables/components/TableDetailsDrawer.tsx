@@ -30,6 +30,7 @@ import {
   FileText,
   AlertTriangle,
 } from 'lucide-react';
+import { formatPrice as centralizedFormatPrice } from '@/utils/format';
 import { cn } from '@/utils/cn';
 
 interface TableDetailsDrawerProps {
@@ -45,7 +46,7 @@ export const TableDetailsDrawer: React.FC<TableDetailsDrawerProps> = ({
   table,
   zone,
   allZones,
-  currency = 'USD',
+  currency = 'PKR',
   onClose,
   onRefresh,
 }) => {
@@ -64,11 +65,7 @@ export const TableDetailsDrawer: React.FC<TableDetailsDrawerProps> = ({
   const [isLoadingOrder, setIsLoadingOrder] = useState(false);
 
   const formatPrice = (val: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: currency || 'USD',
-      minimumFractionDigits: 2,
-    }).format(val);
+    return centralizedFormatPrice(val, currency);
   };
 
   const getStatusBadge = (status: PosTable['status']) => {

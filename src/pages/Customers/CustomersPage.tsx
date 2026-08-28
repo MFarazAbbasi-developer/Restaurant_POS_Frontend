@@ -32,7 +32,7 @@ export const CustomersPage: React.FC = () => {
   const currency =
     user && 'restaurant' in user && user.restaurant?.currency
       ? user.restaurant.currency
-      : 'USD';
+      : 'PKR';
 
   // Filters & Pagination
   const [searchQuery, setSearchQuery] = useState<string>('');

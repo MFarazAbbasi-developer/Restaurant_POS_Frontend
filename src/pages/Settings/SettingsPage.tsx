@@ -35,7 +35,7 @@ type SettingsTab = 'profile' | 'taxes' | 'channels' | 'receipts' | 'hardware';
 
 const CURRENCIES = [
   { code: 'PKR', name: 'Pakistani Rupee (Rs. / PKR)' },
-  { code: 'USD', name: 'US Dollar ($)' },
+  // { code: 'USD', name: 'US Dollar ($)' },
   { code: 'AED', name: 'UAE Dirham (AED)' },
   { code: 'SAR', name: 'Saudi Riyal (SAR)' },
   { code: 'GBP', name: 'British Pound (£)' },
@@ -829,7 +829,7 @@ export const SettingsPage: React.FC = () => {
                           <div className="flex justify-between font-bold text-xs pt-1">
                             <span>
                               TOTAL (
-                              {currency || receiptPreview.restaurant?.currency || 'USD'}):
+                              {currency || receiptPreview.restaurant?.currency || 'PKR'}):
                             </span>
                             <span>
                               {(receiptPreview.totals?.grandTotal || 0).toFixed(2)}

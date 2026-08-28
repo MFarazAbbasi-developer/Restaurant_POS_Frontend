@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import {
   usePurchasingOrdersQuery,
   useSuppliersQuery,
@@ -11,6 +11,7 @@ import {
   useInventoryLocationsQuery,
 } from '@/features/inventory/hooks/useInventoryData';
 import { useAuthStore } from '@/core/auth/authStore';
+import { formatPrice as centralizedFormatPrice } from '@/utils/format';
 import {
   PurchasingOrderRecord,
   PurchasingSupplierRecord,
@@ -51,7 +52,7 @@ export const PurchasingPage: React.FC = () => {
   const currency =
     user && 'restaurant' in user && user.restaurant?.currency
       ? user.restaurant.currency
-      : 'USD';
+      : 'PKR';
 
   // Navigation tab
   const [activeTab, setActiveTab] = useState<ActiveTab>('orders');
@@ -133,13 +134,9 @@ export const PurchasingPage: React.FC = () => {
     refetchSummary();
   };
 
-  const formatPrice = (val: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: currency || 'USD',
-      minimumFractionDigits: 2,
-    }).format(val);
-  };
+  const formatPrice = useCallback((val: number | string | null | undefined) => {
+    return centralizedFormatPrice(val, currency);
+  }, [currency]);
 
   const getStatusBadge = (status: string) => {
     switch (status) {

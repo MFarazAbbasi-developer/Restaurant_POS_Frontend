@@ -11,6 +11,7 @@ import {
 } from '@/features/inventory/hooks/useInventoryData';
 import { useMenuItemsQuery } from '@/features/menu/hooks/useMenuData';
 import { useAuthStore } from '@/core/auth/authStore';
+import { formatPrice as centralizedFormatPrice } from '@/utils/format';
 import { InventoryItemRecord, MenuItemRecord } from '@/types';
 import { InventoryItemModal } from '@/features/inventory/components/InventoryItemModal';
 import { StockAdjustmentModal } from '@/features/inventory/components/StockAdjustmentModal';
@@ -47,7 +48,7 @@ export const InventoryPage: React.FC = () => {
   const currency =
     user && 'restaurant' in user && user.restaurant?.currency
       ? user.restaurant.currency
-      : 'USD';
+      : 'PKR';
 
   // Active Tab
   const [activeTab, setActiveTab] = useState<
@@ -164,11 +165,7 @@ export const InventoryPage: React.FC = () => {
   const wastageList = wastageData?.wastage || [];
 
   const formatPrice = (val: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: currency || 'USD',
-      minimumFractionDigits: 2,
-    }).format(val);
+    return centralizedFormatPrice(val, currency);
   };
 
   const handleRefreshAll = () => {

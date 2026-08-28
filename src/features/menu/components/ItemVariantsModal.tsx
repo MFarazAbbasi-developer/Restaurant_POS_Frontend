@@ -3,6 +3,7 @@ import { MenuItemRecord } from '@/types';
 import { useCreateVariantMutation, useDeleteVariantMutation } from '../hooks/useMenuData';
 import { Button } from '@/components/ui/Button';
 import { X, Layers, Plus, Trash2, DollarSign, AlertCircle } from 'lucide-react';
+import { formatPrice as centralizedFormatPrice } from '@/utils/format';
 
 interface ItemVariantsModalProps {
   item: MenuItemRecord;
@@ -13,7 +14,7 @@ interface ItemVariantsModalProps {
 
 export const ItemVariantsModal: React.FC<ItemVariantsModalProps> = ({
   item,
-  currency = 'USD',
+  currency = 'PKR',
   onClose,
   onSuccess,
 }) => {
@@ -25,11 +26,7 @@ export const ItemVariantsModal: React.FC<ItemVariantsModalProps> = ({
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const formatPrice = (val: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: currency || 'USD',
-      minimumFractionDigits: 2,
-    }).format(val);
+    return centralizedFormatPrice(val, currency);
   };
 
   const handleAddVariant = async (e: React.FormEvent) => {

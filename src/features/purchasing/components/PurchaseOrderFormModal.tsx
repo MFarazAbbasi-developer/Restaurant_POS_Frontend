@@ -19,6 +19,7 @@ import {
   AlertCircle,
   Hash,
 } from 'lucide-react';
+import { formatPrice as centralizedFormatPrice } from '@/utils/format';
 
 interface PurchaseOrderFormModalProps {
   order?: PurchasingOrderRecord | null;
@@ -44,7 +45,7 @@ export const PurchaseOrderFormModal: React.FC<PurchaseOrderFormModalProps> = ({
   suppliers,
   inventoryItems,
   locations,
-  currency = 'USD',
+  currency = 'PKR',
   onClose,
   onSuccess,
 }) => {
@@ -162,11 +163,7 @@ export const PurchaseOrderFormModal: React.FC<PurchaseOrderFormModalProps> = ({
   const grandTotal = calculatedItems.reduce((acc, it) => acc + it.totalAmount, 0);
 
   const formatPrice = (val: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: currency || 'USD',
-      minimumFractionDigits: 2,
-    }).format(val);
+    return centralizedFormatPrice(val, currency);
   };
 
   const handleSubmit = async (submitStatus: 'DRAFT' | 'ORDERED') => {

@@ -22,6 +22,7 @@ import {
   RotateCw,
 } from 'lucide-react';
 import { cn } from '@/utils/cn';
+import { formatPrice as centralizedFormatPrice } from '@/utils/format';
 
 interface PromotionDetailsDrawerProps {
   promotion: PromotionRecord;
@@ -35,7 +36,7 @@ const DAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
 export const PromotionDetailsDrawer: React.FC<PromotionDetailsDrawerProps> = ({
   promotion,
-  currency = 'USD',
+  currency = 'PKR',
   onClose,
   onEdit,
   onDelete,
@@ -61,11 +62,7 @@ export const PromotionDetailsDrawer: React.FC<PromotionDetailsDrawerProps> = ({
   };
 
   const formatPrice = (val: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: currency || 'USD',
-      minimumFractionDigits: 2,
-    }).format(val);
+    return centralizedFormatPrice(val, currency);
   };
 
   const formatDiscountFormula = () => {

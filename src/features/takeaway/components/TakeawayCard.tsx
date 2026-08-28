@@ -11,6 +11,7 @@ import {
   CreditCard,
 } from 'lucide-react';
 import { cn } from '@/utils/cn';
+import { formatPrice as centralizedFormatPrice } from '@/utils/format';
 
 interface TakeawayCardProps {
   order: TakeawayOrderRecord;
@@ -21,18 +22,14 @@ interface TakeawayCardProps {
 
 export const TakeawayCard: React.FC<TakeawayCardProps> = ({
   order,
-  currency = 'USD',
+  currency = 'PKR',
   isSelected = false,
   onClick,
 }) => {
   const updateStatusMutation = useUpdateTakeawayStatusMutation();
 
   const formatPrice = (val: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: currency || 'USD',
-      minimumFractionDigits: 2,
-    }).format(val);
+    return centralizedFormatPrice(val, currency);
   };
 
   const getStatusBadge = (status: TakeawayOrderRecord['status']) => {

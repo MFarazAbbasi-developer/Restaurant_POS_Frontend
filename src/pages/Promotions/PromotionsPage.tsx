@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import {
   usePromotionsQuery,
   useTogglePromotionStatusMutation,
   useDeletePromotionMutation,
 } from '@/features/promotions/hooks/usePromotionData';
 import { useAuthStore } from '@/core/auth/authStore';
+import { formatPrice as centralizedFormatPrice } from '@/utils/format';
 import { PromotionRecord, PromotionType } from '@/types';
 import { PromotionFormModal } from '@/features/promotions/components/PromotionFormModal';
 import { PromotionDetailsDrawer } from '@/features/promotions/components/PromotionDetailsDrawer';
@@ -33,7 +34,7 @@ export const PromotionsPage: React.FC = () => {
   const currency =
     user && 'restaurant' in user && user.restaurant?.currency
       ? user.restaurant.currency
-      : 'USD';
+      : 'PKR';
 
   // Filters
   const [selectedStatus, setSelectedStatus] = useState<'ALL' | 'ACTIVE' | 'INACTIVE'>(
@@ -106,13 +107,9 @@ export const PromotionsPage: React.FC = () => {
     }
   };
 
-  const formatPrice = (val: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: currency || 'USD',
-      minimumFractionDigits: 2,
-    }).format(val);
-  };
+  const formatPrice = useCallback((val: number | string | null | undefined) => {
+    return centralizedFormatPrice(val, currency);
+  }, [currency]);
 
   const formatDiscountFormula = (promo: PromotionRecord) => {
     switch (promo.type) {

@@ -35,7 +35,7 @@ export const ExpenseFormModal: React.FC<ExpenseFormModalProps> = ({
   expense,
   categories,
   suppliers,
-  currency = 'USD',
+  currency = 'PKR',
   onClose,
   onSuccess,
 }) => {

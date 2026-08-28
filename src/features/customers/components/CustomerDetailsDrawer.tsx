@@ -20,6 +20,7 @@ import {
   Sparkles,
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { formatPrice as centralizedFormatPrice } from '@/utils/format';
 
 interface CustomerDetailsDrawerProps {
   customer: CustomerRecord;
@@ -31,7 +32,7 @@ interface CustomerDetailsDrawerProps {
 
 export const CustomerDetailsDrawer: React.FC<CustomerDetailsDrawerProps> = ({
   customer,
-  currency = 'USD',
+  currency = 'PKR',
   onClose,
   onEdit,
   onAddAddress,
@@ -56,11 +57,7 @@ export const CustomerDetailsDrawer: React.FC<CustomerDetailsDrawerProps> = ({
   const loyaltyAccount = loyaltyData?.account;
 
   const formatPrice = (val: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: currency || 'USD',
-      minimumFractionDigits: 2,
-    }).format(val);
+    return centralizedFormatPrice(val, currency);
   };
 
   const handleEnrollLoyalty = async () => {

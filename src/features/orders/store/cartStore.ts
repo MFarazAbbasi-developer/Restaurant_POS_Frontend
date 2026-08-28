@@ -194,7 +194,7 @@ export const useCartStore = create<CartState>((set, get) => ({
 /**
  * Cart Financial Calculation Selector Hook
  */
-export const useCartTotals = (taxRate: number = 0, currency: string = 'USD') => {
+export const useCartTotals = (taxRate: number = 0, currency: string = 'PKR') => {
   const items = useCartStore(s => s.items);
   const orderType = useCartStore(s => s.orderType);
   const flatDeliveryFee = useCartStore(s => s.flatDeliveryFee);

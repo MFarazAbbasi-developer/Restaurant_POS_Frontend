@@ -22,6 +22,7 @@ import {
   Edit2,
   CheckCircle2,
 } from 'lucide-react';
+import { formatPrice as centralizedFormatPrice } from '@/utils/format';
 
 interface PurchaseOrderDetailsDrawerProps {
   orderId: string;
@@ -35,7 +36,7 @@ interface PurchaseOrderDetailsDrawerProps {
 
 export const PurchaseOrderDetailsDrawer: React.FC<PurchaseOrderDetailsDrawerProps> = ({
   orderId,
-  currency = 'USD',
+  currency = 'PKR',
   onClose,
   onEdit,
   onReceive,
@@ -48,11 +49,7 @@ export const PurchaseOrderDetailsDrawer: React.FC<PurchaseOrderDetailsDrawerProp
   const cancelMutation = useCancelPurchasingOrderMutation();
 
   const formatPrice = (val: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: currency || 'USD',
-      minimumFractionDigits: 2,
-    }).format(val);
+    return centralizedFormatPrice(val, currency);
   };
 
   const getStatusBadge = (status: string) => {

@@ -17,6 +17,7 @@ import {
   Ban,
   Link2,
 } from 'lucide-react';
+import { formatPrice as centralizedFormatPrice } from '@/utils/format';
 
 interface ExpenseDetailsDrawerProps {
   expense: ExpenseRecord;
@@ -28,17 +29,13 @@ interface ExpenseDetailsDrawerProps {
 
 export const ExpenseDetailsDrawer: React.FC<ExpenseDetailsDrawerProps> = ({
   expense,
-  currency = 'USD',
+  currency = 'PKR',
   onClose,
   onEdit,
   onVoid,
 }) => {
   const formatPrice = (val: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: currency || 'USD',
-      minimumFractionDigits: 2,
-    }).format(val);
+    return centralizedFormatPrice(val, currency);
   };
 
   const isVoided = expense.status === 'VOIDED';

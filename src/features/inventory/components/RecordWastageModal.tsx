@@ -3,6 +3,7 @@ import { InventoryItemRecord, InventoryLocationRecord } from '@/types';
 import { useCreateStockWastageMutation } from '../hooks/useInventoryData';
 import { Button } from '@/components/ui/Button';
 import { X, Trash2, AlertCircle, DollarSign } from 'lucide-react';
+import { formatPrice as centralizedFormatPrice } from '@/utils/format';
 
 interface RecordWastageModalProps {
   initialItem?: InventoryItemRecord | null;
@@ -17,7 +18,7 @@ export const RecordWastageModal: React.FC<RecordWastageModalProps> = ({
   initialItem,
   allItems,
   locations,
-  currency = 'USD',
+  currency = 'PKR',
   onClose,
   onSuccess,
 }) => {
@@ -44,11 +45,7 @@ export const RecordWastageModal: React.FC<RecordWastageModalProps> = ({
   const totalWastedCost = !isNaN(parsedQty) && parsedQty > 0 ? parsedQty * unitCost : 0;
 
   const formatPrice = (val: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: currency || 'USD',
-      minimumFractionDigits: 2,
-    }).format(val);
+    return centralizedFormatPrice(val, currency);
   };
 
   const handleItemChange = (itemId: string) => {

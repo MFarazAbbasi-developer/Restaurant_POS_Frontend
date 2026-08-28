@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { PosTable } from '@/types';
 import { Badge } from '@/components/ui/Badge';
 import {
@@ -12,6 +12,7 @@ import {
   AlertTriangle,
 } from 'lucide-react';
 import { cn } from '@/utils/cn';
+import { formatPrice as centralizedFormatPrice } from '@/utils/format';
 
 interface TableCardProps {
   table: PosTable;
@@ -22,17 +23,13 @@ interface TableCardProps {
 
 export const TableCard: React.FC<TableCardProps> = ({
   table,
-  currency = 'USD',
+  currency = 'PKR',
   isSelected = false,
   onClick,
 }) => {
-  const formatPrice = (val: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: currency || 'USD',
-      minimumFractionDigits: 2,
-    }).format(val);
-  };
+  const formatPrice = useCallback((val: number) => {
+    return centralizedFormatPrice(val, currency);
+  }, [currency]);
 
   const getStatusBadge = (status: PosTable['status']) => {
     switch (status) {

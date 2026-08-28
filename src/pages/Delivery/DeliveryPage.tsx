@@ -44,7 +44,7 @@ export const DeliveryPage: React.FC = () => {
   const currency =
     user && 'restaurant' in user && user.restaurant?.currency
       ? user.restaurant.currency
-      : 'USD';
+      : 'PKR';
 
   // Local Filter & Selection State
   const [statusFilter, setStatusFilter] = useState<string>('ALL');

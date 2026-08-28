@@ -3,6 +3,7 @@ import { ExpenseRecord } from '@/types';
 import { useVoidExpenseMutation } from '../hooks/useExpensesData';
 import { Button } from '@/components/ui/Button';
 import { X, AlertTriangle, AlertCircle, KeyRound } from 'lucide-react';
+import { formatPrice as centralizedFormatPrice } from '@/utils/format';
 
 interface VoidExpenseModalProps {
   expense: ExpenseRecord;
@@ -13,7 +14,7 @@ interface VoidExpenseModalProps {
 
 export const VoidExpenseModal: React.FC<VoidExpenseModalProps> = ({
   expense,
-  currency = 'USD',
+  currency = 'PKR',
   onClose,
   onSuccess,
 }) => {
@@ -24,11 +25,7 @@ export const VoidExpenseModal: React.FC<VoidExpenseModalProps> = ({
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const formatPrice = (val: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: currency || 'USD',
-      minimumFractionDigits: 2,
-    }).format(val);
+    return centralizedFormatPrice(val, currency);
   };
 
   const handleVoid = async (e: React.FormEvent) => {

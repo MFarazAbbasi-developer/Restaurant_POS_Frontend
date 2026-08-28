@@ -20,7 +20,7 @@ export const ItemFormModal: React.FC<ItemFormModalProps> = ({
   item,
   categories,
   defaultCategoryId,
-  currency = 'USD',
+  currency = 'PKR',
   onClose,
   onSuccess,
 }) => {
