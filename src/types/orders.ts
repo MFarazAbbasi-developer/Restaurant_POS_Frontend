@@ -188,6 +188,10 @@ export interface CreateOrderInput {
   packagingCharge?: number;
   notes?: string;
   promoCode?: string;
+  orderDiscountType?: 'PERCENTAGE' | 'FIXED_AMOUNT';
+  orderDiscountValue?: number;
+  orderDiscountReason?: string;
+  managerPin?: string;
   pointsToRedeem?: number;
   paymentMethod?: string;
   isAggregator?: boolean;

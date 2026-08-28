@@ -127,4 +127,24 @@ export class OrdersApi {
     >('/tables/transfer', payload);
     return response.data;
   }
+
+  /**
+   * POST /api/v1/orders/:id/discount
+   * Apply manual order-level discount
+   */
+  public static async applyDiscount(
+    orderId: string,
+    payload: {
+      discountType: 'PERCENTAGE' | 'FIXED_AMOUNT';
+      discountValue: number;
+      discountReason: string;
+      managerPin?: string;
+    }
+  ): Promise<{ order: OrderRecord }> {
+    const response = await apiClient.post<
+      ApiResponse<{ order: OrderRecord }>,
+      typeof payload
+    >(`/orders/${orderId}/discount`, payload);
+    return response.data;
+  }
 }

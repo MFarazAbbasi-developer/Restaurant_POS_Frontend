@@ -105,17 +105,15 @@ export class PromotionsApi {
    * Validate promo code against order cart
    */
   public static async validateCode(payload: ValidatePromoCodeInput): Promise<{
-    valid: boolean;
+    isValid: boolean;
     promotion?: PromotionRecord;
-    discountAmount?: number;
-    message?: string;
+    estimatedDiscount?: number;
   }> {
     const response = await apiClient.post<
       ApiResponse<{
-        valid: boolean;
+        isValid: boolean;
         promotion?: PromotionRecord;
-        discountAmount?: number;
-        message?: string;
+        estimatedDiscount?: number;
       }>,
       ValidatePromoCodeInput
     >('/promotions/validate-code', payload);

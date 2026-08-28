@@ -23,6 +23,12 @@ interface CartState {
   notes: string;
   flatDeliveryFee: number;
   packagingCharge: number;
+  discountType: 'PERCENTAGE' | 'FIXED_AMOUNT';
+  discountValue: number;
+  discountReason: string;
+  promoCode: string;
+  promoDiscountAmount: number;
+  promoName: string;
 
   // Actions
   addItem: (item: {
@@ -48,6 +54,10 @@ interface CartState {
   setNotes: (notes: string) => void;
   setDeliveryFee: (fee: number) => void;
   setPackagingCharge: (charge: number) => void;
+  setDiscount: (type: 'PERCENTAGE' | 'FIXED_AMOUNT', value: number, reason?: string) => void;
+  setPromoCode: (code: string) => void;
+  setPromoDiscount: (code: string, amount: number, name?: string) => void;
+  clearDiscount: () => void;
   clearCart: () => void;
   resetAll: () => void;
 }
@@ -74,6 +84,12 @@ export const useCartStore = create<CartState>((set, get) => ({
   notes: '',
   flatDeliveryFee: 0,
   packagingCharge: 0,
+  discountType: 'FIXED_AMOUNT',
+  discountValue: 0,
+  discountReason: '',
+  promoCode: '',
+  promoDiscountAmount: 0,
+  promoName: '',
 
   addItem: newItem => {
     const currentItems = get().items;
@@ -173,8 +189,51 @@ export const useCartStore = create<CartState>((set, get) => ({
     set({ packagingCharge });
   },
 
+  setDiscount: (discountType, discountValue, discountReason = '') => {
+    set({
+      discountType,
+      discountValue,
+      discountReason,
+      promoCode: '',
+      promoDiscountAmount: 0,
+      promoName: '',
+    });
+  },
+
+  setPromoCode: promoCode => {
+    set({ promoCode });
+  },
+
+  setPromoDiscount: (promoCode, promoDiscountAmount, promoName = '') => {
+    set({
+      promoCode,
+      promoDiscountAmount,
+      promoName,
+      discountValue: 0,
+      discountReason: '',
+    });
+  },
+
+  clearDiscount: () => {
+    set({
+      discountValue: 0,
+      discountReason: '',
+      promoCode: '',
+      promoDiscountAmount: 0,
+      promoName: '',
+    });
+  },
+
   clearCart: () => {
-    set({ items: [], notes: '' });
+    set({
+      items: [],
+      notes: '',
+      discountValue: 0,
+      discountReason: '',
+      promoCode: '',
+      promoDiscountAmount: 0,
+      promoName: '',
+    });
   },
 
   resetAll: () => {
@@ -187,6 +246,12 @@ export const useCartStore = create<CartState>((set, get) => ({
       notes: '',
       flatDeliveryFee: 0,
       packagingCharge: 0,
+      discountType: 'FIXED_AMOUNT',
+      discountValue: 0,
+      discountReason: '',
+      promoCode: '',
+      promoDiscountAmount: 0,
+      promoName: '',
     });
   },
 }));
@@ -199,16 +264,37 @@ export const useCartTotals = (taxRate: number = 0, currency: string = 'PKR') => 
   const orderType = useCartStore(s => s.orderType);
   const flatDeliveryFee = useCartStore(s => s.flatDeliveryFee);
   const packagingCharge = useCartStore(s => s.packagingCharge);
+  const discountType = useCartStore(s => s.discountType);
+  const discountValue = useCartStore(s => s.discountValue);
+  const discountReason = useCartStore(s => s.discountReason);
+  const promoCode = useCartStore(s => s.promoCode);
+  const promoDiscountAmount = useCartStore(s => s.promoDiscountAmount);
+  const promoName = useCartStore(s => s.promoName);
+  const setDiscount = useCartStore(s => s.setDiscount);
+  const setPromoCode = useCartStore(s => s.setPromoCode);
+  const setPromoDiscount = useCartStore(s => s.setPromoDiscount);
+  const clearDiscount = useCartStore(s => s.clearDiscount);
 
   const subtotal = items.reduce((sum, item) => sum + item.itemGrossTotal, 0);
   const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
 
-  // Tax calculation (tax exclusive estimate matching backend)
-  const taxAmount = (subtotal * taxRate) / 100;
+  let discountAmount = 0;
+  if (promoCode && promoDiscountAmount > 0) {
+    discountAmount = Math.min(subtotal, promoDiscountAmount);
+  } else if (discountValue > 0) {
+    if (discountType === 'PERCENTAGE') {
+      discountAmount = Math.min(subtotal, (subtotal * discountValue) / 100);
+    } else {
+      discountAmount = Math.min(subtotal, discountValue);
+    }
+  }
+
+  const discountedSubtotal = Math.max(0, subtotal - discountAmount);
+  const taxAmount = (discountedSubtotal * taxRate) / 100;
   const deliveryCharge = orderType === 'DELIVERY' ? flatDeliveryFee : 0;
   const packCharge = orderType === 'TAKEAWAY' ? packagingCharge : 0;
 
-  const grandTotal = subtotal + taxAmount + deliveryCharge + packCharge;
+  const grandTotal = discountedSubtotal + taxAmount + deliveryCharge + packCharge;
 
   const formatPrice = (val: number | string) => {
     const num = typeof val === 'string' ? parseFloat(val) : val;
@@ -218,11 +304,23 @@ export const useCartTotals = (taxRate: number = 0, currency: string = 'PKR') => 
   return {
     subtotal,
     itemCount,
+    discountAmount,
+    discountType,
+    discountValue,
+    discountReason,
+    promoCode,
+    promoDiscountAmount,
+    promoName,
+    discountedSubtotal,
     taxAmount,
     taxRate,
     deliveryCharge,
     packagingCharge: packCharge,
     grandTotal,
     formatPrice,
+    setDiscount,
+    setPromoCode,
+    setPromoDiscount,
+    clearDiscount,
   };
 };

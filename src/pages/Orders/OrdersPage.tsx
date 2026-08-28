@@ -6,6 +6,7 @@ import {
 } from '@/features/orders/hooks/usePosData';
 import { useCartStore, useCartTotals } from '@/features/orders/store/cartStore';
 import { useAuthStore } from '@/core/auth/authStore';
+import { PromotionsApi } from '@/core/api/promotionsApi';
 import { ItemCustomizerModal } from '@/features/orders/components/ItemCustomizerModal';
 import { TableSelectorModal } from '@/features/orders/components/TableSelectorModal';
 import { CustomerModal } from '@/features/orders/components/CustomerModal';
@@ -32,6 +33,7 @@ import {
   FileText,
   MapPin,
   LayoutGrid,
+  Tag,
 } from 'lucide-react';
 import { cn } from '@/utils/cn';
 
@@ -76,11 +78,20 @@ export const OrdersPage: React.FC = () => {
   const {
     subtotal,
     itemCount,
+    discountAmount,
+    discountType,
+    discountValue,
+    discountReason,
+    promoCode,
+    promoName,
     taxAmount,
     deliveryCharge,
     packagingCharge,
     grandTotal,
     formatPrice,
+    setDiscount,
+    setPromoDiscount,
+    clearDiscount,
   } = useCartTotals(restaurantTaxRate, currency);
 
   // Local View State
@@ -95,6 +106,14 @@ export const OrdersPage: React.FC = () => {
   const [savedReceiptOrder, setSavedReceiptOrder] = useState<OrderRecord | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isNotesExpanded, setIsNotesExpanded] = useState<boolean>(false);
+  const [isDiscountExpanded, setIsDiscountExpanded] = useState<boolean>(false);
+  const [discountTab, setDiscountTab] = useState<'MANUAL' | 'PROMO'>('PROMO');
+  const [manualDiscountType, setManualDiscountType] = useState<'PERCENTAGE' | 'FIXED_AMOUNT'>('PERCENTAGE');
+  const [manualDiscountValue, setManualDiscountValue] = useState<string>('');
+  const [manualDiscountReason, setManualDiscountReason] = useState<string>('');
+  const [promoCodeInput, setPromoCodeInput] = useState<string>('');
+  const [isApplyingPromo, setIsApplyingPromo] = useState<boolean>(false);
+  const [promoErrorMessage, setPromoErrorMessage] = useState<string | null>(null);
 
   // Filter Categories & Items
   const categories = useMemo(() => menuData?.categories || [], [menuData]);
@@ -160,6 +179,13 @@ export const OrdersPage: React.FC = () => {
       flatDeliveryFee: orderType === 'DELIVERY' ? deliveryCharge : undefined,
       packagingCharge: orderType === 'TAKEAWAY' ? packagingCharge : undefined,
       notes: orderNotes.trim() || undefined,
+      promoCode: promoCode.trim() || undefined,
+      orderDiscountType: discountValue > 0 && !promoCode ? discountType : undefined,
+      orderDiscountValue: discountValue > 0 && !promoCode ? discountValue : undefined,
+      orderDiscountReason:
+        discountValue > 0 && !promoCode
+          ? discountReason.trim() || 'POS Order Discount'
+          : undefined,
       items: cartItems.map(item => ({
         menuItemId: item.menuItemId,
         variantId: item.variantId,
@@ -168,6 +194,66 @@ export const OrdersPage: React.FC = () => {
         specialInstructions: item.specialInstructions,
       })),
     };
+  };
+
+  // Action: Validate & Apply Promo Code in real-time
+  const handleApplyPromoCode = async () => {
+    const code = promoCodeInput.trim().toUpperCase();
+    if (!code) return;
+    if (cartItems.length === 0) {
+      setPromoErrorMessage('Please add items to cart before applying promo code.');
+      return;
+    }
+
+    setIsApplyingPromo(true);
+    setPromoErrorMessage(null);
+
+    try {
+      const res = await PromotionsApi.validateCode({
+        code,
+        orderType,
+        customerId: customer?.id || undefined,
+        items: cartItems.map(item => ({
+          menuItemId: item.menuItemId,
+          variantId: item.variantId || undefined,
+          quantity: item.quantity,
+          unitPrice: item.unitPrice,
+          modifiersPrice: item.modifiersPrice,
+          modifierIds: item.selectedModifiers.map(m => m.modifierId),
+        })),
+      });
+
+      if (res && res.isValid) {
+        let discountVal = res.estimatedDiscount ?? 0;
+        if (discountVal === 0 && res.promotion) {
+          if (res.promotion.type === 'PERCENTAGE') {
+            discountVal = Math.min(
+              res.promotion.maxDiscountAmount || Infinity,
+              (subtotal * res.promotion.discountValue) / 100
+            );
+          } else if (res.promotion.type === 'FIXED_AMOUNT') {
+            discountVal = Math.min(subtotal, res.promotion.discountValue);
+          }
+        }
+
+        setPromoDiscount(code, discountVal, res.promotion?.name || code);
+        setIsDiscountExpanded(false);
+        setPromoCodeInput('');
+        setPromoErrorMessage(null);
+      } else {
+        setPromoErrorMessage('Promo code could not be validated.');
+      }
+    } catch (err: unknown) {
+      const apiErrMsg =
+        err && typeof err === 'object' && 'response' in err
+          ? (err as { response?: { data?: { message?: string } } }).response?.data?.message
+          : null;
+      const msg =
+        apiErrMsg || (err instanceof Error ? err.message : 'Invalid or ineligible promo code');
+      setPromoErrorMessage(msg);
+    } finally {
+      setIsApplyingPromo(false);
+    }
   };
 
   // 1. Action: Save / Send Order (No Immediate Tender)
@@ -753,6 +839,199 @@ export const OrdersPage: React.FC = () => {
               {formatPrice(subtotal)}
             </span>
           </div>
+
+          {/* Discount Section */}
+          {discountAmount > 0 ? (
+            <div className="flex items-center justify-between text-pos-success font-medium bg-pos-success-soft/30 px-2 py-1 rounded border border-pos-success/30">
+              <div className="flex items-center gap-1 min-w-0">
+                <Tag size={13} className="shrink-0 text-pos-success" />
+                <span className="truncate text-[11px]">
+                  Discount ({promoCode ? `Code: ${promoCode}${promoName ? ` - ${promoName}` : ''}` : discountType === 'PERCENTAGE' ? `${discountValue}% OFF` : 'Flat OFF'})
+                </span>
+              </div>
+              <div className="flex items-center gap-1.5 shrink-0">
+                <span className="font-mono text-xs font-bold">-{formatPrice(discountAmount)}</span>
+                <button
+                  type="button"
+                  onClick={clearDiscount}
+                  title="Remove Discount"
+                  className="text-pos-text-muted hover:text-pos-danger transition-colors ml-0.5"
+                >
+                  <X size={13} />
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div>
+              {isDiscountExpanded ? (
+                <div className="p-2 rounded-md bg-pos-surface-subtle border border-pos-border space-y-2 text-xs">
+                  <div className="flex items-center justify-between">
+                    <span className="font-semibold text-pos-text flex items-center gap-1">
+                      <Tag size={13} className="text-pos-primary" />
+                      <span>Order Discount & Coupon</span>
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsDiscountExpanded(false);
+                        setPromoErrorMessage(null);
+                      }}
+                      className="text-pos-text-muted hover:text-pos-text text-[11px]"
+                    >
+                      Close
+                    </button>
+                  </div>
+
+                  {/* Tabs: Promo vs Manual */}
+                  <div className="grid grid-cols-2 gap-1 bg-pos-surface p-0.5 rounded border border-pos-border">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setDiscountTab('PROMO');
+                        setPromoErrorMessage(null);
+                      }}
+                      className={cn(
+                        'py-1 text-[11px] font-medium rounded text-center transition-colors',
+                        discountTab === 'PROMO'
+                          ? 'bg-pos-primary text-white font-semibold'
+                          : 'text-pos-text-secondary hover:text-pos-text'
+                      )}
+                    >
+                      Promo Code
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setDiscountTab('MANUAL');
+                        setPromoErrorMessage(null);
+                      }}
+                      className={cn(
+                        'py-1 text-[11px] font-medium rounded text-center transition-colors',
+                        discountTab === 'MANUAL'
+                          ? 'bg-pos-primary text-white font-semibold'
+                          : 'text-pos-text-secondary hover:text-pos-text'
+                      )}
+                    >
+                      Manual Discount
+                    </button>
+                  </div>
+
+                  {discountTab === 'PROMO' ? (
+                    <div className="space-y-1.5 pt-0.5">
+                      <form
+                        onSubmit={e => {
+                          e.preventDefault();
+                          handleApplyPromoCode();
+                        }}
+                        className="flex gap-1.5"
+                      >
+                        <input
+                          type="text"
+                          value={promoCodeInput}
+                          onChange={e => {
+                            setPromoCodeInput(e.target.value.toUpperCase());
+                            setPromoErrorMessage(null);
+                          }}
+                          placeholder="e.g. JASHAN15, BBQFEAST"
+                          className="flex-1 px-2 py-1 rounded bg-pos-surface border border-pos-border text-xs text-pos-text focus:outline-none focus:border-pos-primary font-mono uppercase"
+                        />
+                        <Button
+                          type="submit"
+                          variant="primary"
+                          size="sm"
+                          disabled={!promoCodeInput.trim() || isApplyingPromo}
+                          isLoading={isApplyingPromo}
+                        >
+                          Apply Code
+                        </Button>
+                      </form>
+                      {promoErrorMessage && (
+                        <div className="text-[11px] text-pos-danger bg-pos-danger-soft/40 px-2 py-1 rounded border border-pos-danger/30 flex items-center gap-1 font-medium">
+                          <AlertCircle size={12} className="shrink-0" />
+                          <span>{promoErrorMessage}</span>
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="space-y-1.5 pt-0.5">
+                      <div className="flex items-center gap-1">
+                        <button
+                          type="button"
+                          onClick={() => setManualDiscountType('PERCENTAGE')}
+                          className={cn(
+                            'flex-1 py-1 text-[11px] rounded border text-center font-semibold transition-colors',
+                            manualDiscountType === 'PERCENTAGE'
+                              ? 'border-pos-primary bg-pos-primary-soft text-pos-primary'
+                              : 'border-pos-border text-pos-text-muted hover:text-pos-text'
+                          )}
+                        >
+                          Percentage (%)
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setManualDiscountType('FIXED_AMOUNT')}
+                          className={cn(
+                            'flex-1 py-1 text-[11px] rounded border text-center font-semibold transition-colors',
+                            manualDiscountType === 'FIXED_AMOUNT'
+                              ? 'border-pos-primary bg-pos-primary-soft text-pos-primary'
+                              : 'border-pos-border text-pos-text-muted hover:text-pos-text'
+                          )}
+                        >
+                          Flat Amount ({currency})
+                        </button>
+                      </div>
+
+                      <div className="flex gap-1.5">
+                        <input
+                          type="number"
+                          min="0"
+                          step="any"
+                          value={manualDiscountValue}
+                          onChange={e => setManualDiscountValue(e.target.value)}
+                          placeholder={manualDiscountType === 'PERCENTAGE' ? 'e.g. 10 (%)' : `e.g. 100 (${currency})`}
+                          className="flex-1 px-2 py-1 rounded bg-pos-surface border border-pos-border text-xs text-pos-text focus:outline-none focus:border-pos-primary font-mono"
+                        />
+                        <Button
+                          type="button"
+                          variant="primary"
+                          size="sm"
+                          disabled={!manualDiscountValue || parseFloat(manualDiscountValue) <= 0}
+                          onClick={() => {
+                            const val = parseFloat(manualDiscountValue);
+                            if (val > 0) {
+                              setDiscount(manualDiscountType, val, manualDiscountReason);
+                              setIsDiscountExpanded(false);
+                              setManualDiscountValue('');
+                              setManualDiscountReason('');
+                            }
+                          }}
+                        >
+                          Apply
+                        </Button>
+                      </div>
+
+                      <input
+                        type="text"
+                        value={manualDiscountReason}
+                        onChange={e => setManualDiscountReason(e.target.value)}
+                        placeholder="Discount reason (e.g. Staff / VIP / Promo)"
+                        className="w-full px-2 py-1 rounded bg-pos-surface border border-pos-border text-[11px] text-pos-text focus:outline-none focus:border-pos-primary"
+                      />
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setIsDiscountExpanded(true)}
+                  className="w-full text-left text-[11px] text-pos-primary hover:underline font-semibold flex items-center gap-1 py-0.5"
+                >
+                  <Tag size={12} />
+                  <span>+ Apply Discount / Coupon Code</span>
+                </button>
+              )}
+            </div>
+          )}
 
           <div className="flex justify-between text-pos-text-muted">
             <span>Estimated Tax ({restaurantTaxRate}%):</span>
