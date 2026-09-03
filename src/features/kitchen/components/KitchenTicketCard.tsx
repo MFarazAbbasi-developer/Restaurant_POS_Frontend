@@ -283,8 +283,8 @@ export const KitchenTicketCard: React.FC<KitchenTicketCardProps> = ({
                     </span>
                   )}
                   {item.kitchenStatus === 'SERVED' && (
-                    <span className="text-[10px] font-medium text-pos-text-muted bg-pos-surface px-1.5 py-0.5 rounded">
-                      Served
+                    <span className="text-[10px] font-semibold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200/80 flex items-center gap-1">
+                      <CheckCircle2 size={10} className="text-emerald-600" /> Direct / Ready
                     </span>
                   )}
                 </div>

@@ -61,6 +61,7 @@ export type TableStatus =
 export interface PosActiveTableOrderItem {
   id: string;
   itemName: string;
+  variantName?: string | null;
   quantity: number;
   unitPrice: number;
   kitchenStatus: string;
@@ -230,6 +231,7 @@ export interface OrderRecord {
   paymentStatus: OrderPaymentStatus;
   paymentMethod: string;
   guestCount: number;
+  tokenNumber?: number | null;
   subtotal: string | number;
   itemDiscountsTotal: string | number;
   orderDiscountAmount: string | number;

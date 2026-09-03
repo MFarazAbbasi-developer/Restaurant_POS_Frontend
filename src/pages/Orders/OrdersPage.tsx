@@ -27,15 +27,27 @@ import {
   Minus,
   Trash2,
   CreditCard,
-  Send,
   User,
   AlertCircle,
   FileText,
   MapPin,
   LayoutGrid,
   Tag,
+  ChefHat,
 } from 'lucide-react';
 import { cn } from '@/utils/cn';
+
+const isReadyToServeItem = (itemCode?: string, itemName?: string) => {
+  if (itemCode && /^(DRK|WAT|BEV|SODA|COLD)/i.test(itemCode)) return true;
+  if (
+    itemName &&
+    /drink|water|coke|sprite|fanta|pepsi|7up|dew|marinda|pakola|lassi|chai|tea|juice|nestle|aquafina|gourmet|rabri|kheer|gulab jamun|shahi tukray|falooda/i.test(
+      itemName
+    )
+  )
+    return true;
+  return false;
+};
 
 export const OrdersPage: React.FC = () => {
   const { user } = useAuthStore();
@@ -104,6 +116,13 @@ export const OrdersPage: React.FC = () => {
   const [completedPaymentResult, setCompletedPaymentResult] =
     useState<PaymentResponseData | null>(null);
   const [savedReceiptOrder, setSavedReceiptOrder] = useState<OrderRecord | null>(null);
+  const [orderSuccessNotification, setOrderSuccessNotification] = useState<{
+    orderCode: string;
+    orderType: OrderType;
+    tableName?: string;
+    tokenNumber?: number | null;
+    orderId: string;
+  } | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isNotesExpanded, setIsNotesExpanded] = useState<boolean>(false);
   const [isDiscountExpanded, setIsDiscountExpanded] = useState<boolean>(false);
@@ -267,9 +286,27 @@ export const OrdersPage: React.FC = () => {
 
     setErrorMessage(null);
     try {
+      const currentTableName = selectedTable?.name;
       const response = await createOrderMutation.mutateAsync(buildOrderPayload());
       resetAll();
-      setSavedReceiptOrder(response.order);
+
+      // Show non-blocking instant notification banner
+      setOrderSuccessNotification({
+        orderCode: response.order.orderCode,
+        orderType: response.order.orderType,
+        tokenNumber: response.order.tokenNumber,
+        tableName:
+          currentTableName ||
+          (response.order.table ? (response.order.table as { name?: string }).name : undefined),
+        orderId: response.order.id,
+      });
+
+      // Auto-hide notification after 5 seconds
+      setTimeout(() => {
+        setOrderSuccessNotification(prev =>
+          prev?.orderCode === response.order.orderCode ? null : prev
+        );
+      }, 5000);
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Failed to save order';
       setErrorMessage(msg);
@@ -307,7 +344,59 @@ export const OrdersPage: React.FC = () => {
   ];
 
   return (
-    <div className="h-[calc(100vh-5rem)] flex flex-col xl:flex-row gap-3 overflow-hidden select-none -m-4 md:-m-6 p-2 sm:p-3 bg-pos-bg">
+    <div className="h-[calc(100vh-5rem)] flex flex-col xl:flex-row gap-3 overflow-hidden select-none -m-4 md:-m-6 p-2 sm:p-3 bg-pos-bg relative">
+      {/* Instant Non-Blocking Order Notification Banner */}
+      {orderSuccessNotification && (
+        <div className="absolute top-2 left-1/2 -translate-x-1/2 z-40 max-w-xl w-full px-4 animate-in slide-in-from-top-3 fade-in duration-200">
+          <div className="p-3 rounded-lg bg-emerald-900 text-white flex items-center justify-between shadow-lg border border-emerald-700">
+            <div className="flex items-center gap-2.5 min-w-0">
+              <div className="h-7 w-7 rounded-full bg-emerald-500/20 text-emerald-300 flex items-center justify-center shrink-0">
+                <ChefHat size={16} />
+              </div>
+              <div className="text-xs truncate">
+                <span className="font-bold text-emerald-300 mr-1.5">
+                  {orderSuccessNotification.tokenNumber
+                    ? `Token #${orderSuccessNotification.tokenNumber} (#${orderSuccessNotification.orderCode})`
+                    : `Order #${orderSuccessNotification.orderCode}`}
+                </span>
+                <span className="text-emerald-100">
+                  {orderSuccessNotification.orderType === 'DINE_IN'
+                    ? `sent to Kitchen for ${orderSuccessNotification.tableName || 'Table'}`
+                    : orderSuccessNotification.orderType === 'TAKEAWAY'
+                      ? 'sent to Kitchen / Packing Queue'
+                      : 'placed successfully (Ready for Pickup)'}
+                </span>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 shrink-0 ml-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setSavedReceiptOrder({
+                    id: orderSuccessNotification.orderId,
+                    orderCode: orderSuccessNotification.orderCode,
+                  } as OrderRecord);
+                  setOrderSuccessNotification(null);
+                }}
+                className="text-xs font-semibold px-2 py-1 rounded bg-emerald-800 hover:bg-emerald-700 text-emerald-200 border border-emerald-600 transition-colors flex items-center gap-1 cursor-pointer"
+              >
+                <FileText size={12} />
+                <span>View KOT</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setOrderSuccessNotification(null)}
+                aria-label="Dismiss notification"
+                className="text-emerald-300 hover:text-white p-1 rounded transition-colors cursor-pointer"
+              >
+                <X size={14} />
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* =========================================================================
           ZONE 1 (LEFT): Order Channel & Category Navigation (~210px)
       ========================================================================= */}
@@ -608,11 +697,15 @@ export const OrdersPage: React.FC = () => {
                         <span className="text-[10px] font-mono text-pos-primary font-bold bg-pos-primary-soft px-1.5 py-0.5 rounded">
                           #{item.itemCode}
                         </span>
-                        {hasCustomizations && (
+                        {isReadyToServeItem(item.itemCode, item.name) ? (
+                          <span className="text-[9px] font-semibold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200/80">
+                            ⚡ Ready Item
+                          </span>
+                        ) : hasCustomizations ? (
                           <span className="text-[9px] font-semibold text-pos-text-muted bg-pos-surface-subtle px-1.5 py-0.5 rounded border border-pos-border">
                             Custom
                           </span>
-                        )}
+                        ) : null}
                       </div>
                       <h4 className="text-xs font-semibold text-pos-text mt-1.5 line-clamp-2 leading-snug">
                         {item.name}
@@ -718,6 +811,11 @@ export const OrdersPage: React.FC = () => {
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0">
                     <span className="font-semibold text-pos-text">{item.itemName}</span>
+                    {isReadyToServeItem(item.itemCode, item.itemName) && (
+                      <span className="text-[9px] font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200/80 px-1.5 py-0.5 rounded ml-1.5 inline-flex items-center gap-0.5">
+                        ⚡ Direct Serve
+                      </span>
+                    )}
                     {item.variantName && (
                       <span className="text-[11px] text-pos-primary font-medium ml-1.5">
                         ({item.variantName})
@@ -1071,34 +1169,97 @@ export const OrdersPage: React.FC = () => {
             </Badge>
           </div>
 
-          {/* Action Buttons */}
-          <div className="grid grid-cols-2 gap-2 pt-1">
-            <Button
-              type="button"
-              variant="secondary"
-              size="md"
-              onClick={handleSaveOrder}
-              disabled={cartItems.length === 0 || createOrderMutation.isPending}
-              isLoading={createOrderMutation.isPending}
-              className="text-xs font-semibold flex items-center justify-center gap-1.5 min-h-[42px]"
-            >
-              <Send size={14} />
-              <span>Save Order</span>
-            </Button>
+          {/* Action Buttons - Tailored by Order Type */}
+          {orderType === 'DINE_IN' ? (
+            <div className="space-y-1.5 pt-1">
+              <Button
+                type="button"
+                variant="primary"
+                size="lg"
+                onClick={handleSaveOrder}
+                disabled={cartItems.length === 0 || createOrderMutation.isPending}
+                isLoading={createOrderMutation.isPending}
+                className="w-full text-xs font-bold flex items-center justify-center gap-2 min-h-[44px] shadow-xs"
+              >
+                <ChefHat size={16} />
+                <span>
+                  {selectedTable
+                    ? `Send to Kitchen • ${selectedTable.name}`
+                    : 'Send to Kitchen (KOT)'}
+                </span>
+              </Button>
 
-            <Button
-              type="button"
-              variant="primary"
-              size="md"
-              onClick={handleCheckoutPayment}
-              disabled={cartItems.length === 0 || createOrderMutation.isPending}
-              isLoading={createOrderMutation.isPending}
-              className="text-xs font-bold flex items-center justify-center gap-1.5 min-h-[42px] shadow-xs"
-            >
-              <CreditCard size={15} />
-              <span>Pay Tender</span>
-            </Button>
-          </div>
+              <div className="flex items-center justify-between px-1">
+                <span className="text-[10px] text-pos-text-muted">
+                  Settle bill when guests finish dining
+                </span>
+                <button
+                  type="button"
+                  onClick={handleCheckoutPayment}
+                  disabled={cartItems.length === 0 || createOrderMutation.isPending}
+                  className="text-[11px] font-medium text-pos-text-secondary hover:text-pos-primary underline transition-colors"
+                >
+                  Direct Pay Upfront
+                </button>
+              </div>
+            </div>
+          ) : orderType === 'TAKEAWAY' ? (
+            <div className="grid grid-cols-2 gap-2 pt-1">
+              <Button
+                type="button"
+                variant="secondary"
+                size="md"
+                onClick={handleSaveOrder}
+                disabled={cartItems.length === 0 || createOrderMutation.isPending}
+                isLoading={createOrderMutation.isPending}
+                className="text-xs font-semibold flex items-center justify-center gap-1.5 min-h-[42px]"
+              >
+                <Package size={14} />
+                <span>Pay on Pickup</span>
+              </Button>
+
+              <Button
+                type="button"
+                variant="primary"
+                size="md"
+                onClick={handleCheckoutPayment}
+                disabled={cartItems.length === 0 || createOrderMutation.isPending}
+                isLoading={createOrderMutation.isPending}
+                className="text-xs font-bold flex items-center justify-center gap-1.5 min-h-[42px] shadow-xs"
+              >
+                <CreditCard size={15} />
+                <span>Pay & Checkout</span>
+              </Button>
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 gap-2 pt-1">
+              <Button
+                type="button"
+                variant="secondary"
+                size="md"
+                onClick={handleSaveOrder}
+                disabled={cartItems.length === 0 || createOrderMutation.isPending}
+                isLoading={createOrderMutation.isPending}
+                className="text-xs font-semibold flex items-center justify-center gap-1.5 min-h-[42px]"
+              >
+                <Truck size={14} />
+                <span>Cash on Delivery</span>
+              </Button>
+
+              <Button
+                type="button"
+                variant="primary"
+                size="md"
+                onClick={handleCheckoutPayment}
+                disabled={cartItems.length === 0 || createOrderMutation.isPending}
+                isLoading={createOrderMutation.isPending}
+                className="text-xs font-bold flex items-center justify-center gap-1.5 min-h-[42px] shadow-xs"
+              >
+                <CreditCard size={15} />
+                <span>Prepaid Delivery</span>
+              </Button>
+            </div>
+          )}
         </div>
       </div>
 

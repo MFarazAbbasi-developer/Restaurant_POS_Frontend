@@ -1,10 +1,17 @@
 import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useTakeawayQueueQuery } from '@/features/takeaway/hooks/useTakeawayData';
+import {
+  useTakeawayQueueQuery,
+  useUpdateTakeawayStatusMutation,
+} from '@/features/takeaway/hooks/useTakeawayData';
 import { useAuthStore } from '@/core/auth/authStore';
 import { useCartStore } from '@/features/orders/store/cartStore';
 import { TakeawayCard } from '@/features/takeaway/components/TakeawayCard';
 import { TakeawayDetailsDrawer } from '@/features/takeaway/components/TakeawayDetailsDrawer';
+import { PaymentModal } from '@/features/orders/components/PaymentModal';
+import { OrderSuccessModal } from '@/features/orders/components/OrderSuccessModal';
+import { OrdersApi } from '@/core/api/ordersApi';
+import { TakeawayOrderRecord, OrderRecord, PaymentResponseData } from '@/types';
 import { Button } from '@/components/ui/Button';
 import { Spinner } from '@/components/ui/Spinner';
 import {
@@ -24,6 +31,7 @@ export const TakeawayPage: React.FC = () => {
   const navigate = useNavigate();
   const { user } = useAuthStore();
   const { setOrderType, setSelectedTable } = useCartStore();
+  const updateStatusMutation = useUpdateTakeawayStatusMutation();
 
   const {
     data: queueData,
@@ -42,6 +50,18 @@ export const TakeawayPage: React.FC = () => {
   const [statusFilter, setStatusFilter] = useState<string>('ALL');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
+  const [settlingOrder, setSettlingOrder] = useState<OrderRecord | null>(null);
+  const [completedPaymentResult, setCompletedPaymentResult] =
+    useState<PaymentResponseData | null>(null);
+
+  const handleStartSettlement = async (order: TakeawayOrderRecord) => {
+    try {
+      const response = await OrdersApi.getOrder(order.id);
+      setSettlingOrder(response.order);
+    } catch (err) {
+      console.error('Failed to fetch order for settlement', err);
+    }
+  };
 
   const rawQueue = useMemo(() => queueData?.queue || [], [queueData]);
 
@@ -258,6 +278,7 @@ export const TakeawayPage: React.FC = () => {
                   onClick={() =>
                     setSelectedOrderId(prev => (prev === order.id ? null : order.id))
                   }
+                  onSettle={handleStartSettlement}
                 />
               ))}
             </div>
@@ -274,6 +295,41 @@ export const TakeawayPage: React.FC = () => {
           currency={currency}
           onClose={() => setSelectedOrderId(null)}
           onRefresh={() => refetch()}
+        />
+      )}
+
+      {/* Payment Tender Modal */}
+      {settlingOrder && (
+        <PaymentModal
+          order={settlingOrder}
+          currency={currency}
+          onClose={() => setSettlingOrder(null)}
+          onPaymentSuccess={async result => {
+            const currentOrderId = settlingOrder.id;
+            setSettlingOrder(null);
+            setCompletedPaymentResult(result);
+            try {
+              await updateStatusMutation.mutateAsync({
+                orderId: currentOrderId,
+                payload: { status: 'COMPLETED' },
+              });
+            } catch (e) {
+              console.error(e);
+            }
+          }}
+        />
+      )}
+
+      {/* Payment Settlement Success Screen */}
+      {completedPaymentResult && (
+        <OrderSuccessModal
+          result={completedPaymentResult}
+          currency={currency}
+          onNewSale={() => {
+            setCompletedPaymentResult(null);
+            refetch();
+            setSelectedOrderId(null);
+          }}
         />
       )}
     </div>

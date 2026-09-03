@@ -1,7 +1,11 @@
 import React, { useState } from 'react';
-import { TakeawayOrderRecord } from '@/types';
+import { TakeawayOrderRecord, OrderRecord, PaymentResponseData } from '@/types';
 import { useUpdateTakeawayStatusMutation } from '../hooks/useTakeawayData';
+import { OrdersApi } from '@/core/api/ordersApi';
 import { CancelTakeawayModal } from './CancelTakeawayModal';
+import { BillReceiptModal } from '@/components/receipts/BillReceiptModal';
+import { PaymentModal } from '@/features/orders/components/PaymentModal';
+import { OrderSuccessModal } from '@/features/orders/components/OrderSuccessModal';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import {
@@ -13,7 +17,6 @@ import {
   CheckCircle2,
   PackageCheck,
   AlertTriangle,
-  FileText,
   AlertCircle,
 } from 'lucide-react';
 import { formatPrice as centralizedFormatPrice } from '@/utils/format';
@@ -33,7 +36,12 @@ export const TakeawayDetailsDrawer: React.FC<TakeawayDetailsDrawerProps> = ({
 }) => {
   const updateStatusMutation = useUpdateTakeawayStatusMutation();
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
+  const [isReceiptModalOpen, setIsReceiptModalOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [payingOrder, setPayingOrder] = useState<OrderRecord | null>(null);
+  const [completedPaymentResult, setCompletedPaymentResult] =
+    useState<PaymentResponseData | null>(null);
+  const [isLoadingOrder, setIsLoadingOrder] = useState(false);
 
   const formatPrice = (val: number) => {
     return centralizedFormatPrice(val, currency);
@@ -80,6 +88,27 @@ export const TakeawayDetailsDrawer: React.FC<TakeawayDetailsDrawerProps> = ({
     }
   };
 
+  const handleStartHandoverAndSettlement = async () => {
+    if (order.isPayOnPickup || order.paymentStatus !== 'PAID') {
+      setIsLoadingOrder(true);
+      setErrorMessage(null);
+      try {
+        const response = await OrdersApi.getOrder(order.id);
+        setPayingOrder(response.order);
+      } catch (err) {
+        const msg =
+          err instanceof Error
+            ? err.message
+            : 'Failed to fetch order details for settlement';
+        setErrorMessage(msg);
+      } finally {
+        setIsLoadingOrder(false);
+      }
+    } else {
+      await handleUpdateStatus('COMPLETED');
+    }
+  };
+
   const handleUpdateStatus = async (
     newStatus: 'PREPARING' | 'READY' | 'COMPLETED',
     markPaid: boolean = false
@@ -96,6 +125,9 @@ export const TakeawayDetailsDrawer: React.FC<TakeawayDetailsDrawerProps> = ({
         },
       });
       onRefresh();
+      if (newStatus === 'COMPLETED') {
+        onClose();
+      }
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Failed to update order status';
       setErrorMessage(msg);
@@ -118,7 +150,10 @@ export const TakeawayDetailsDrawer: React.FC<TakeawayDetailsDrawerProps> = ({
               {getStatusBadge(order.status)}
             </div>
             <p className="text-[11px] text-pos-text-muted mt-0.5">
-              Takeaway Token • {order.businessDate}
+              {new Date(order.createdAt).toLocaleTimeString([], {
+                hour: '2-digit',
+                minute: '2-digit',
+              })}
             </p>
           </div>
         </div>
@@ -126,54 +161,49 @@ export const TakeawayDetailsDrawer: React.FC<TakeawayDetailsDrawerProps> = ({
         <button
           type="button"
           onClick={onClose}
-          aria-label="Close takeaway details"
-          className="p-1.5 rounded-lg text-pos-text-muted hover:text-pos-text hover:bg-pos-surface-subtle transition-colors"
+          className="h-7 w-7 rounded-md hover:bg-pos-surface-subtle text-pos-text-muted flex items-center justify-center transition-colors"
         >
-          <X size={18} />
+          <X size={16} />
         </button>
       </div>
 
-      {/* Drawer Error Banner */}
-      {errorMessage && (
-        <div className="p-3 bg-pos-danger-soft border-b border-[#FECACA] text-pos-danger text-xs flex items-center gap-2 shrink-0">
-          <AlertCircle size={15} className="shrink-0" />
-          <span className="flex-1">{errorMessage}</span>
-          <button type="button" onClick={() => setErrorMessage(null)}>
-            <X size={14} />
-          </button>
-        </div>
-      )}
-
       {/* Drawer Scrollable Content */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar">
+      <div className="flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar text-xs">
+        {/* Drawer Error Banner */}
+        {errorMessage && (
+          <div className="p-2.5 rounded-lg bg-pos-danger-soft border border-[#FECACA] text-pos-danger text-xs flex items-center gap-2">
+            <AlertCircle size={14} className="shrink-0" />
+            <span>{errorMessage}</span>
+          </div>
+        )}
+
         {/* Customer & Tender Banner */}
-        <div className="p-3 rounded-lg bg-pos-surface-subtle border border-pos-border space-y-2 text-xs">
+        <div className="p-3 rounded-lg bg-pos-surface-subtle border border-pos-border space-y-2">
           <div className="flex items-center justify-between">
-            <span className="font-bold text-pos-text flex items-center gap-1.5 text-sm">
-              <User size={15} className="text-pos-primary" />
+            <span className="font-semibold text-pos-text flex items-center gap-1.5">
+              <User size={13} className="text-pos-text-muted" />
               {order.customerName}
             </span>
             {order.isPayOnPickup ? (
-              <Badge variant="warning" size="sm">
+              <Badge variant="warning" size="sm" className="font-semibold">
                 Pay on Pickup
               </Badge>
             ) : (
-              <Badge variant="success" size="sm">
-                Paid ({order.paymentMethod})
+              <Badge variant="success" size="sm" className="font-semibold">
+                Paid Upfront
               </Badge>
             )}
           </div>
 
           {order.customerPhone && (
-            <p className="text-pos-text-muted flex items-center gap-1.5 font-mono text-[11px]">
-              <Phone size={13} /> {order.customerPhone}
+            <p className="text-pos-text-muted flex items-center gap-1.5">
+              <Phone size={12} /> {order.customerPhone}
             </p>
           )}
 
           {order.specialInstructions && (
-            <p className="text-pos-text-muted italic flex items-center gap-1.5 pt-1 border-t border-pos-border text-[11px]">
-              <FileText size={13} className="shrink-0 text-pos-warning" />
-              {order.specialInstructions}
+            <p className="text-pos-text-secondary bg-pos-surface p-2 rounded border border-pos-border text-[11px]">
+              <span className="font-bold">Notes:</span> {order.specialInstructions}
             </p>
           )}
         </div>
@@ -181,57 +211,59 @@ export const TakeawayDetailsDrawer: React.FC<TakeawayDetailsDrawerProps> = ({
         {/* Detailed Items Breakdown */}
         <div>
           <h4 className="text-xs font-semibold uppercase tracking-wider text-pos-text-secondary mb-2">
-            Order Items ({order.items.length})
+            Order Items ({order.items.reduce((acc, it) => acc + it.quantity, 0)})
           </h4>
-          <div className="space-y-2">
-            {order.items.map(item => (
-              <div
-                key={item.id}
-                className="p-3 rounded-lg bg-pos-surface border border-pos-border text-xs space-y-1.5 shadow-xs"
-              >
-                <div className="flex items-start justify-between gap-2">
-                  <div>
-                    <span className="font-bold text-pos-text">
-                      {item.quantity}x {item.name}
-                    </span>
-                    {item.variantName && (
-                      <span className="text-[11px] text-pos-primary font-semibold ml-1.5">
-                        ({item.variantName})
-                      </span>
-                    )}
+          <div className="divide-y divide-pos-border border border-pos-border rounded-lg overflow-hidden bg-pos-surface">
+            {order.items.map((item, idx) => (
+              <div key={item.id || idx} className="p-2.5 flex justify-between items-start">
+                <div className="min-w-0 pr-2">
+                  <div className="flex items-center gap-1.5 font-medium text-pos-text">
+                    <span className="font-bold text-pos-primary">{item.quantity}x</span>
+                    <span className="truncate">{item.name}</span>
                   </div>
-                  <span className="font-bold font-mono text-pos-text shrink-0">
-                    {formatPrice(item.subtotal)}
-                  </span>
+                  {item.variantName && (
+                    <p className="text-[11px] text-pos-text-muted ml-5">
+                      {item.variantName}
+                    </p>
+                  )}
+                  {Array.isArray(item.modifiers) && item.modifiers.length > 0 && (
+                    <p className="text-[10px] text-pos-text-muted ml-5">
+                      +{(item.modifiers as Array<{ modifierName?: string; name?: string }>)
+                        .map(m => m.modifierName || m.name)
+                        .filter(Boolean)
+                        .join(', ')}
+                    </p>
+                  )}
+                  {item.specialInstructions && (
+                    <p className="text-[10px] text-pos-warning ml-5 italic">
+                      "{item.specialInstructions}"
+                    </p>
+                  )}
                 </div>
-
-                {item.specialInstructions && (
-                  <p className="text-[11px] text-pos-text-muted italic flex items-center gap-1">
-                    <FileText size={11} /> {item.specialInstructions}
-                  </p>
-                )}
-
-                <div className="flex justify-between items-center text-[10px] text-pos-text-muted pt-1 border-t border-pos-border font-mono">
-                  <span>Unit: {formatPrice(item.unitPrice)}</span>
-                  <span>Line Total: {formatPrice(item.subtotal)}</span>
-                </div>
+                <span className="font-mono font-semibold text-pos-text shrink-0">
+                  {formatPrice(item.subtotal)}
+                </span>
               </div>
             ))}
           </div>
         </div>
 
         {/* Financial Summary */}
-        <div className="p-3.5 rounded-lg bg-pos-surface-subtle border border-pos-border space-y-1.5 text-xs">
-          <div className="flex justify-between items-center text-sm font-bold">
-            <span className="text-pos-text">Total Amount:</span>
-            <span className="text-lg font-black text-pos-primary font-mono">
+        <div className="pt-2 border-t border-pos-border space-y-1.5">
+          <div className="flex justify-between items-center text-sm font-bold text-pos-text">
+            <span>Grand Total:</span>
+            <span className="font-mono text-base text-pos-primary">
               {formatPrice(order.totalAmount)}
             </span>
+          </div>
+          <div className="flex justify-between items-center text-xs text-pos-text-muted">
+            <span>Payment Method:</span>
+            <span className="font-medium text-pos-text">{order.paymentMethod}</span>
           </div>
         </div>
 
         {/* Status Progression Controls */}
-        <div className="space-y-2 pt-2">
+        <div className="pt-3 border-t border-pos-border space-y-2">
           <h4 className="text-xs font-semibold uppercase tracking-wider text-pos-text-secondary">
             Queue Actions
           </h4>
@@ -266,12 +298,16 @@ export const TakeawayDetailsDrawer: React.FC<TakeawayDetailsDrawerProps> = ({
             <Button
               variant="primary"
               size="lg"
-              onClick={() => handleUpdateStatus('COMPLETED', order.isPayOnPickup)}
-              isLoading={updateStatusMutation.isPending}
+              onClick={handleStartHandoverAndSettlement}
+              isLoading={updateStatusMutation.isPending || isLoadingOrder}
               className="w-full font-bold flex items-center justify-center gap-2"
             >
               <PackageCheck size={16} />
-              <span>Complete Handover {order.isPayOnPickup && '& Settle'}</span>
+              <span>
+                {order.isPayOnPickup || order.paymentStatus !== 'PAID'
+                  ? `Complete Handover & Settle (${formatPrice(order.totalAmount)})`
+                  : 'Complete Handover'}
+              </span>
             </Button>
           )}
 
@@ -291,10 +327,10 @@ export const TakeawayDetailsDrawer: React.FC<TakeawayDetailsDrawerProps> = ({
           <Button
             variant="secondary"
             size="md"
-            onClick={() => window.print()}
-            className="w-full text-xs font-medium flex items-center justify-center gap-1.5"
+            onClick={() => setIsReceiptModalOpen(true)}
+            className="w-full text-xs font-semibold flex items-center justify-center gap-1.5 min-h-[38px]"
           >
-            <Printer size={14} />
+            <Printer size={15} />
             <span>Print Counter Token Receipt</span>
           </Button>
         </div>
@@ -306,6 +342,49 @@ export const TakeawayDetailsDrawer: React.FC<TakeawayDetailsDrawerProps> = ({
           order={order}
           onClose={() => setIsCancelModalOpen(false)}
           onSuccess={() => {
+            onRefresh();
+            onClose();
+          }}
+        />
+      )}
+
+      {/* Bill & Token Receipt Modal */}
+      {isReceiptModalOpen && (
+        <BillReceiptModal
+          orderId={order.id}
+          orderCode={order.orderCode}
+          onClose={() => setIsReceiptModalOpen(false)}
+        />
+      )}
+
+      {/* Payment Modal for Pay on Pickup */}
+      {payingOrder && (
+        <PaymentModal
+          order={payingOrder}
+          currency={currency}
+          onClose={() => setPayingOrder(null)}
+          onPaymentSuccess={async result => {
+            setPayingOrder(null);
+            setCompletedPaymentResult(result);
+            try {
+              await updateStatusMutation.mutateAsync({
+                orderId: order.id,
+                payload: { status: 'COMPLETED' },
+              });
+            } catch (e) {
+              console.error(e);
+            }
+          }}
+        />
+      )}
+
+      {/* Payment Settlement Success Screen */}
+      {completedPaymentResult && (
+        <OrderSuccessModal
+          result={completedPaymentResult}
+          currency={currency}
+          onNewSale={() => {
+            setCompletedPaymentResult(null);
             onRefresh();
             onClose();
           }}

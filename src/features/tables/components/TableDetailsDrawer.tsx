@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { PosTable, PosZone, TableStatus, OrderRecord } from '@/types';
+import { PosTable, PosZone, TableStatus, OrderRecord, PaymentResponseData } from '@/types';
 import {
   useUpdateTableStatusMutation,
-  useCreateTableOrderMutation,
 } from '@/features/orders/hooks/usePosData';
 import { useCartStore } from '@/features/orders/store/cartStore';
 import { OrdersApi } from '@/core/api/ordersApi';
 import { PaymentModal } from '@/features/orders/components/PaymentModal';
 import { BillReceiptModal } from '@/components/receipts/BillReceiptModal';
+import { OrderSuccessModal } from '@/features/orders/components/OrderSuccessModal';
 import { TableTransferModal } from './TableTransferModal';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
@@ -27,7 +27,6 @@ import {
   CheckCircle2,
   ChefHat,
   Printer,
-  FileText,
   AlertTriangle,
 } from 'lucide-react';
 import { formatPrice as centralizedFormatPrice } from '@/utils/format';
@@ -52,12 +51,13 @@ export const TableDetailsDrawer: React.FC<TableDetailsDrawerProps> = ({
 }) => {
   const navigate = useNavigate();
   const updateStatusMutation = useUpdateTableStatusMutation();
-  const createTableOrderMutation = useCreateTableOrderMutation();
   const { setSelectedTable, setOrderType } = useCartStore();
 
   const [isTransferModalOpen, setIsTransferModalOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [payingOrder, setPayingOrder] = useState<OrderRecord | null>(null);
+  const [completedPaymentResult, setCompletedPaymentResult] =
+    useState<PaymentResponseData | null>(null);
   const [viewingReceiptOrderId, setViewingReceiptOrderId] = useState<{
     id: string;
     code: string;
@@ -210,25 +210,7 @@ export const TableDetailsDrawer: React.FC<TableDetailsDrawerProps> = ({
     }
   };
 
-  // 3. Action: Create New Sub-bill / Order
-  const handleCreateSubBill = async () => {
-    setErrorMessage(null);
-    try {
-      await createTableOrderMutation.mutateAsync({
-        tableId: table.id,
-        payload: {
-          guestCount: 1,
-          subBillName: `Bill #${(table.activeOrders?.length || 0) + 1}`,
-        },
-      });
-      onRefresh();
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Failed to create sub-bill';
-      setErrorMessage(msg);
-    }
-  };
-
-  // 4. Action: Change Table Operational Status
+  // 3. Action: Change Table Operational Status
   const handleStatusChange = async (newStatus: TableStatus) => {
     if (newStatus === table.status) return;
     setErrorMessage(null);
@@ -304,7 +286,7 @@ export const TableDetailsDrawer: React.FC<TableDetailsDrawerProps> = ({
               <span className="text-[10px] font-bold uppercase tracking-wider text-pos-text-muted">
                 Active Table Total
               </span>
-              <p className="text-xl font-black text-pos-primary font-mono mt-0.5">
+              <p className="text-2xl font-black text-pos-primary font-mono mt-0.5">
                 {formatPrice(totalAmount)}
               </p>
             </div>
@@ -318,104 +300,137 @@ export const TableDetailsDrawer: React.FC<TableDetailsDrawerProps> = ({
             </div>
           </div>
 
-          {/* Primary POS Action Button */}
-          <Button
-            variant="primary"
-            size="lg"
-            onClick={handleOpenPOSRegister}
-            className="w-full font-bold flex items-center justify-center gap-2 shadow-xs min-h-[42px]"
-          >
-            <ShoppingBag size={18} />
-            <span>Open in POS Register</span>
-          </Button>
+          {/* Primary Action Buttons Bar */}
+          {table.activeOrders && table.activeOrders.length > 0 ? (
+            <div className="space-y-2">
+              {/* Primary Settlement Button (Dominant Action) */}
+              <Button
+                variant="primary"
+                size="lg"
+                disabled={isLoadingOrder}
+                onClick={() => {
+                  if (table.activeOrders && table.activeOrders.length > 0) {
+                    handleSettleOrder(table.activeOrders[0].id);
+                  }
+                }}
+                className="w-full font-bold flex items-center justify-center gap-2 min-h-[44px] bg-pos-success hover:bg-pos-success/90 text-white shadow-xs text-sm"
+              >
+                <CreditCard size={17} />
+                <span>Settle & Pay Bill ({formatPrice(totalAmount)})</span>
+              </Button>
 
-          {/* Active Orders List */}
+              {/* Secondary Actions: Add More Dishes & Print Pre-Bill */}
+              <div className="grid grid-cols-2 gap-2">
+                <Button
+                  variant="secondary"
+                  size="md"
+                  onClick={handleOpenPOSRegister}
+                  className="font-semibold flex items-center justify-center gap-1.5 min-h-[38px] text-xs"
+                >
+                  <Plus size={15} />
+                  <span>+ Add Dishes</span>
+                </Button>
+
+                <Button
+                  variant="secondary"
+                  size="md"
+                  onClick={() => {
+                    if (table.activeOrders && table.activeOrders.length > 0) {
+                      handleStatusChange('BILL_PRINTED');
+                      setViewingReceiptOrderId({
+                        id: table.activeOrders[0].id,
+                        code: table.activeOrders[0].orderCode,
+                      });
+                    }
+                  }}
+                  className="font-semibold flex items-center justify-center gap-1.5 min-h-[38px] text-xs"
+                >
+                  <Printer size={15} />
+                  <span>View / Print Bill</span>
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <Button
+              variant="primary"
+              size="lg"
+              onClick={handleOpenPOSRegister}
+              className="w-full font-bold flex items-center justify-center gap-2 shadow-xs min-h-[44px]"
+            >
+              <ShoppingBag size={18} />
+              <span>Start Order in POS</span>
+            </Button>
+          )}
+
+          {/* Unified Order & Dishes Item Breakdown */}
           <div>
             <div className="flex items-center justify-between mb-2">
               <h4 className="text-xs font-semibold uppercase tracking-wider text-pos-text-secondary">
-                Active Orders & Bills ({table.activeOrders?.length || 0})
+                Order Dishes & Portions
               </h4>
-              <button
-                type="button"
-                onClick={handleCreateSubBill}
-                disabled={createTableOrderMutation.isPending}
-                className="text-xs text-pos-primary hover:underline font-semibold flex items-center gap-1"
-              >
-                <Plus size={13} /> New Sub-Bill
-              </button>
+              {table.activeOrders && table.activeOrders.length > 0 && (
+                <span className="text-[11px] font-mono text-pos-primary font-bold">
+                  #{table.activeOrders[0].orderCode}
+                </span>
+              )}
             </div>
 
             {table.activeOrders && table.activeOrders.length > 0 ? (
               <div className="space-y-3">
-                {table.activeOrders.map(ord => (
+                {table.activeOrders.map((ord, orderIdx) => (
                   <div
                     key={ord.id}
-                    className="p-3.5 rounded-lg bg-pos-surface border border-pos-border text-xs space-y-2.5 shadow-xs"
+                    className="p-3 rounded-lg bg-pos-surface border border-pos-border text-xs space-y-2 shadow-xs"
                   >
                     <div className="flex items-center justify-between">
                       <span className="font-bold text-pos-text flex items-center gap-1.5 font-mono">
-                        <Receipt size={14} className="text-pos-primary" />#{ord.orderCode}
+                        <Receipt size={14} className="text-pos-primary" />
+                        {table.activeOrders && table.activeOrders.length > 1
+                          ? `Round #${orderIdx + 1} (${ord.orderCode})`
+                          : `Order #${ord.orderCode}`}
                       </span>
                       {getOrderStatusBadge(ord.status)}
                     </div>
 
-                    {/* Items preview if available */}
-                    {ord.items && ord.items.length > 0 && (
-                      <div className="bg-pos-surface-subtle rounded-md p-2 space-y-1 border border-pos-border text-[11px]">
+                    {/* Ordered Items List */}
+                    {ord.items && ord.items.length > 0 ? (
+                      <div className="bg-pos-surface-subtle rounded-md p-2 space-y-1.5 border border-pos-border text-[11px]">
                         {ord.items.map(it => (
-                          <div key={it.id} className="flex justify-between text-pos-text">
-                            <span className="font-medium">
-                              {it.quantity}x {it.itemName}
-                            </span>
-                            <span className="font-mono text-pos-text-muted">
+                          <div key={it.id} className="flex justify-between items-center text-pos-text">
+                            <div className="min-w-0 pr-2">
+                              <span className="font-semibold text-pos-text">
+                                {it.quantity}x {it.itemName}
+                              </span>
+                              {it.variantName && (
+                                <span className="text-[10px] text-pos-primary ml-1 font-medium">
+                                  ({it.variantName})
+                                </span>
+                              )}
+                            </div>
+                            <span className="font-mono font-medium text-pos-text shrink-0">
                               {formatPrice(it.quantity * it.unitPrice)}
                             </span>
                           </div>
                         ))}
                       </div>
+                    ) : (
+                      <p className="text-[11px] text-pos-text-muted italic">
+                        No dishes listed on this ticket.
+                      </p>
                     )}
 
-                    <div className="flex items-center justify-between text-pos-text-muted pt-2 border-t border-pos-border text-xs">
-                      <span>{ord.guestCount} Guest(s)</span>
-                      <span className="font-bold font-mono text-sm text-pos-primary">
+                    <div className="flex items-center justify-between text-pos-text-muted pt-1.5 border-t border-pos-border text-xs">
+                      <span>Sub-Total:</span>
+                      <span className="font-bold font-mono text-pos-text">
                         {formatPrice(ord.totalAmount)}
                       </span>
-                    </div>
-
-                    {/* Action Buttons: View Bill & Settle Bill */}
-                    <div className="pt-1 grid grid-cols-2 gap-2">
-                      <Button
-                        type="button"
-                        variant="secondary"
-                        size="sm"
-                        onClick={() => {
-                          handleStatusChange('BILL_PRINTED');
-                          setViewingReceiptOrderId({ id: ord.id, code: ord.orderCode });
-                        }}
-                        className="text-xs font-semibold flex items-center justify-center gap-1"
-                      >
-                        <FileText size={13} />
-                        <span>View Bill</span>
-                      </Button>
-
-                      <Button
-                        type="button"
-                        variant="primary"
-                        size="sm"
-                        disabled={isLoadingOrder}
-                        onClick={() => handleSettleOrder(ord.id)}
-                        className="text-xs font-bold flex items-center justify-center gap-1 bg-pos-success hover:bg-pos-success/90 text-white"
-                      >
-                        <CreditCard size={13} />
-                        <span>Settle Bill</span>
-                      </Button>
                     </div>
                   </div>
                 ))}
               </div>
             ) : (
               <div className="py-6 text-center text-xs text-pos-text-muted bg-pos-surface-subtle rounded-lg border border-dashed border-pos-border">
-                No active orders on this table.
+                No active orders on this table. Click "Start Order in POS" above to seat guests.
               </div>
             )}
           </div>
@@ -435,7 +450,7 @@ export const TableDetailsDrawer: React.FC<TableDetailsDrawerProps> = ({
                     onClick={() => handleStatusChange(opt.id)}
                     disabled={updateStatusMutation.isPending}
                     className={cn(
-                      'p-2.5 rounded-lg border text-xs font-medium transition-colors text-left flex items-center gap-2 min-h-[40px]',
+                      'p-2 rounded-lg border text-xs font-medium transition-colors text-left flex items-center gap-2 min-h-[38px]',
                       isCurrent
                         ? 'border-pos-primary bg-pos-primary-soft text-pos-primary font-semibold ring-1 ring-pos-primary'
                         : 'border-pos-border bg-pos-surface text-pos-text-secondary hover:text-pos-text hover:bg-pos-surface-subtle'
@@ -497,9 +512,21 @@ export const TableDetailsDrawer: React.FC<TableDetailsDrawerProps> = ({
           order={payingOrder}
           currency={currency}
           onClose={() => setPayingOrder(null)}
-          onPaymentSuccess={() => {
+          onPaymentSuccess={(result) => {
             setPayingOrder(null);
+            setCompletedPaymentResult(result);
             onRefresh();
+          }}
+        />
+      )}
+
+      {/* Official Payment Success & Tax Receipt Modal */}
+      {completedPaymentResult && (
+        <OrderSuccessModal
+          result={completedPaymentResult}
+          currency={currency}
+          onNewSale={() => {
+            setCompletedPaymentResult(null);
             onClose();
           }}
         />

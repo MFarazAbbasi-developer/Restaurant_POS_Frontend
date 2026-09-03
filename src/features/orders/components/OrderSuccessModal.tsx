@@ -17,16 +17,28 @@ export const OrderSuccessModal: React.FC<OrderSuccessModalProps> = ({
   currency = 'PKR',
   onNewSale,
 }) => {
-  const { order, payment, changeAmount = 0 } = result;
+  const order = result?.order;
+  const payment = result?.payment;
+  const changeAmount = result?.changeAmount ?? 0;
   const [isReceiptModalOpen, setIsReceiptModalOpen] = useState(false);
 
   const grandTotal =
-    typeof order.grandTotal === 'string'
-      ? parseFloat(order.grandTotal)
-      : order.grandTotal;
+    order?.grandTotal !== undefined
+      ? typeof order.grandTotal === 'string'
+        ? parseFloat(order.grandTotal)
+        : order.grandTotal
+      : payment?.amount !== undefined
+        ? typeof payment.amount === 'string'
+          ? parseFloat(payment.amount)
+          : payment.amount
+        : 0;
 
   const amountPaid =
-    typeof payment.amount === 'string' ? parseFloat(payment.amount) : payment.amount;
+    payment?.amount !== undefined
+      ? typeof payment.amount === 'string'
+        ? parseFloat(payment.amount)
+        : payment.amount
+      : grandTotal;
 
   const formatPrice = (val: number) => {
     return centralizedFormatPrice(val, currency);
@@ -53,25 +65,36 @@ export const OrderSuccessModal: React.FC<OrderSuccessModalProps> = ({
 
           {/* Order Details Receipt Box */}
           <div className="bg-pos-surface-subtle border border-pos-border rounded-lg p-4 text-xs space-y-2 text-left font-mono">
+            {order?.tokenNumber && (
+              <div className="flex justify-between items-center bg-pos-primary/10 px-3 py-2 rounded-md border border-pos-primary/20 mb-2">
+                <span className="text-pos-primary font-bold text-xs uppercase tracking-wider">
+                  Counter Token:
+                </span>
+                <span className="font-black text-pos-primary text-lg font-mono">
+                  #{order.tokenNumber}
+                </span>
+              </div>
+            )}
+
             <div className="flex justify-between items-center pb-2 border-b border-pos-border">
               <span className="text-pos-text-muted">Order Code:</span>
               <span className="font-bold text-pos-primary text-sm">
-                #{order.orderCode}
+                #{order?.orderCode || 'ORD-COMPLETED'}
               </span>
             </div>
 
             <div className="flex justify-between items-center text-pos-text-muted">
               <span>Order Type:</span>
               <span className="font-semibold text-pos-text">
-                {order.orderType === 'DINE_IN'
-                  ? `DINE-IN (${order.table?.name || 'Table'})`
-                  : order.orderType}
+                {order?.orderType === 'DINE_IN'
+                  ? `DINE-IN (${order?.table?.name || 'Table'})`
+                  : order?.orderType || 'SALE'}
               </span>
             </div>
 
             <div className="flex justify-between items-center text-pos-text-muted">
               <span>Tender Method:</span>
-              <span className="font-semibold text-pos-text">{payment.paymentMethod}</span>
+              <span className="font-semibold text-pos-text">{payment?.paymentMethod || 'CASH'}</span>
             </div>
 
             <div className="flex justify-between items-center text-pos-text-muted">
@@ -94,14 +117,16 @@ export const OrderSuccessModal: React.FC<OrderSuccessModalProps> = ({
 
           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
-            <Button
-              variant="secondary"
-              size="lg"
-              onClick={() => setIsReceiptModalOpen(true)}
-              className="w-full sm:w-auto font-medium flex items-center justify-center gap-2"
-            >
-              <FileText size={16} /> View Digital Bill
-            </Button>
+            {order?.id && (
+              <Button
+                variant="secondary"
+                size="lg"
+                onClick={() => setIsReceiptModalOpen(true)}
+                className="w-full sm:w-auto font-medium flex items-center justify-center gap-2"
+              >
+                <FileText size={16} /> View Digital Bill
+              </Button>
+            )}
 
             <Button
               variant="primary"
@@ -116,7 +141,7 @@ export const OrderSuccessModal: React.FC<OrderSuccessModalProps> = ({
       </div>
 
       {/* On-screen Digital Bill Receipt Modal */}
-      {isReceiptModalOpen && (
+      {isReceiptModalOpen && order?.id && (
         <BillReceiptModal
           orderId={order.id}
           orderCode={order.orderCode}

@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/utils/cn';
 import { PRODUCT_IDENTITY } from '@/config/product';
+import { formatPrice as centralizedFormatPrice } from '@/utils/format';
 
 interface BillReceiptModalProps {
   orderId: string;
@@ -76,36 +77,32 @@ export const BillReceiptModal: React.FC<BillReceiptModalProps> = ({
   };
 
   const formatCurrency = (amount: number, currency = 'PKR') => {
-    return new Intl.NumberFormat('en-PK', {
-      style: 'currency',
-      currency: currency || 'PKR',
-      minimumFractionDigits: 2,
-    }).format(amount);
+    return centralizedFormatPrice(amount, currency);
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-3 sm:p-4 animate-in fade-in duration-150 select-none">
-      <div className="w-full max-w-xl bg-pos-surface border border-pos-border rounded-xl shadow-modal overflow-hidden flex flex-col max-h-[92vh]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-2 sm:p-4 animate-in fade-in duration-150 select-none">
+      <div className="w-full max-w-xl bg-pos-surface border border-pos-border rounded-xl shadow-modal overflow-hidden flex flex-col max-h-[90vh]">
         {/* Modal Header */}
         <div className="p-3.5 sm:p-4 border-b border-pos-border bg-pos-surface flex items-center justify-between shrink-0">
-          <div className="flex items-center gap-2">
-            <div className="h-8 w-8 rounded-lg bg-pos-primary-soft text-pos-primary flex items-center justify-center">
+          <div className="flex items-center gap-2 min-w-0">
+            <div className="h-8 w-8 rounded-lg bg-pos-primary-soft text-pos-primary flex items-center justify-center shrink-0">
               <Receipt size={18} />
             </div>
-            <div>
-              <h3 className="text-sm font-semibold text-pos-text leading-tight flex items-center gap-2">
+            <div className="min-w-0">
+              <h3 className="text-sm font-semibold text-pos-text leading-tight flex items-center gap-2 truncate">
                 <span>Customer Bill & Receipt</span>
                 <span className="font-mono text-pos-primary text-xs font-semibold">
                   #{orderCode || receipt?.metadata.orderCode || 'BILL'}
                 </span>
               </h3>
-              <p className="text-[11px] text-pos-text-muted">
+              <p className="text-[11px] text-pos-text-muted truncate">
                 On-screen thermal receipt preview (no physical printer required)
               </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 shrink-0 ml-2">
             {/* View Mode Toggle */}
             <div className="hidden sm:flex items-center bg-pos-surface-subtle p-0.5 rounded-md border border-pos-border text-xs">
               <button
@@ -138,7 +135,7 @@ export const BillReceiptModal: React.FC<BillReceiptModalProps> = ({
               type="button"
               onClick={onClose}
               aria-label="Close bill preview"
-              className="p-1.5 rounded-lg text-pos-text-muted hover:text-pos-text hover:bg-pos-surface-subtle transition-colors"
+              className="p-1.5 rounded-lg text-pos-text-muted hover:text-pos-text hover:bg-pos-surface-subtle transition-colors cursor-pointer"
             >
               <X size={18} />
             </button>
@@ -146,7 +143,7 @@ export const BillReceiptModal: React.FC<BillReceiptModalProps> = ({
         </div>
 
         {/* Modal Controls Bar */}
-        <div className="px-4 py-2 border-b border-pos-border bg-pos-surface-subtle/50 flex flex-wrap items-center justify-between gap-2 shrink-0 text-xs">
+        <div className="px-3.5 sm:px-4 py-2 border-b border-pos-border bg-pos-surface-subtle/50 flex flex-wrap items-center justify-between gap-2 shrink-0 text-xs">
           <div className="flex items-center gap-2">
             <span className="text-pos-text-muted font-medium text-[11px]">
               Paper Width:
@@ -184,7 +181,7 @@ export const BillReceiptModal: React.FC<BillReceiptModalProps> = ({
               type="button"
               onClick={handleCopyText}
               disabled={!receipt}
-              className="px-2.5 py-1 rounded-lg border border-pos-border bg-pos-surface hover:bg-pos-surface-hover text-pos-text text-[11px] font-semibold flex items-center gap-1 transition-colors"
+              className="px-2.5 py-1 rounded-lg border border-pos-border bg-pos-surface hover:bg-pos-surface-hover text-pos-text text-[11px] font-semibold flex items-center gap-1 transition-colors cursor-pointer"
               title="Copy receipt text to clipboard"
             >
               {copied ? (
@@ -199,7 +196,7 @@ export const BillReceiptModal: React.FC<BillReceiptModalProps> = ({
               type="button"
               onClick={handleBrowserPrint}
               disabled={!receipt}
-              className="px-2.5 py-1 rounded-lg border border-pos-border bg-pos-surface hover:bg-pos-surface-hover text-pos-text text-[11px] font-semibold flex items-center gap-1 transition-colors"
+              className="px-2.5 py-1 rounded-lg border border-pos-border bg-pos-surface hover:bg-pos-surface-hover text-pos-text text-[11px] font-semibold flex items-center gap-1 transition-colors cursor-pointer"
               title="Print via browser or Save as PDF"
             >
               <Download size={13} />
@@ -209,7 +206,7 @@ export const BillReceiptModal: React.FC<BillReceiptModalProps> = ({
         </div>
 
         {/* Scrollable Receipt Body */}
-        <div className="flex-1 overflow-y-auto p-4 sm:p-6 bg-pos-bg/80 flex justify-center custom-scrollbar">
+        <div className="flex-1 min-h-0 overflow-y-auto p-3 sm:p-5 bg-pos-bg/80 custom-scrollbar">
           {isLoading ? (
             <div className="py-20 flex flex-col items-center justify-center gap-3 text-pos-text-muted text-xs">
               <Spinner size="lg" />
@@ -223,14 +220,14 @@ export const BillReceiptModal: React.FC<BillReceiptModalProps> = ({
           ) : receipt ? (
             <div
               className={cn(
-                'bg-white text-zinc-900 rounded-xl shadow-dropdown border border-zinc-200 transition-all font-mono',
+                'bg-white text-zinc-900 rounded-xl shadow-dropdown border border-zinc-200 transition-all font-mono mx-auto my-1',
                 paperWidth === '80mm'
                   ? 'w-full max-w-[420px] p-5 sm:p-6'
                   : 'w-full max-w-[320px] p-4 text-[11px]'
               )}
             >
               {viewMode === 'MONOSPACE' ? (
-                <pre className="whitespace-pre font-mono text-[11px] leading-relaxed text-zinc-900 overflow-x-auto">
+                <pre className="whitespace-pre-wrap break-words font-mono text-[11px] leading-relaxed text-zinc-900">
                   {receipt.renderedSlip}
                 </pre>
               ) : (
@@ -264,6 +261,18 @@ export const BillReceiptModal: React.FC<BillReceiptModalProps> = ({
 
                   {/* Order & Table Metadata */}
                   <div className="text-[11px] text-zinc-700 space-y-1 pb-3 border-b-2 border-dashed border-zinc-300">
+                    {/* High-visibility Token Badge for Takeaway Counter Orders */}
+                    {receipt.metadata.tokenNumber && (
+                      <div className="text-center py-2 bg-zinc-100 rounded-md border-2 border-zinc-900 my-1">
+                        <span className="text-[10px] uppercase font-bold text-zinc-600 tracking-wider">
+                          TAKEAWAY COUNTER TOKEN
+                        </span>
+                        <p className="text-2xl sm:text-3xl font-black text-zinc-950 font-mono leading-none mt-0.5">
+                          TOKEN #{receipt.metadata.tokenNumber}
+                        </p>
+                      </div>
+                    )}
+
                     <div className="flex justify-between font-bold">
                       <span>ORDER: #{receipt.metadata.orderCode}</span>
                       <span className="uppercase text-zinc-900 font-black">
