@@ -5,9 +5,11 @@ import { NotFound } from '@/components/boundaries/NotFound';
 import { ProtectedRoute } from '@/routes/ProtectedRoute';
 import { PublicRoute } from '@/routes/PublicRoute';
 import { RequirePermission } from '@/routes/RequirePermission';
+import { SetupGate } from '@/routes/SetupGate';
 
 // Pages
 import { LoginPage } from '@/pages/Login/LoginPage';
+import { SetupPage } from '@/pages/Setup/SetupPage';
 import { DashboardPage } from '@/pages/Dashboard/DashboardPage';
 import { OrdersPage } from '@/pages/Orders/OrdersPage';
 import { TablesPage } from '@/pages/Tables/TablesPage';
@@ -30,9 +32,12 @@ import { SettingsPage } from '@/pages/Settings/SettingsPage';
 export const AppRouter: React.FC = () => {
   return (
     <Routes>
-      {/* Public Routes */}
-      <Route element={<PublicRoute />}>
-        <Route path="/login" element={<LoginPage />} />
+      {/* First-run setup + public auth */}
+      <Route element={<SetupGate />}>
+        <Route path="/setup" element={<SetupPage />} />
+        <Route element={<PublicRoute />}>
+          <Route path="/login" element={<LoginPage />} />
+        </Route>
       </Route>
 
       {/* Protected POS Shell Routes */}

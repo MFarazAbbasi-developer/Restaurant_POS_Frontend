@@ -68,12 +68,23 @@ export const StaffLoginForm: React.FC = () => {
   const location = useLocation();
   const { login, isLoading, error, clearError } = useAuthStore();
 
-  const [username, setUsername] = useState('owner_admin');
-  const [pin, setPin] = useState('1234');
+  const setupComplete = Boolean(
+    (location.state as { setupComplete?: boolean; username?: string } | null)?.setupComplete
+  );
+  const setupUsername =
+    (location.state as { username?: string } | null)?.username?.trim() || '';
+
+  const [username, setUsername] = useState(setupUsername || 'owner_admin');
+  const [pin, setPin] = useState(setupComplete ? '' : '1234');
   const [password, setPassword] = useState('');
   const [isPasswordMode, setIsPasswordMode] = useState(false);
   const [restaurantId, setRestaurantId] = useState('');
   const [showAdvanced, setShowAdvanced] = useState(false);
+  const [setupNotice] = useState(
+    setupComplete
+      ? 'Setup complete. Sign in with the owner account you just created.'
+      : null
+  );
 
   // Clear previous errors when user changes inputs
   useEffect(() => {
@@ -208,6 +219,13 @@ export const StaffLoginForm: React.FC = () => {
           ))}
         </div>
       </div>
+
+      {setupNotice && (
+        <div className="mb-5 p-3 rounded-lg bg-pos-surface-subtle border border-pos-border text-pos-text-secondary flex items-start gap-2.5 text-xs">
+          <Sparkles size={16} className="shrink-0 mt-0.5 text-pos-primary" />
+          <p className="font-medium">{setupNotice}</p>
+        </div>
+      )}
 
       {error && (
         <div className="mb-5 p-3 rounded-lg bg-pos-danger-soft border border-[#FECACA] text-pos-danger flex items-start gap-2.5 text-xs">
