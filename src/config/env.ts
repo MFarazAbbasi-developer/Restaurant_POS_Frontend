@@ -13,7 +13,7 @@ const envSchema = z.object({
   VITE_APP_ENV: z
     .enum(['development', 'staging', 'production', 'test'])
     .default('development'),
-  VITE_APP_NAME: z.string().default('Faraz POS'),
+  VITE_APP_NAME: z.string().default('FARMAX POS'),
   VITE_APP_VERSION: z.string().default('0.1.0'),
   VITE_DEFAULT_TERMINAL_ID: z.string().default('POS-01'),
 
@@ -34,7 +34,7 @@ const envSchema = z.object({
     .transform((val) => (val === undefined ? true : val === 'true' || val === '1')),
   VITE_RECEIPT_ATTRIBUTION_TEXT: z
     .string()
-    .default('Powered by Faraz POS · Developed by Developer Name'),
+    .default('Powered by FARMAX POS · Developed by Developer Name'),
 });
 
 const parsedEnv = envSchema.safeParse(import.meta.env);

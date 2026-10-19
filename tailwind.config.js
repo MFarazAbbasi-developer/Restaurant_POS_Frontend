@@ -5,7 +5,7 @@ export default {
     extend: {
       colors: {
         pos: {
-          // Primary Faraz Brand Palette
+          // Primary FARMAX Brand Palette
           primary: '#E85D04',
           'primary-hover': '#D45103',
           'primary-soft': '#FFF1E8',

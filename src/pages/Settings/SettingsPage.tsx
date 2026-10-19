@@ -700,7 +700,7 @@ export const SettingsPage: React.FC = () => {
                         rows={3}
                         value={receiptHeader}
                         onChange={e => setReceiptHeader(e.target.value)}
-                        placeholder="e.g. Welcome to Faraz POS! Specializing in Traditional & Continental Delights."
+                        placeholder="e.g. Welcome to FARMAX POS! Specializing in Traditional & Continental Delights."
                         className="w-full p-2.5 rounded-md bg-pos-surface border border-pos-border text-pos-text text-xs focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary resize-none font-normal"
                       />
                     </div>
