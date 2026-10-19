@@ -43,7 +43,10 @@ class SocketClientManager {
     const tokens = authStorage.getTokens();
     const terminal = authStorage.getTerminalSession();
 
-    this.socket = io(env.wsUrl, {
+    const socketTarget =
+      env.wsUrl || (typeof window !== 'undefined' ? window.location.origin : undefined);
+
+    const socketOptions = {
       autoConnect: true,
       reconnection: true,
       reconnectionAttempts: Infinity,
@@ -54,8 +57,10 @@ class SocketClientManager {
         token: tokens?.accessToken,
         terminalId: terminal?.terminalId || env.defaultTerminalId,
       },
-      transports: ['websocket', 'polling'],
-    });
+      transports: ['websocket', 'polling'] as ('websocket' | 'polling')[],
+    };
+
+    this.socket = socketTarget ? io(socketTarget, socketOptions) : io(socketOptions);
 
     this.setupListeners();
     return this.socket;

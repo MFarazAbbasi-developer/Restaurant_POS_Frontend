@@ -1,8 +1,15 @@
 import { z } from 'zod';
 
 const envSchema = z.object({
-  VITE_API_BASE_URL: z.string().url().default('http://localhost:5000/api/v1'),
-  VITE_WS_URL: z.string().url().default('http://localhost:5000'),
+  VITE_API_BASE_URL: z
+    .string()
+    .min(1)
+    .refine(
+      (val) => val.startsWith('/') || val.startsWith('http://') || val.startsWith('https://'),
+      { message: 'VITE_API_BASE_URL must be a valid URL or relative path starting with /' },
+    )
+    .optional(),
+  VITE_WS_URL: z.string().optional(),
   VITE_APP_ENV: z
     .enum(['development', 'staging', 'production', 'test'])
     .default('development'),
@@ -20,11 +27,11 @@ const envSchema = z.object({
   VITE_RECEIPT_ATTRIBUTION_ENABLED: z
     .string()
     .optional()
-    .transform(val => (val === undefined ? true : val === 'true' || val === '1')),
+    .transform((val) => (val === undefined ? true : val === 'true' || val === '1')),
   VITE_RECEIPT_ATTRIBUTION_SHOW_PHONE: z
     .string()
     .optional()
-    .transform(val => (val === undefined ? true : val === 'true' || val === '1')),
+    .transform((val) => (val === undefined ? true : val === 'true' || val === '1')),
   VITE_RECEIPT_ATTRIBUTION_TEXT: z
     .string()
     .default('Powered by Faraz POS · Developed by Developer Name'),
@@ -37,9 +44,33 @@ if (!parsedEnv.success) {
   throw new Error('Invalid environment configuration');
 }
 
+const isProd =
+  parsedEnv.data.VITE_APP_ENV === 'production' ||
+  (import.meta.env.PROD && parsedEnv.data.VITE_APP_ENV !== 'development');
+const isDev = !isProd;
+
+// Resolve API base URL: Use configured VITE_API_BASE_URL, or fall back to /api/v1 in prod and http://localhost:5000/api/v1 in dev
+const resolveApiBaseUrl = (): string => {
+  if (parsedEnv.data.VITE_API_BASE_URL) {
+    return parsedEnv.data.VITE_API_BASE_URL;
+  }
+  return isProd ? '/api/v1' : 'http://localhost:5000/api/v1';
+};
+
+// Resolve WebSocket URL: If explicitly set to non-empty, use it. In prod, fall back to window.location.origin (same-origin). In dev, fall back to http://localhost:5000
+const resolveWsUrl = (): string => {
+  if (parsedEnv.data.VITE_WS_URL && parsedEnv.data.VITE_WS_URL.trim() !== '') {
+    return parsedEnv.data.VITE_WS_URL.trim();
+  }
+  if (isProd) {
+    return typeof window !== 'undefined' ? window.location.origin : '';
+  }
+  return 'http://localhost:5000';
+};
+
 export const env = {
-  apiBaseUrl: parsedEnv.data.VITE_API_BASE_URL,
-  wsUrl: parsedEnv.data.VITE_WS_URL,
+  apiBaseUrl: resolveApiBaseUrl(),
+  wsUrl: resolveWsUrl(),
   appEnv: parsedEnv.data.VITE_APP_ENV,
   appName: parsedEnv.data.VITE_APP_NAME,
   appVersion: parsedEnv.data.VITE_APP_VERSION,
@@ -51,8 +82,8 @@ export const env = {
   receiptAttributionEnabled: parsedEnv.data.VITE_RECEIPT_ATTRIBUTION_ENABLED,
   receiptAttributionShowPhone: parsedEnv.data.VITE_RECEIPT_ATTRIBUTION_SHOW_PHONE,
   receiptAttributionText: parsedEnv.data.VITE_RECEIPT_ATTRIBUTION_TEXT,
-  isDev: parsedEnv.data.VITE_APP_ENV === 'development',
-  isProd: parsedEnv.data.VITE_APP_ENV === 'production',
+  isDev,
+  isProd,
 } as const;
 
 export type Env = typeof env;
