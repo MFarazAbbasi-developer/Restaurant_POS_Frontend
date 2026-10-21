@@ -1,6 +1,7 @@
 export * from './auth';
 export * from './orders';
 export * from './staff';
+export * from './tables';
 
 /**
  * Standard API response envelope from backend service

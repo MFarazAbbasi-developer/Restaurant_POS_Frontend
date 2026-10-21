@@ -2,8 +2,12 @@ import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { usePosTablesQuery } from '@/features/orders/hooks/usePosData';
 import { useAuthStore } from '@/core/auth/authStore';
+import { usePermissions } from '@/core/auth/usePermissions';
 import { TableCard } from '@/features/tables/components/TableCard';
 import { TableDetailsDrawer } from '@/features/tables/components/TableDetailsDrawer';
+import { CreateZoneModal } from '@/features/tables/components/CreateZoneModal';
+import { CreateTableModal } from '@/features/tables/components/CreateTableModal';
+import { useZonesListQuery } from '@/features/tables/hooks/useTablesAdminData';
 import { Button } from '@/components/ui/Button';
 import { Spinner } from '@/components/ui/Spinner';
 import {
@@ -17,15 +21,20 @@ import {
   AlertCircle,
   Percent,
   PlusCircle,
+  Plus,
   Printer,
   AlertTriangle,
   Calendar,
+  LayoutGrid,
 } from 'lucide-react';
 import { cn } from '@/utils/cn';
 
 export const TablesPage: React.FC = () => {
   const navigate = useNavigate();
   const { user } = useAuthStore();
+  const { hasPermission } = usePermissions();
+  const canManageTables = hasPermission('tables.manage');
+
   const {
     data: floorData,
     isLoading,
@@ -33,6 +42,10 @@ export const TablesPage: React.FC = () => {
     error,
     refetch,
   } = usePosTablesQuery();
+
+  const { data: adminZones = [], refetch: refetchZones } = useZonesListQuery(
+    canManageTables
+  );
 
   const currency =
     user && 'restaurant' in user && user.restaurant?.currency
@@ -44,6 +57,12 @@ export const TablesPage: React.FC = () => {
   const [statusFilter, setStatusFilter] = useState<string>('ALL');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [selectedTableId, setSelectedTableId] = useState<string | null>(null);
+  const [isCreateZoneOpen, setIsCreateZoneOpen] = useState(false);
+  const [isCreateTableOpen, setIsCreateTableOpen] = useState(false);
+
+  const handleFloorMutated = async () => {
+    await Promise.all([refetch(), canManageTables ? refetchZones() : Promise.resolve()]);
+  };
 
   const zones = useMemo(() => floorData?.zones || [], [floorData]);
 
@@ -256,6 +275,36 @@ export const TablesPage: React.FC = () => {
               <span className="hidden sm:inline">Refresh</span>
             </Button>
 
+            {canManageTables && (
+              <>
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  onClick={() => setIsCreateZoneOpen(true)}
+                  className="min-h-[36px] px-3 font-medium flex items-center gap-1.5"
+                  title="Add dining zone"
+                >
+                  <LayoutGrid size={14} />
+                  <span className="hidden lg:inline">Add Zone</span>
+                </Button>
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  onClick={() => setIsCreateTableOpen(true)}
+                  disabled={adminZones.length === 0 && zones.length === 0}
+                  className="min-h-[36px] px-3 font-medium flex items-center gap-1.5"
+                  title={
+                    adminZones.length === 0 && zones.length === 0
+                      ? 'Create a zone before adding tables'
+                      : 'Add table'
+                  }
+                >
+                  <Plus size={14} />
+                  <span className="hidden lg:inline">Add Table</span>
+                </Button>
+              </>
+            )}
+
             <Button
               variant="primary"
               size="sm"
@@ -371,13 +420,73 @@ export const TablesPage: React.FC = () => {
             </div>
           )}
 
-          {!isLoading && filteredTables.length === 0 && (
-            <div className="py-24 text-center text-xs text-pos-text-muted flex flex-col items-center gap-2">
-              <UtensilsCrossed size={28} className="text-pos-text-muted/50" />
-              <p className="font-semibold text-pos-text">No tables found</p>
-              <p className="text-xs">Try adjusting your zone or status filter</p>
+          {!isLoading && !error && zones.length === 0 && (
+            <div className="py-20 px-4 text-center flex flex-col items-center gap-3">
+              <LayoutGrid size={40} className="text-pos-text-muted/40" />
+              <p className="font-bold text-base text-pos-text">No dining zones yet</p>
+              <p className="text-xs text-pos-text-secondary max-w-md leading-relaxed">
+                Create a zone (for example Main Hall or Patio), then add tables. After that,
+                Dine-in on the POS Register can assign orders to those tables. Takeaway works
+                without tables.
+              </p>
+              {canManageTables ? (
+                <div className="flex flex-wrap items-center justify-center gap-2 mt-1">
+                  <Button
+                    type="button"
+                    variant="primary"
+                    size="sm"
+                    onClick={() => setIsCreateZoneOpen(true)}
+                    className="font-semibold gap-1.5"
+                  >
+                    <LayoutGrid size={14} />
+                    Add first zone
+                  </Button>
+                </div>
+              ) : (
+                <p className="text-[11px] text-pos-text-muted">
+                  Creating zones requires the{' '}
+                  <span className="font-semibold text-pos-text">tables.manage</span> permission.
+                </p>
+              )}
             </div>
           )}
+
+          {!isLoading &&
+            !error &&
+            zones.length > 0 &&
+            allTables.length === 0 && (
+              <div className="py-20 px-4 text-center flex flex-col items-center gap-3">
+                <UtensilsCrossed size={40} className="text-pos-text-muted/40" />
+                <p className="font-bold text-base text-pos-text">Zones ready — add tables</p>
+                <p className="text-xs text-pos-text-secondary max-w-md leading-relaxed">
+                  You have {zones.length} zone{zones.length === 1 ? '' : 's'} but no tables yet.
+                  Add at least one table so staff can select it for Dine-in orders.
+                </p>
+                {canManageTables && (
+                  <Button
+                    type="button"
+                    variant="primary"
+                    size="sm"
+                    onClick={() => setIsCreateTableOpen(true)}
+                    className="font-semibold gap-1.5 mt-1"
+                  >
+                    <Plus size={14} />
+                    Add first table
+                  </Button>
+                )}
+              </div>
+            )}
+
+          {!isLoading &&
+            !error &&
+            allTables.length > 0 &&
+            filteredTables.length === 0 && (
+              <div className="py-24 text-center text-xs text-pos-text-muted flex flex-col items-center gap-2">
+                <UtensilsCrossed size={28} className="text-pos-text-muted/50" />
+                <p className="font-semibold text-pos-text">No tables match filters</p>
+                <p className="text-xs">Try adjusting your zone or status filter</p>
+              </div>
+            )}
 
           {!isLoading && filteredTables.length > 0 && (
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-3">
@@ -408,6 +517,40 @@ export const TablesPage: React.FC = () => {
           currency={currency}
           onClose={() => setSelectedTableId(null)}
           onRefresh={() => refetch()}
+        />
+      )}
+
+      {isCreateZoneOpen && canManageTables && (
+        <CreateZoneModal
+          onClose={() => setIsCreateZoneOpen(false)}
+          onSuccess={() => {
+            void handleFloorMutated();
+          }}
+        />
+      )}
+
+      {isCreateTableOpen && canManageTables && (
+        <CreateTableModal
+          zones={
+            adminZones.length > 0
+              ? adminZones
+              : zones.map(z => ({
+                  id: z.id,
+                  restaurantId: floorData?.restaurantId || '',
+                  name: z.name,
+                  description: z.description,
+                  sortOrder: z.sortOrder,
+                  isActive: true,
+                  createdAt: '',
+                  updatedAt: '',
+                  _count: { tables: z.tables.length },
+                }))
+          }
+          preferredZoneId={selectedZoneId !== 'ALL' ? selectedZoneId : null}
+          onClose={() => setIsCreateTableOpen(false)}
+          onSuccess={() => {
+            void handleFloorMutated();
+          }}
         />
       )}
     </div>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { ReceiptsApi, FormattedCustomerReceipt } from '@/core/api/receiptsApi';
 import { Button } from '@/components/ui/Button';
 import { Spinner } from '@/components/ui/Spinner';
@@ -11,9 +11,15 @@ import {
   Receipt,
   Download,
   AlertCircle,
+  RotateCcw,
+  ChefHat,
 } from 'lucide-react';
 import { cn } from '@/utils/cn';
 import { PRODUCT_IDENTITY } from '@/config/product';
+import { printThermalSlip } from '@/core/desktop/print';
+import { usePermissions } from '@/core/auth/usePermissions';
+import { useRestaurantConfigQuery } from '@/features/settings/hooks/useRestaurantSettingsData';
+import { readPrinterSettings } from '@/features/settings/printerSettings';
 
 interface BillReceiptModalProps {
   orderId: string;
@@ -28,12 +34,35 @@ export const BillReceiptModal: React.FC<BillReceiptModalProps> = ({
   onClose,
   onSettleBill,
 }) => {
-  const [paperWidth, setPaperWidth] = useState<'80mm' | '58mm'>('80mm');
+  const { hasPermission } = usePermissions();
+  const canReprint = hasPermission('receipts.reprint');
+  const canViewReceipts = hasPermission('receipts.view');
+  const { data: restaurant } = useRestaurantConfigQuery();
+  const printerSettings = useMemo(
+    () => readPrinterSettings(restaurant?.settings),
+    [restaurant?.settings]
+  );
+
+  const [paperWidth, setPaperWidth] = useState<'80mm' | '58mm'>(
+    printerSettings.paperWidth || '80mm'
+  );
   const [receipt, setReceipt] = useState<FormattedCustomerReceipt | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const [viewMode, setViewMode] = useState<'VISUAL' | 'MONOSPACE'>('VISUAL');
+  const [actionMessage, setActionMessage] = useState<string | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
+  const [isPrinting, setIsPrinting] = useState(false);
+  const [isReprinting, setIsReprinting] = useState(false);
+  const [isPrintingKot, setIsPrintingKot] = useState(false);
+  const [reprintReason, setReprintReason] = useState('Customer request');
+
+  useEffect(() => {
+    if (printerSettings.paperWidth) {
+      setPaperWidth(printerSettings.paperWidth);
+    }
+  }, [printerSettings.paperWidth]);
 
   useEffect(() => {
     let isMounted = true;
@@ -71,8 +100,78 @@ export const BillReceiptModal: React.FC<BillReceiptModalProps> = ({
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const handleBrowserPrint = () => {
-    window.print();
+  const handlePrintReceipt = async () => {
+    if (!receipt?.renderedSlip) return;
+    setActionError(null);
+    setActionMessage(null);
+    setIsPrinting(true);
+    try {
+      const result = await printThermalSlip({
+        text: receipt.renderedSlip,
+        deviceName: printerSettings.receiptPrinterName,
+        jobTitle: `Receipt ${receipt.metadata.orderCode}`,
+      });
+      setActionMessage(result.message);
+    } catch (err) {
+      setActionError(err instanceof Error ? err.message : 'Print failed.');
+    } finally {
+      setIsPrinting(false);
+    }
+  };
+
+  const handleReprint = async () => {
+    if (!canReprint) {
+      setActionError('Reprint requires the receipts.reprint permission.');
+      return;
+    }
+    const reason = reprintReason.trim();
+    if (reason.length < 3) {
+      setActionError('Enter a reprint reason (at least 3 characters).');
+      return;
+    }
+    setActionError(null);
+    setActionMessage(null);
+    setIsReprinting(true);
+    try {
+      const reprinted = await ReceiptsApi.reprintReceipt(orderId, {
+        reason,
+        paperWidth,
+      });
+      setReceipt(reprinted);
+      const result = await printThermalSlip({
+        text: reprinted.renderedSlip,
+        deviceName: printerSettings.receiptPrinterName,
+        jobTitle: `Reprint ${reprinted.metadata.orderCode}`,
+      });
+      setActionMessage(`Reprint recorded. ${result.message}`);
+    } catch (err) {
+      setActionError(err instanceof Error ? err.message : 'Reprint failed.');
+    } finally {
+      setIsReprinting(false);
+    }
+  };
+
+  const handlePrintKot = async () => {
+    if (!canViewReceipts) {
+      setActionError('Kitchen tickets require the receipts.view permission.');
+      return;
+    }
+    setActionError(null);
+    setActionMessage(null);
+    setIsPrintingKot(true);
+    try {
+      const ticket = await ReceiptsApi.getKitchenTicket(orderId, { paperWidth });
+      const result = await printThermalSlip({
+        text: ticket.renderedSlip,
+        deviceName: printerSettings.kitchenPrinterName,
+        jobTitle: `KOT ${ticket.metadata.orderCode}`,
+      });
+      setActionMessage(`Kitchen ticket: ${result.message}`);
+    } catch (err) {
+      setActionError(err instanceof Error ? err.message : 'KOT print failed.');
+    } finally {
+      setIsPrintingKot(false);
+    }
   };
 
   const formatCurrency = (amount: number, currency = 'PKR') => {
@@ -100,7 +199,7 @@ export const BillReceiptModal: React.FC<BillReceiptModalProps> = ({
                 </span>
               </h3>
               <p className="text-[11px] text-pos-text-muted">
-                On-screen thermal receipt preview (no physical printer required)
+                Preview, print, or reprint — printing never creates new orders or payments
               </p>
             </div>
           </div>
@@ -197,16 +296,87 @@ export const BillReceiptModal: React.FC<BillReceiptModalProps> = ({
 
             <button
               type="button"
-              onClick={handleBrowserPrint}
+              onClick={() => void handlePrintReceipt()}
+              disabled={!receipt || isPrinting}
+              className="px-2.5 py-1 rounded-lg border border-pos-primary bg-pos-primary text-white hover:bg-pos-primary/90 text-[11px] font-semibold flex items-center gap-1 transition-colors disabled:opacity-60"
+              title="Print customer receipt slip"
+            >
+              <Printer size={13} />
+              <span>{isPrinting ? 'Printing…' : 'Print Receipt'}</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => void handlePrintKot()}
+              disabled={!receipt || isPrintingKot}
+              className="px-2.5 py-1 rounded-lg border border-pos-border bg-pos-surface hover:bg-pos-surface-hover text-pos-text text-[11px] font-semibold flex items-center gap-1 transition-colors disabled:opacity-60"
+              title="Print kitchen order ticket (KOT)"
+            >
+              <ChefHat size={13} />
+              <span>{isPrintingKot ? 'Printing…' : 'Print KOT'}</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                if (!receipt?.renderedSlip) return;
+                void printThermalSlip({
+                  text: receipt.renderedSlip,
+                  jobTitle: `Receipt ${receipt.metadata.orderCode}`,
+                  preferDialogWhenNoDevice: true,
+                })
+                  .then(r => setActionMessage(r.message))
+                  .catch(err =>
+                    setActionError(err instanceof Error ? err.message : 'Print failed.')
+                  );
+              }}
               disabled={!receipt}
               className="px-2.5 py-1 rounded-lg border border-pos-border bg-pos-surface hover:bg-pos-surface-hover text-pos-text text-[11px] font-semibold flex items-center gap-1 transition-colors"
-              title="Print via browser or Save as PDF"
+              title="Browser / Save as PDF fallback"
             >
               <Download size={13} />
-              <span>Save PDF / Print</span>
+              <span>Browser Print</span>
             </button>
           </div>
         </div>
+
+        {(actionMessage || actionError || canReprint) && (
+          <div className="px-4 py-2 border-b border-pos-border bg-pos-surface flex flex-col gap-2 shrink-0 text-xs">
+            {actionMessage && (
+              <div className="p-2 rounded-md bg-pos-success-soft border border-[#BBF7D0] text-pos-success flex items-start gap-2">
+                <Check size={14} className="shrink-0 mt-0.5" />
+                <span className="font-medium">{actionMessage}</span>
+              </div>
+            )}
+            {actionError && (
+              <div className="p-2 rounded-md bg-pos-danger-soft border border-[#FECACA] text-pos-danger flex items-start gap-2">
+                <AlertCircle size={14} className="shrink-0 mt-0.5" />
+                <span className="font-medium">{actionError}</span>
+              </div>
+            )}
+            {canReprint && (
+              <div className="flex flex-wrap items-center gap-2">
+                <input
+                  type="text"
+                  value={reprintReason}
+                  onChange={e => setReprintReason(e.target.value)}
+                  placeholder="Reprint reason"
+                  className="flex-1 min-w-[160px] px-2.5 py-1.5 rounded-md border border-pos-border bg-pos-surface text-[11px] text-pos-text"
+                />
+                <button
+                  type="button"
+                  onClick={() => void handleReprint()}
+                  disabled={!receipt || isReprinting}
+                  className="px-2.5 py-1.5 rounded-lg border border-pos-border bg-pos-surface hover:bg-pos-surface-hover text-pos-text text-[11px] font-semibold flex items-center gap-1 disabled:opacity-60"
+                  title="Audited reprint — does not create a new order or payment"
+                >
+                  <RotateCcw size={13} />
+                  <span>{isReprinting ? 'Reprinting…' : 'Reprint'}</span>
+                </button>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Scrollable Receipt Body */}
         <div className="flex-1 overflow-y-auto p-4 sm:p-6 bg-pos-bg/80 flex justify-center custom-scrollbar">
@@ -494,11 +664,13 @@ export const BillReceiptModal: React.FC<BillReceiptModalProps> = ({
               type="button"
               variant="outline"
               size="md"
-              onClick={handleBrowserPrint}
+              onClick={() => void handlePrintReceipt()}
+              isLoading={isPrinting}
+              disabled={!receipt}
               className="font-medium text-xs flex items-center gap-1.5"
             >
               <Printer size={15} />
-              <span>Browser Print / PDF</span>
+              <span>Print Receipt</span>
             </Button>
 
             {onSettleBill && receipt?.metadata.paymentStatus !== 'PAID' && (

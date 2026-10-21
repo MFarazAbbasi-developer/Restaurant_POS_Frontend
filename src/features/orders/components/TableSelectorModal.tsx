@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { usePosTablesQuery } from '../hooks/usePosData';
 import { PosTable } from '@/types';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { Spinner } from '@/components/ui/Spinner';
-import { X, Users, UtensilsCrossed, Check, AlertCircle } from 'lucide-react';
+import { X, Users, UtensilsCrossed, Check, AlertCircle, LayoutGrid } from 'lucide-react';
 import { cn } from '@/utils/cn';
 
 import { usePermissions } from '@/core/auth/usePermissions';
@@ -20,8 +21,10 @@ export const TableSelectorModal: React.FC<TableSelectorModalProps> = ({
   onSelectTable,
   onClose,
 }) => {
+  const navigate = useNavigate();
   const { hasPermission } = usePermissions();
   const canViewTables = hasPermission('tables.view');
+  const canManageTables = hasPermission('tables.manage');
   const {
     data: floorData,
     isLoading,
@@ -30,6 +33,7 @@ export const TableSelectorModal: React.FC<TableSelectorModalProps> = ({
   const [selectedZoneId, setSelectedZoneId] = useState<string>('ALL');
 
   const zones = floorData?.zones || [];
+  const totalTables = floorData?.summary.totalTables ?? 0;
   const activeZones =
     selectedZoneId === 'ALL' ? zones : zones.filter(z => z.id === selectedZoneId);
 
@@ -137,13 +141,71 @@ export const TableSelectorModal: React.FC<TableSelectorModalProps> = ({
             </div>
           )}
 
-          {!isLoading && activeZones.length === 0 && (
-            <div className="py-12 text-center text-xs text-pos-text-muted">
-              No tables found in this zone.
+          {!isLoading && canViewTables && !error && zones.length === 0 && (
+            <div className="py-12 px-2 text-center flex flex-col items-center gap-3">
+              <LayoutGrid size={32} className="text-pos-text-muted/40" />
+              <p className="font-semibold text-sm text-pos-text">No dining tables configured</p>
+              <p className="text-xs text-pos-text-secondary max-w-sm leading-relaxed">
+                Create a zone and add tables under Floor &amp; Tables before starting a Dine-in
+                sale. Takeaway does not require tables.
+              </p>
+              {canManageTables && (
+                <Button
+                  type="button"
+                  variant="primary"
+                  size="sm"
+                  className="font-semibold mt-1"
+                  onClick={() => {
+                    onClose();
+                    navigate('/tables');
+                  }}
+                >
+                  Open Floor &amp; Tables
+                </Button>
+              )}
             </div>
           )}
 
           {!isLoading &&
+            canViewTables &&
+            !error &&
+            zones.length > 0 &&
+            totalTables === 0 && (
+              <div className="py-12 px-2 text-center flex flex-col items-center gap-3">
+                <UtensilsCrossed size={32} className="text-pos-text-muted/40" />
+                <p className="font-semibold text-sm text-pos-text">Zones exist but have no tables</p>
+                <p className="text-xs text-pos-text-secondary max-w-sm leading-relaxed">
+                  Add at least one table in Floor &amp; Tables, then return here to assign it to
+                  this order.
+                </p>
+                {canManageTables && (
+                  <Button
+                    type="button"
+                    variant="primary"
+                    size="sm"
+                    className="font-semibold mt-1"
+                    onClick={() => {
+                      onClose();
+                      navigate('/tables');
+                    }}
+                  >
+                    Add tables
+                  </Button>
+                )}
+              </div>
+            )}
+
+          {!isLoading &&
+            canViewTables &&
+            totalTables > 0 &&
+            activeZones.length === 0 && (
+              <div className="py-12 text-center text-xs text-pos-text-muted">
+                No tables found in this zone.
+              </div>
+            )}
+
+          {!isLoading &&
+            totalTables > 0 &&
             activeZones.map(zone => (
               <div key={zone.id} className="space-y-3">
                 <div className="flex items-center justify-between">
@@ -155,45 +217,49 @@ export const TableSelectorModal: React.FC<TableSelectorModalProps> = ({
                   </span>
                 </div>
 
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-                  {zone.tables.map(table => {
-                    const isSelected = currentTableId === table.id;
-                    return (
-                      <button
-                        key={table.id}
-                        type="button"
-                        onClick={() => {
-                          onSelectTable({ id: table.id, name: table.name });
-                          onClose();
-                        }}
-                        className={cn(
-                          'p-3.5 rounded-lg border text-left transition-colors relative flex flex-col justify-between min-h-[90px] shadow-xs',
-                          isSelected
-                            ? 'border-pos-primary bg-pos-primary-soft/40 ring-1 ring-pos-primary'
-                            : 'border-pos-border bg-pos-surface hover:border-pos-border-strong hover:bg-pos-surface-subtle'
-                        )}
-                      >
-                        <div className="flex items-start justify-between">
-                          <span className="text-sm font-semibold text-pos-text truncate">
-                            {table.name}
-                          </span>
-                          {isSelected && (
-                            <span className="h-5 w-5 rounded-full bg-pos-primary text-white flex items-center justify-center shrink-0">
-                              <Check size={12} strokeWidth={3} />
-                            </span>
+                {zone.tables.length === 0 ? (
+                  <p className="text-xs text-pos-text-muted py-2">No tables in this zone.</p>
+                ) : (
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                    {zone.tables.map(table => {
+                      const isSelected = currentTableId === table.id;
+                      return (
+                        <button
+                          key={table.id}
+                          type="button"
+                          onClick={() => {
+                            onSelectTable({ id: table.id, name: table.name });
+                            onClose();
+                          }}
+                          className={cn(
+                            'p-3.5 rounded-lg border text-left transition-colors relative flex flex-col justify-between min-h-[90px] shadow-xs',
+                            isSelected
+                              ? 'border-pos-primary bg-pos-primary-soft/40 ring-1 ring-pos-primary'
+                              : 'border-pos-border bg-pos-surface hover:border-pos-border-strong hover:bg-pos-surface-subtle'
                           )}
-                        </div>
+                        >
+                          <div className="flex items-start justify-between">
+                            <span className="text-sm font-semibold text-pos-text truncate">
+                              {table.name}
+                            </span>
+                            {isSelected && (
+                              <span className="h-5 w-5 rounded-full bg-pos-primary text-white flex items-center justify-center shrink-0">
+                                <Check size={12} strokeWidth={3} />
+                              </span>
+                            )}
+                          </div>
 
-                        <div className="flex items-center justify-between pt-2 mt-2 border-t border-pos-border text-xs">
-                          <span className="text-pos-text-muted flex items-center gap-1">
-                            <Users size={12} /> {table.capacity}
-                          </span>
-                          {getStatusBadge(table.status)}
-                        </div>
-                      </button>
-                    );
-                  })}
-                </div>
+                          <div className="flex items-center justify-between pt-2 mt-2 border-t border-pos-border text-xs">
+                            <span className="text-pos-text-muted flex items-center gap-1">
+                              <Users size={12} /> {table.capacity}
+                            </span>
+                            {getStatusBadge(table.status)}
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
             ))}
         </div>

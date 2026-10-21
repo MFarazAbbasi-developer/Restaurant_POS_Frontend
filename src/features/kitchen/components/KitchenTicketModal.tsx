@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo, useState } from 'react';
 import { KitchenTicket } from '@/types';
 import {
   useUpdateOrderKitchenStatusMutation,
@@ -19,8 +19,14 @@ import {
   Package,
   Truck,
   Layers,
+  AlertCircle,
+  Check,
 } from 'lucide-react';
 import { cn } from '@/utils/cn';
+import { ReceiptsApi } from '@/core/api/receiptsApi';
+import { printThermalSlip } from '@/core/desktop/print';
+import { useRestaurantConfigQuery } from '@/features/settings/hooks/useRestaurantSettingsData';
+import { readPrinterSettings } from '@/features/settings/printerSettings';
 
 interface KitchenTicketModalProps {
   ticket: KitchenTicket;
@@ -33,6 +39,14 @@ export const KitchenTicketModal: React.FC<KitchenTicketModalProps> = ({
 }) => {
   const updateStatusMutation = useUpdateOrderKitchenStatusMutation();
   const recallMutation = useRecallKitchenOrderMutation();
+  const { data: restaurant } = useRestaurantConfigQuery();
+  const printerSettings = useMemo(
+    () => readPrinterSettings(restaurant?.settings),
+    [restaurant?.settings]
+  );
+  const [isPrinting, setIsPrinting] = useState(false);
+  const [printMessage, setPrintMessage] = useState<string | null>(null);
+  const [printError, setPrintError] = useState<string | null>(null);
 
   const handleUpdateStatus = async (status: 'PREPARING' | 'READY' | 'SERVED') => {
     try {
@@ -54,6 +68,27 @@ export const KitchenTicketModal: React.FC<KitchenTicketModalProps> = ({
       onClose();
     } catch {
       // Handled by query
+    }
+  };
+
+  const handlePrintKot = async () => {
+    setPrintError(null);
+    setPrintMessage(null);
+    setIsPrinting(true);
+    try {
+      const slip = await ReceiptsApi.getKitchenTicket(ticket.id, {
+        paperWidth: printerSettings.paperWidth || '80mm',
+      });
+      const result = await printThermalSlip({
+        text: slip.renderedSlip,
+        deviceName: printerSettings.kitchenPrinterName,
+        jobTitle: `KOT ${slip.metadata.orderCode}`,
+      });
+      setPrintMessage(result.message);
+    } catch (err) {
+      setPrintError(err instanceof Error ? err.message : 'Failed to print kitchen ticket.');
+    } finally {
+      setIsPrinting(false);
     }
   };
 
@@ -223,17 +258,35 @@ export const KitchenTicketModal: React.FC<KitchenTicketModalProps> = ({
           )}
         </div>
 
+        {(printMessage || printError) && (
+          <div className="px-4 py-2 border-t border-pos-border bg-pos-surface shrink-0 text-xs space-y-1.5">
+            {printMessage && (
+              <div className="p-2 rounded-md bg-pos-success-soft border border-[#BBF7D0] text-pos-success flex items-start gap-2">
+                <Check size={14} className="shrink-0 mt-0.5" />
+                <span className="font-medium">{printMessage}</span>
+              </div>
+            )}
+            {printError && (
+              <div className="p-2 rounded-md bg-pos-danger-soft border border-[#FECACA] text-pos-danger flex items-start gap-2">
+                <AlertCircle size={14} className="shrink-0 mt-0.5" />
+                <span className="font-medium">{printError}</span>
+              </div>
+            )}
+          </div>
+        )}
+
         {/* Footer Actions */}
         <div className="p-4 border-t border-pos-border bg-pos-surface flex flex-col sm:flex-row items-center gap-2 shrink-0">
           <Button
             type="button"
             variant="secondary"
             size="md"
-            onClick={() => window.print()}
+            onClick={() => void handlePrintKot()}
+            isLoading={isPrinting}
             className="w-full sm:w-auto text-xs font-medium flex items-center justify-center gap-1.5"
           >
             <Printer size={15} />
-            <span>Print KOT</span>
+            <span>{isPrinting ? 'Printing…' : 'Print KOT'}</span>
           </Button>
 
           <div className="flex-1 w-full flex items-center justify-end gap-2">

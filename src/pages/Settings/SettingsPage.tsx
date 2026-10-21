@@ -4,6 +4,10 @@ import {
   useUpdateRestaurantConfigMutation,
   useReceiptPreviewQuery,
 } from '@/features/settings/hooks/useRestaurantSettingsData';
+import {
+  mergePrinterSettings,
+  readPrinterSettings,
+} from '@/features/settings/printerSettings';
 import { useKitchenStationsQuery } from '@/features/kitchen/hooks/useKitchenData';
 import { usePosTablesQuery } from '@/features/orders/hooks/usePosData';
 import { useDeliveryZonesQuery } from '@/features/delivery/hooks/useDeliveryData';
@@ -26,10 +30,16 @@ import {
   ShoppingBag,
   Flame,
   Info,
+  RotateCw,
 } from 'lucide-react';
 import { cn } from '@/utils/cn';
 import { useAuthStore } from '@/core/auth/authStore';
 import { PRODUCT_IDENTITY } from '@/config/product';
+import {
+  isDesktopPrintingAvailable,
+  listDesktopPrinters,
+} from '@/core/desktop/print';
+import type { DesktopPrinterInfo } from '@/types/electron';
 
 type SettingsTab = 'profile' | 'taxes' | 'channels' | 'receipts' | 'hardware';
 
@@ -87,6 +97,28 @@ export const SettingsPage: React.FC = () => {
   const [deliveryEnabled, setDeliveryEnabled] = useState(true);
   const [receiptHeader, setReceiptHeader] = useState('');
   const [receiptFooter, setReceiptFooter] = useState('');
+  const [receiptPrinterName, setReceiptPrinterName] = useState('');
+  const [kitchenPrinterName, setKitchenPrinterName] = useState('');
+  const [osPrinters, setOsPrinters] = useState<DesktopPrinterInfo[]>([]);
+  const [isLoadingPrinters, setIsLoadingPrinters] = useState(false);
+  const [printersError, setPrintersError] = useState<string | null>(null);
+  const desktopPrinting = isDesktopPrintingAvailable();
+
+  const refreshOsPrinters = async () => {
+    if (!desktopPrinting) return;
+    setIsLoadingPrinters(true);
+    setPrintersError(null);
+    try {
+      const list = await listDesktopPrinters();
+      setOsPrinters(list);
+    } catch (err) {
+      setPrintersError(
+        err instanceof Error ? err.message : 'Could not list system printers.'
+      );
+    } finally {
+      setIsLoadingPrinters(false);
+    }
+  };
 
   // Sync state when data loads
   useEffect(() => {
@@ -108,8 +140,21 @@ export const SettingsPage: React.FC = () => {
       setDeliveryEnabled(restaurant.deliveryEnabled !== false);
       setReceiptHeader(restaurant.receiptHeader || '');
       setReceiptFooter(restaurant.receiptFooter || '');
+      const printers = readPrinterSettings(restaurant.settings);
+      setReceiptPrinterName(printers.receiptPrinterName || '');
+      setKitchenPrinterName(printers.kitchenPrinterName || '');
+      if (printers.paperWidth) {
+        setPaperWidth(printers.paperWidth);
+      }
     }
   }, [restaurant]);
+
+  useEffect(() => {
+    if (activeTab === 'receipts' && desktopPrinting) {
+      void refreshOsPrinters();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- refresh only when opening receipts tab
+  }, [activeTab, desktopPrinting]);
 
   const handleReset = () => {
     if (restaurant) {
@@ -130,6 +175,12 @@ export const SettingsPage: React.FC = () => {
       setDeliveryEnabled(restaurant.deliveryEnabled !== false);
       setReceiptHeader(restaurant.receiptHeader || '');
       setReceiptFooter(restaurant.receiptFooter || '');
+      const printers = readPrinterSettings(restaurant.settings);
+      setReceiptPrinterName(printers.receiptPrinterName || '');
+      setKitchenPrinterName(printers.kitchenPrinterName || '');
+      if (printers.paperWidth) {
+        setPaperWidth(printers.paperWidth);
+      }
       setSuccessMessage(null);
       setErrorMessage(null);
     }
@@ -164,6 +215,11 @@ export const SettingsPage: React.FC = () => {
         deliveryEnabled,
         receiptHeader: receiptHeader.trim() || null,
         receiptFooter: receiptFooter.trim() || null,
+        settings: mergePrinterSettings(restaurant?.settings, {
+          receiptPrinterName: receiptPrinterName.trim() || undefined,
+          kitchenPrinterName: kitchenPrinterName.trim() || undefined,
+          paperWidth,
+        }),
       });
 
       // Refresh /auth/me so POS cart tax preview picks up the new restaurant.taxRate
@@ -746,6 +802,104 @@ export const SettingsPage: React.FC = () => {
                           </button>
                         ))}
                       </div>
+                    </div>
+
+                    <div className="pt-2 border-t border-pos-border space-y-3">
+                      <div className="flex items-center justify-between gap-2">
+                        <h4 className="text-xs font-bold text-pos-text flex items-center gap-1.5">
+                          <Printer size={14} className="text-pos-primary" />
+                          Windows Printers
+                        </h4>
+                        {desktopPrinting && (
+                          <button
+                            type="button"
+                            onClick={() => void refreshOsPrinters()}
+                            disabled={isLoadingPrinters}
+                            className="text-[11px] font-semibold text-pos-primary flex items-center gap-1"
+                          >
+                            <RotateCw
+                              size={12}
+                              className={isLoadingPrinters ? 'animate-spin' : ''}
+                            />
+                            Refresh list
+                          </button>
+                        )}
+                      </div>
+
+                      {!desktopPrinting && (
+                        <p className="text-[11px] text-pos-text-muted leading-relaxed">
+                          Desktop printer selection is available in the FARMAX POS Windows app.
+                          Browser/dev mode uses the system print dialog as a fallback.
+                        </p>
+                      )}
+
+                      {printersError && (
+                        <p className="text-[11px] text-pos-danger font-medium">{printersError}</p>
+                      )}
+
+                      <div>
+                        <label className="block font-semibold uppercase tracking-wider text-[11px] text-pos-text-secondary mb-1">
+                          Customer receipt printer
+                        </label>
+                        <select
+                          value={receiptPrinterName}
+                          onChange={e => setReceiptPrinterName(e.target.value)}
+                          className="w-full p-2.5 rounded-md bg-pos-surface border border-pos-border text-pos-text text-xs focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary"
+                        >
+                          <option value="">
+                            {desktopPrinting
+                              ? 'Ask each time / default printer'
+                              : 'Browser print dialog'}
+                          </option>
+                          {osPrinters.map(p => (
+                            <option key={p.name} value={p.name}>
+                              {p.displayName || p.name}
+                              {p.isDefault ? ' (default)' : ''}
+                            </option>
+                          ))}
+                          {receiptPrinterName &&
+                            !osPrinters.some(p => p.name === receiptPrinterName) && (
+                              <option value={receiptPrinterName}>
+                                {receiptPrinterName} (saved)
+                              </option>
+                            )}
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block font-semibold uppercase tracking-wider text-[11px] text-pos-text-secondary mb-1">
+                          Kitchen ticket (KOT) printer
+                        </label>
+                        <select
+                          value={kitchenPrinterName}
+                          onChange={e => setKitchenPrinterName(e.target.value)}
+                          className="w-full p-2.5 rounded-md bg-pos-surface border border-pos-border text-pos-text text-xs focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary"
+                        >
+                          <option value="">
+                            {desktopPrinting
+                              ? 'Ask each time / default printer'
+                              : 'Browser print dialog'}
+                          </option>
+                          {osPrinters.map(p => (
+                            <option key={`kot-${p.name}`} value={p.name}>
+                              {p.displayName || p.name}
+                              {p.isDefault ? ' (default)' : ''}
+                            </option>
+                          ))}
+                          {kitchenPrinterName &&
+                            !osPrinters.some(p => p.name === kitchenPrinterName) && (
+                              <option value={kitchenPrinterName}>
+                                {kitchenPrinterName} (saved)
+                              </option>
+                            )}
+                        </select>
+                      </div>
+
+                      <p className="text-[11px] text-pos-text-muted leading-relaxed">
+                        Printer names are saved in restaurant settings (no database migration).
+                        Printing uses existing receipt/KOT slips and never creates orders or
+                        payments.
+                      </p>
                     </div>
                   </div>
 
