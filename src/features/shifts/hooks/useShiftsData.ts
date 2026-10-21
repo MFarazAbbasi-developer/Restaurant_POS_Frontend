@@ -84,6 +84,7 @@ export const useCloseShiftMutation = () => {
     mutationFn: (payload: CloseShiftInput) => ShiftsApi.closeShift(payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['shifts'] });
+      queryClient.invalidateQueries({ queryKey: ['payments'] });
       queryClient.invalidateQueries({ queryKey: ['reports'] });
     },
   });
@@ -115,11 +116,15 @@ export const usePastShiftsQuery = (params?: ListShiftsQueryParams) => {
 /**
  * Hook to list payment transactions with filtering
  */
-export const usePaymentsListQuery = (params?: ListPaymentsQueryParams) => {
+export const usePaymentsListQuery = (
+  params?: ListPaymentsQueryParams,
+  options?: { enabled?: boolean }
+) => {
   return useQuery({
     queryKey: SHIFTS_QUERY_KEYS.PAYMENTS(params),
     queryFn: () => ShiftsApi.listPayments(params),
     staleTime: 1000 * 15,
+    enabled: options?.enabled ?? true,
   });
 };
 

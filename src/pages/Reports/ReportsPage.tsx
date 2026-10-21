@@ -13,6 +13,7 @@ import {
 } from '@/features/reports/hooks/useReportsData';
 import { useCategoriesQuery } from '@/features/menu/hooks/useMenuData';
 import { useAuthStore } from '@/core/auth/authStore';
+import { usePermissions } from '@/core/auth/usePermissions';
 import { formatPrice as centralizedFormatPrice } from '@/utils/format';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
@@ -30,6 +31,7 @@ import {
   Download,
   Printer,
   AlertTriangle,
+  AlertCircle,
   Flame,
   Receipt,
   Tag,
@@ -44,8 +46,37 @@ type ReportTab =
 
 type DatePreset = 'today' | 'yesterday' | '7days' | 'month' | 'custom';
 
+/** Local calendar YYYY-MM-DD (avoids UTC day-shift from toISOString). */
+function toLocalDateStr(date: Date): string {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
+}
+
+function ReportErrorState({
+  message,
+  onRetry,
+}: {
+  message: string;
+  onRetry: () => void;
+}) {
+  return (
+    <div className="py-16 flex flex-col items-center justify-center gap-3 text-xs">
+      <AlertCircle size={32} className="text-pos-danger" />
+      <p className="font-bold text-pos-text">Failed to load report</p>
+      <p className="text-pos-text-muted max-w-sm text-center">{message}</p>
+      <Button variant="secondary" size="sm" onClick={onRetry}>
+        Retry
+      </Button>
+    </div>
+  );
+}
+
 export const ReportsPage: React.FC = () => {
   const { user } = useAuthStore();
+  const { hasPermission } = usePermissions();
+  const canExport = hasPermission('reports.export');
   const currency =
     user && 'restaurant' in user && user.restaurant?.currency
       ? user.restaurant.currency
@@ -54,11 +85,10 @@ export const ReportsPage: React.FC = () => {
   // Navigation tab
   const [activeTab, setActiveTab] = useState<ReportTab>('summary');
 
-  // Date filters
-  const getTodayStr = () => new Date().toISOString().split('T')[0];
+  // Date filters (business-date based; defaults to local today)
   const [datePreset, setDatePreset] = useState<DatePreset>('today');
-  const [startDate, setStartDate] = useState<string>(getTodayStr());
-  const [endDate, setEndDate] = useState<string>(getTodayStr());
+  const [startDate, setStartDate] = useState<string>(() => toLocalDateStr(new Date()));
+  const [endDate, setEndDate] = useState<string>(() => toLocalDateStr(new Date()));
 
   // Item Ranking filters
   const [itemCategoryFilter, setItemCategoryFilter] = useState<string>('');
@@ -71,24 +101,24 @@ export const ReportsPage: React.FC = () => {
     const today = new Date();
 
     if (preset === 'today') {
-      const d = today.toISOString().split('T')[0];
+      const d = toLocalDateStr(today);
       setStartDate(d);
       setEndDate(d);
     } else if (preset === 'yesterday') {
       const y = new Date(today);
       y.setDate(y.getDate() - 1);
-      const d = y.toISOString().split('T')[0];
+      const d = toLocalDateStr(y);
       setStartDate(d);
       setEndDate(d);
     } else if (preset === '7days') {
       const past = new Date(today);
       past.setDate(past.getDate() - 6);
-      setStartDate(past.toISOString().split('T')[0]);
-      setEndDate(today.toISOString().split('T')[0]);
+      setStartDate(toLocalDateStr(past));
+      setEndDate(toLocalDateStr(today));
     } else if (preset === 'month') {
       const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
-      setStartDate(firstDay.toISOString().split('T')[0]);
-      setEndDate(today.toISOString().split('T')[0]);
+      setStartDate(toLocalDateStr(firstDay));
+      setEndDate(toLocalDateStr(today));
     }
   };
 
@@ -137,8 +167,13 @@ export const ReportsPage: React.FC = () => {
     return centralizedFormatPrice(val, currency);
   }, [currency]);
 
-  // CSV Export utility
+  const totalRefundsCollected =
+    paymentsQuery.data?.methods.reduce((acc, m) => acc + (m.refundAmount || 0), 0) ?? 0;
+
+  // CSV Export utility — uses backend field names only
   const handleExportCSV = () => {
+    if (!canExport) return;
+
     let rows: string[][] = [];
     const filename = `report_${activeTab}_${startDate}_to_${endDate}.csv`;
 
@@ -158,7 +193,9 @@ export const ReportsPage: React.FC = () => {
         ['Packaging Charges', s.packagingCharges.toString()],
         ['Grand Total', s.grandTotal.toString()],
         ['Total Payments Collected', s.totalPaymentsCollected.toString()],
+        ['Refunds Issued', totalRefundsCollected.toString()],
         ['Outstanding Balance', s.outstandingBalance.toString()],
+        ['Valid Orders', m.validOrdersCount.toString()],
         ['Completed Orders', m.completedOrdersCount.toString()],
         ['Cancelled Orders', m.cancelledOrdersCount.toString()],
         ['Voided Orders', m.voidedOrdersCount.toString()],
@@ -172,17 +209,17 @@ export const ReportsPage: React.FC = () => {
           'Item Code',
           'Category',
           'Quantity Sold',
-          'Net Sales',
-          'Average Price',
+          'Net Revenue',
+          'Revenue Share %',
         ],
         ...itemsRankingQuery.data.items.map((it, idx) => [
           (idx + 1).toString(),
-          it.itemName,
+          it.name,
           it.itemCode,
           it.categoryName,
           it.quantitySold.toString(),
-          it.netSales.toString(),
-          it.averagePrice.toString(),
+          it.netRevenue.toString(),
+          it.revenueShare.toString(),
         ]),
       ];
     } else if (activeTab === 'channels' && channelsQuery.data) {
@@ -190,20 +227,68 @@ export const ReportsPage: React.FC = () => {
         [
           'Order Type',
           'Order Count',
-          'Percentage of Orders',
           'Gross Sales',
+          'Discounts',
           'Net Sales',
           'Grand Total',
-          'Average Order Value',
+          'Average Ticket',
+          'Percentage of Total',
         ],
-        ...channelsQuery.data.breakdown.map(b => [
+        ...channelsQuery.data.channels.map(b => [
           b.orderType,
           b.orderCount.toString(),
-          b.percentageOfOrders.toString(),
           b.grossSales.toString(),
+          b.discounts.toString(),
           b.netSales.toString(),
           b.grandTotal.toString(),
-          b.averageOrderValue.toString(),
+          b.averageTicket.toString(),
+          b.percentageOfTotal.toString(),
+        ]),
+      ];
+      if (paymentsQuery.data) {
+        rows.push([]);
+        rows.push([
+          'Payment Method',
+          'Transactions',
+          'Gross Collected',
+          'Refunds',
+          'Net Collected',
+          '% of Gross',
+        ]);
+        for (const m of paymentsQuery.data.methods) {
+          rows.push([
+            m.paymentMethod,
+            m.transactionCount.toString(),
+            m.grossAmount.toString(),
+            m.refundAmount.toString(),
+            m.netAmount.toString(),
+            m.percentageOfTotal.toString(),
+          ]);
+        }
+      }
+    } else if (activeTab === 'staff_shifts' && shiftsSummaryQuery.data) {
+      rows = [
+        [
+          'Register',
+          'Cashier',
+          'Business Date',
+          'Status',
+          'Opening Cash',
+          'Cash Sales',
+          'Expected',
+          'Counted',
+          'Variance',
+        ],
+        ...shiftsSummaryQuery.data.shifts.map(s => [
+          s.registerName,
+          s.cashierName,
+          s.businessDate,
+          s.status,
+          s.openingCash.toString(),
+          s.cashSales.toString(),
+          (s.expectedClosingCash ?? '').toString(),
+          (s.actualClosingCash ?? '').toString(),
+          (s.variance ?? '').toString(),
         ]),
       ];
     } else {
@@ -320,15 +405,17 @@ export const ReportsPage: React.FC = () => {
               <span className="hidden sm:inline">Refresh</span>
             </Button>
 
-            <Button
-              variant="secondary"
-              size="sm"
-              onClick={handleExportCSV}
-              className="min-h-[34px] px-2.5 font-medium flex items-center gap-1"
-            >
-              <Download size={13} />
-              <span className="hidden sm:inline">Export CSV</span>
-            </Button>
+            {canExport && (
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={handleExportCSV}
+                className="min-h-[34px] px-2.5 font-medium flex items-center gap-1"
+              >
+                <Download size={13} />
+                <span className="hidden sm:inline">Export CSV</span>
+              </Button>
+            )}
 
             <Button
               variant="secondary"
@@ -345,39 +432,41 @@ export const ReportsPage: React.FC = () => {
         {/* =========================================================================
           SUMMARY METRICS TILES
       ========================================================================= */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 p-3 border-b border-pos-border bg-pos-surface shrink-0">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5 p-3 border-b border-pos-border bg-pos-surface shrink-0">
           <div className="p-2.5 rounded-lg bg-pos-surface-subtle border border-pos-border">
             <span className="text-[10px] font-semibold uppercase tracking-wider text-pos-primary block">
-              Net Sales Revenue
+              Net Sales
             </span>
             <span className="text-base font-mono font-bold text-pos-primary mt-0.5 block">
               {formatPrice(summary?.netSales || 0)}
             </span>
             <span className="text-[10px] text-pos-text-muted">
-              Gross: {formatPrice(summary?.grossSales || 0)}
+              Gross {formatPrice(summary?.grossSales || 0)} · Disc{' '}
+              {formatPrice(summary?.totalDiscounts || 0)}
             </span>
           </div>
 
           <div className="p-2.5 rounded-lg bg-pos-surface-subtle border border-pos-border">
             <span className="text-[10px] font-semibold uppercase tracking-wider text-pos-text-secondary block">
-              Valid Orders
+              Orders
             </span>
             <span className="text-base font-mono font-bold text-pos-text mt-0.5 block">
-              {metrics?.validOrdersCount || 0} Orders
+              {metrics?.validOrdersCount || 0} Valid
             </span>
             <span className="text-[10px] text-pos-text-muted">
-              Total Placed: {metrics?.totalOrdersCount || 0}
+              Completed {metrics?.completedOrdersCount || 0} · Tax{' '}
+              {formatPrice(summary?.taxCollected || 0)}
             </span>
           </div>
 
           <div className="p-2.5 rounded-lg bg-pos-surface-subtle border border-pos-border">
             <span className="text-[10px] font-semibold uppercase tracking-wider text-pos-text-secondary block">
-              Average Order Value (AOV)
+              AOV
             </span>
             <span className="text-base font-mono font-bold text-pos-text mt-0.5 block">
               {formatPrice(metrics?.averageOrderValue || 0)}
             </span>
-            <span className="text-[10px] text-pos-text-muted">Per valid check</span>
+            <span className="text-[10px] text-pos-text-muted">Per valid order</span>
           </div>
 
           <div className="p-2.5 rounded-lg bg-pos-surface-subtle border border-pos-border">
@@ -388,7 +477,19 @@ export const ReportsPage: React.FC = () => {
               {formatPrice(summary?.totalPaymentsCollected || 0)}
             </span>
             <span className="text-[10px] text-pos-text-muted">
-              {summary?.totalPaymentsCount || 0} Transactions
+              {summary?.totalPaymentsCount || 0} tx · not voided
+            </span>
+          </div>
+
+          <div className="p-2.5 rounded-lg bg-pos-surface-subtle border border-pos-border">
+            <span className="text-[10px] font-semibold uppercase tracking-wider text-pos-danger block">
+              Refunds Issued
+            </span>
+            <span className="text-base font-mono font-bold text-pos-danger mt-0.5 block">
+              {formatPrice(totalRefundsCollected)}
+            </span>
+            <span className="text-[10px] text-pos-text-muted">
+              From payment-method report
             </span>
           </div>
         </div>
@@ -496,9 +597,21 @@ export const ReportsPage: React.FC = () => {
                   <Spinner size="lg" />
                   <span>Generating Executive Sales Summary...</span>
                 </div>
-              ) : !summary ? (
+              ) : summaryQuery.isError ? (
+                <ReportErrorState
+                  message={
+                    summaryQuery.error instanceof Error
+                      ? summaryQuery.error.message
+                      : 'Unable to load sales summary.'
+                  }
+                  onRetry={() => summaryQuery.refetch()}
+                />
+              ) : !summary ||
+                ((metrics?.totalOrdersCount || 0) === 0 &&
+                  (summary.totalPaymentsCount || 0) === 0) ? (
                 <div className="py-24 text-center text-xs text-pos-text-muted">
-                  No sales data recorded for the selected period.
+                  No sales data recorded for {startDate}
+                  {startDate !== endDate ? ` → ${endDate}` : ''}.
                 </div>
               ) : (
                 <div className="space-y-4">
@@ -662,49 +775,70 @@ export const ReportsPage: React.FC = () => {
                   <Spinner size="lg" />
                   <span>Loading Channels & Payments Breakdown...</span>
                 </div>
+              ) : channelsQuery.isError || paymentsQuery.isError ? (
+                <ReportErrorState
+                  message={
+                    (channelsQuery.error instanceof Error
+                      ? channelsQuery.error.message
+                      : null) ||
+                    (paymentsQuery.error instanceof Error
+                      ? paymentsQuery.error.message
+                      : null) ||
+                    'Unable to load channel/payment reports.'
+                  }
+                  onRetry={() => {
+                    channelsQuery.refetch();
+                    paymentsQuery.refetch();
+                  }}
+                />
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {/* Sales by Channel */}
                   <div className="p-4 rounded-lg bg-pos-surface border border-pos-border shadow-xs space-y-3">
                     <h4 className="text-xs font-semibold uppercase tracking-wider text-pos-text-secondary flex items-center gap-1.5">
                       <Truck size={14} className="text-pos-primary" />
-                      <span>Sales by Channel (Dining Method)</span>
+                      <span>Sales by Channel</span>
                     </h4>
-
-                    {channelsQuery.data?.breakdown &&
-                    channelsQuery.data.breakdown.length > 0 ? (
+                    {channelsQuery.data?.channels &&
+                    channelsQuery.data.channels.length > 0 ? (
                       <div className="space-y-3">
-                        {channelsQuery.data.breakdown.map(ch => (
+                        <p className="text-[11px] text-pos-text-muted font-mono">
+                          Channel revenue total:{' '}
+                          {formatPrice(channelsQuery.data.totalRevenue)}
+                        </p>
+                        {channelsQuery.data.channels.map(ch => (
                           <div
                             key={ch.orderType}
                             className="p-3 rounded-md bg-pos-surface-subtle border border-pos-border space-y-2 text-xs"
                           >
                             <div className="flex items-center justify-between">
                               <span className="font-bold text-pos-text">
-                                {ch.orderType.replace('_', ' ')} ({ch.orderCount} orders)
+                                {ch.orderType.replace(/_/g, ' ')} ({ch.orderCount}{' '}
+                                orders)
                               </span>
                               <span className="font-mono font-bold text-pos-primary text-sm">
-                                {formatPrice(ch.grandTotal)} ({ch.percentageOfSales}%)
+                                {formatPrice(ch.grandTotal)} ({ch.percentageOfTotal}%)
                               </span>
                             </div>
-
                             <div className="h-2 w-full bg-pos-surface rounded-full overflow-hidden border border-pos-border">
                               <div
                                 className="h-full bg-pos-primary transition-all rounded-full"
-                                style={{ width: `${ch.percentageOfSales}%` }}
+                                style={{
+                                  width: `${Math.min(100, ch.percentageOfTotal)}%`,
+                                }}
                               />
                             </div>
-
                             <div className="flex items-center justify-between text-[11px] text-pos-text-muted pt-1">
-                              <span>AOV: {formatPrice(ch.averageOrderValue)}</span>
-                              <span>Discounts: {formatPrice(ch.totalDiscount)}</span>
+                              <span>Net: {formatPrice(ch.netSales)}</span>
+                              <span>Disc: {formatPrice(ch.discounts)}</span>
+                              <span>AOV: {formatPrice(ch.averageTicket)}</span>
                             </div>
                           </div>
                         ))}
                       </div>
                     ) : (
                       <div className="p-8 text-center text-xs text-pos-text-muted">
-                        No channel sales data available.
+                        No channel sales data for this period.
                       </div>
                     )}
                   </div>
@@ -713,46 +847,49 @@ export const ReportsPage: React.FC = () => {
                   <div className="p-4 rounded-lg bg-pos-surface border border-pos-border shadow-xs space-y-3">
                     <h4 className="text-xs font-semibold uppercase tracking-wider text-pos-text-secondary flex items-center gap-1.5">
                       <CreditCard size={14} className="text-pos-primary" />
-                      <span>Payment Method Collection Mix</span>
+                      <span>Sales by Payment Method</span>
                     </h4>
-
-                    {paymentsQuery.data?.breakdown &&
-                    paymentsQuery.data.breakdown.length > 0 ? (
+                    {paymentsQuery.data?.methods &&
+                    paymentsQuery.data.methods.length > 0 ? (
                       <div className="space-y-3">
-                        {paymentsQuery.data.breakdown.map(pm => (
+                        <p className="text-[11px] text-pos-text-muted font-mono">
+                          Gross collected:{' '}
+                          {formatPrice(paymentsQuery.data.totalCollected)} · Refunds:{' '}
+                          {formatPrice(totalRefundsCollected)}
+                        </p>
+                        {paymentsQuery.data.methods.map(pm => (
                           <div
                             key={pm.paymentMethod}
                             className="p-3 rounded-md bg-pos-surface-subtle border border-pos-border space-y-2 text-xs"
                           >
                             <div className="flex items-center justify-between">
                               <span className="font-bold text-pos-text">
-                                {pm.paymentMethod} ({pm.transactionCount} transactions)
+                                {pm.paymentMethod} ({pm.transactionCount} tx)
                               </span>
                               <span className="font-mono font-bold text-pos-success text-sm">
-                                {formatPrice(pm.totalAmountCollected)} (
-                                {pm.percentageOfAmount}%)
+                                Net {formatPrice(pm.netAmount)} ({pm.percentageOfTotal}%)
                               </span>
                             </div>
-
                             <div className="h-2 w-full bg-pos-surface rounded-full overflow-hidden border border-pos-border">
                               <div
                                 className="h-full bg-pos-success transition-all rounded-full"
-                                style={{ width: `${pm.percentageOfAmount}%` }}
+                                style={{
+                                  width: `${Math.min(100, pm.percentageOfTotal)}%`,
+                                }}
                               />
                             </div>
-
                             <div className="flex items-center justify-between text-[11px] text-pos-text-muted pt-1">
-                              <span>
-                                Avg Tx: {formatPrice(pm.averageTransactionValue)}
+                              <span>Gross: {formatPrice(pm.grossAmount)}</span>
+                              <span className="text-pos-danger">
+                                Refunds: {formatPrice(pm.refundAmount)}
                               </span>
-                              <span>{pm.percentageOfTransactions}% of total tx</span>
                             </div>
                           </div>
                         ))}
                       </div>
                     ) : (
                       <div className="p-8 text-center text-xs text-pos-text-muted">
-                        No payment transaction data available.
+                        No payment transactions for this period.
                       </div>
                     )}
                   </div>
@@ -835,8 +972,8 @@ export const ReportsPage: React.FC = () => {
                             <th className="py-2 px-2">Item Name</th>
                             <th className="py-2 px-2">Category</th>
                             <th className="py-2 px-2 text-right">Qty Sold</th>
-                            <th className="py-2 px-2 text-right">Net Sales</th>
-                            <th className="py-2 px-2 text-right">Avg Price</th>
+                            <th className="py-2 px-2 text-right">Net Revenue</th>
+                            <th className="py-2 px-2 text-right">Share</th>
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-pos-border">
@@ -850,7 +987,7 @@ export const ReportsPage: React.FC = () => {
                               </td>
                               <td className="py-2.5 px-2">
                                 <span className="font-bold text-pos-text block">
-                                  {item.itemName}
+                                  {item.name}
                                 </span>
                                 <span className="text-[10px] text-pos-text-muted font-mono">
                                   {item.itemCode}
@@ -865,10 +1002,10 @@ export const ReportsPage: React.FC = () => {
                                 {item.quantitySold}
                               </td>
                               <td className="py-2.5 px-2 text-right font-mono font-bold text-pos-primary">
-                                {formatPrice(item.netSales)}
+                                {formatPrice(item.netRevenue)}
                               </td>
                               <td className="py-2.5 px-2 text-right font-mono text-pos-text-muted">
-                                {formatPrice(item.averagePrice)}
+                                {item.revenueShare}%
                               </td>
                             </tr>
                           ))}
@@ -906,20 +1043,20 @@ export const ReportsPage: React.FC = () => {
                               {c.categoryName}
                             </span>
                             <span className="font-mono font-bold text-pos-primary">
-                              {formatPrice(c.netSales)} ({c.percentageOfSales}%)
+                              {formatPrice(c.netRevenue)} ({c.revenueShare}%)
                             </span>
                           </div>
 
                           <div className="h-1.5 w-full bg-pos-surface rounded-full overflow-hidden border border-pos-border">
                             <div
                               className="h-full bg-pos-primary transition-all rounded-full"
-                              style={{ width: `${c.percentageOfSales}%` }}
+                              style={{ width: `${Math.min(100, c.revenueShare)}%` }}
                             />
                           </div>
 
                           <div className="text-[10px] text-pos-text-muted flex items-center justify-between pt-0.5">
-                            <span>{c.quantitySold} units sold</span>
-                            <span>{c.itemsCount} menu items</span>
+                            <span>{c.itemsSold} units sold</span>
+                            <span>Gross {formatPrice(c.grossRevenue)}</span>
                           </div>
                         </div>
                       ))}
@@ -956,18 +1093,17 @@ export const ReportsPage: React.FC = () => {
                             Peak Dining Rush Hour
                           </span>
                           <span className="text-base font-bold text-pos-text">
-                            {hourlyTrendsQuery.data.peakHour.hourLabel} (
-                            {hourlyTrendsQuery.data.peakHour.orderCount} Orders)
+                            {hourlyTrendsQuery.data.peakHour.hourLabel}
                           </span>
                         </div>
                       </div>
 
                       <div className="text-right font-mono">
                         <span className="text-[10px] text-pos-text-muted block">
-                          Peak Hourly Sales
+                          Peak Hour Revenue
                         </span>
                         <span className="text-lg font-bold text-pos-primary">
-                          {formatPrice(hourlyTrendsQuery.data.peakHour.netSales)}
+                          {formatPrice(hourlyTrendsQuery.data.peakHour.revenue)}
                         </span>
                       </div>
                     </div>
@@ -976,16 +1112,19 @@ export const ReportsPage: React.FC = () => {
                   {/* 24-Hour Timeline Grid */}
                   <div className="p-4 rounded-lg bg-pos-surface border border-pos-border shadow-xs space-y-3">
                     <h4 className="text-xs font-semibold uppercase tracking-wider text-pos-text-secondary">
-                      Hourly Sales & Volume Timeline
+                      Hourly Sales & Volume Timeline (
+                      {hourlyTrendsQuery.data.totalOrders} orders)
                     </h4>
 
                     <div className="space-y-2">
-                      {hourlyTrendsQuery.data.hourlyData.map(h => {
+                      {hourlyTrendsQuery.data.hourlyDistribution.map(h => {
                         const maxSales = Math.max(
-                          ...hourlyTrendsQuery.data!.hourlyData.map(x => x.netSales),
+                          ...hourlyTrendsQuery.data!.hourlyDistribution.map(
+                            x => x.grandTotal
+                          ),
                           1
                         );
-                        const percent = Math.round((h.netSales / maxSales) * 100);
+                        const percent = Math.round((h.grandTotal / maxSales) * 100);
 
                         return (
                           <div
@@ -1008,7 +1147,7 @@ export const ReportsPage: React.FC = () => {
                                 {h.orderCount} orders
                               </span>
                               <span className="font-bold text-pos-primary w-24">
-                                {formatPrice(h.netSales)}
+                                {formatPrice(h.grandTotal)}
                               </span>
                             </div>
                           </div>
@@ -1036,6 +1175,15 @@ export const ReportsPage: React.FC = () => {
                     <div className="py-16 flex justify-center">
                       <Spinner size="md" />
                     </div>
+                  ) : staffQuery.isError ? (
+                    <ReportErrorState
+                      message={
+                        staffQuery.error instanceof Error
+                          ? staffQuery.error.message
+                          : 'Unable to load staff performance.'
+                      }
+                      onRetry={() => staffQuery.refetch()}
+                    />
                   ) : !staffQuery.data?.staff || staffQuery.data.staff.length === 0 ? (
                     <div className="py-12 text-center text-xs text-pos-text-muted">
                       No staff sales activity in this period.
@@ -1050,23 +1198,23 @@ export const ReportsPage: React.FC = () => {
                           <div className="flex items-center justify-between">
                             <div>
                               <span className="font-bold text-pos-text block">
-                                {st.staffName}
+                                {st.name}
                               </span>
                               <span className="text-[10px] text-pos-text-muted font-mono">
-                                {st.role} • @{st.username}
+                                @{st.username} · {st.shiftsCount} shifts
                               </span>
                             </div>
                             <span className="font-mono font-bold text-sm text-pos-primary">
-                              {formatPrice(st.totalSales)}
+                              {formatPrice(st.totalRevenue)}
                             </span>
                           </div>
 
                           <div className="flex items-center justify-between text-[11px] text-pos-text-muted pt-1 border-t border-pos-border">
+                            <span>{st.ordersProcessed} orders processed</span>
                             <span>
-                              {st.completedOrders} Orders Fulfilled ({st.cancelledOrders}{' '}
-                              Cancelled)
+                              Gross {formatPrice(st.grossSales)} · Disc{' '}
+                              {formatPrice(st.totalDiscounts)}
                             </span>
-                            <span>AOV: {formatPrice(st.averageOrderValue)}</span>
                           </div>
                         </div>
                       ))}
@@ -1085,6 +1233,15 @@ export const ReportsPage: React.FC = () => {
                     <div className="py-16 flex justify-center">
                       <Spinner size="md" />
                     </div>
+                  ) : shiftsSummaryQuery.isError ? (
+                    <ReportErrorState
+                      message={
+                        shiftsSummaryQuery.error instanceof Error
+                          ? shiftsSummaryQuery.error.message
+                          : 'Unable to load shift settlements.'
+                      }
+                      onRetry={() => shiftsSummaryQuery.refetch()}
+                    />
                   ) : !shiftsSummaryQuery.data?.shifts ||
                     shiftsSummaryQuery.data.shifts.length === 0 ? (
                     <div className="py-12 text-center text-xs text-pos-text-muted">
@@ -1092,9 +1249,40 @@ export const ReportsPage: React.FC = () => {
                     </div>
                   ) : (
                     <div className="space-y-2.5 max-h-96 overflow-y-auto custom-scrollbar">
+                      {shiftsSummaryQuery.data.summary && (
+                        <div className="p-2.5 rounded-md bg-pos-surface border border-pos-border text-[11px] font-mono grid grid-cols-2 gap-1">
+                          <span>
+                            Shifts: {shiftsSummaryQuery.data.summary.totalShifts}
+                          </span>
+                          <span>
+                            Cash sales:{' '}
+                            {formatPrice(
+                              shiftsSummaryQuery.data.summary.totalCashSales
+                            )}
+                          </span>
+                          <span>
+                            Expected:{' '}
+                            {formatPrice(
+                              shiftsSummaryQuery.data.summary.totalExpectedCash
+                            )}
+                          </span>
+                          <span
+                            className={cn(
+                              shiftsSummaryQuery.data.summary.totalVariance < 0
+                                ? 'text-pos-danger'
+                                : shiftsSummaryQuery.data.summary.totalVariance > 0
+                                  ? 'text-pos-success'
+                                  : ''
+                            )}
+                          >
+                            Variance:{' '}
+                            {formatPrice(shiftsSummaryQuery.data.summary.totalVariance)}
+                          </span>
+                        </div>
+                      )}
                       {shiftsSummaryQuery.data.shifts.map(sh => (
                         <div
-                          key={sh.shiftId}
+                          key={sh.id}
                           className="p-3 rounded-md bg-pos-surface-subtle border border-pos-border space-y-1.5 text-xs"
                         >
                           <div className="flex items-center justify-between">
@@ -1103,7 +1291,7 @@ export const ReportsPage: React.FC = () => {
                                 {sh.registerName}
                               </span>
                               <span className="text-[10px] text-pos-text-muted">
-                                Cashier: {sh.cashierName}
+                                {sh.cashierName} · {sh.businessDate}
                               </span>
                             </div>
                             <Badge
@@ -1118,28 +1306,47 @@ export const ReportsPage: React.FC = () => {
                           <div className="grid grid-cols-2 gap-2 text-[11px] pt-1">
                             <div>
                               <span className="text-pos-text-muted block">
-                                Total Sales:
+                                Cash sales:
                               </span>
                               <span className="font-mono font-bold text-pos-text">
-                                {formatPrice(sh.totalSales)}
+                                {formatPrice(sh.cashSales)}
                               </span>
                             </div>
-
                             <div>
-                              <span className="text-pos-text-muted block">
-                                Cash Variance:
+                              <span className="text-pos-text-muted block">Opening:</span>
+                              <span className="font-mono font-bold text-pos-text">
+                                {formatPrice(sh.openingCash)}
                               </span>
+                            </div>
+                            <div>
+                              <span className="text-pos-text-muted block">Expected:</span>
+                              <span className="font-mono font-bold text-pos-text">
+                                {sh.expectedClosingCash != null
+                                  ? formatPrice(sh.expectedClosingCash)
+                                  : '—'}
+                              </span>
+                            </div>
+                            <div>
+                              <span className="text-pos-text-muted block">Counted:</span>
+                              <span className="font-mono font-bold text-pos-text">
+                                {sh.actualClosingCash != null
+                                  ? formatPrice(sh.actualClosingCash)
+                                  : '—'}
+                              </span>
+                            </div>
+                            <div className="col-span-2">
+                              <span className="text-pos-text-muted block">Variance:</span>
                               <span
                                 className={cn(
                                   'font-mono font-bold',
-                                  sh.cashVariance < 0
+                                  (sh.variance ?? 0) < 0
                                     ? 'text-pos-danger'
-                                    : sh.cashVariance > 0
+                                    : (sh.variance ?? 0) > 0
                                       ? 'text-pos-success'
                                       : 'text-pos-text'
                                 )}
                               >
-                                {formatPrice(sh.cashVariance)}
+                                {sh.variance != null ? formatPrice(sh.variance) : 'N/A'}
                               </span>
                             </div>
                           </div>
@@ -1150,67 +1357,59 @@ export const ReportsPage: React.FC = () => {
                 </div>
               </div>
 
-              {/* Financial Adjustments & Voids Audit Log */}
-              {financialAdjQuery.data && (
+              {/* Financial Adjustments summary (backend contract) */}
+              {financialAdjQuery.isLoading ? (
+                <div className="py-8 flex justify-center">
+                  <Spinner size="md" />
+                </div>
+              ) : financialAdjQuery.data ? (
                 <div className="p-4 rounded-lg bg-pos-surface border border-pos-border shadow-xs space-y-3">
                   <h4 className="text-xs font-semibold uppercase tracking-wider text-pos-text-secondary flex items-center gap-1.5">
                     <AlertTriangle size={14} className="text-pos-danger" />
-                    <span>Void & Cancellation Audit Logs</span>
+                    <span>Tax, Discounts, Voids & Cancellations</span>
                   </h4>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    {/* Voided Orders */}
-                    <div className="space-y-2">
-                      <span className="text-[11px] font-semibold text-pos-danger block">
-                        Voided Checks ({financialAdjQuery.data.voidedOrders.length})
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
+                    <div className="p-2.5 rounded-md bg-pos-surface-subtle border border-pos-border">
+                      <span className="text-[10px] text-pos-text-muted block">Tax</span>
+                      <span className="font-mono font-bold">
+                        {formatPrice(financialAdjQuery.data.taxes.totalTaxCollected)}
                       </span>
-                      {financialAdjQuery.data.voidedOrders.slice(0, 5).map(v => (
-                        <div
-                          key={v.orderId}
-                          className="p-2.5 rounded-md bg-pos-surface-subtle border border-[#FECACA] text-xs space-y-0.5"
-                        >
-                          <div className="flex items-center justify-between font-mono font-bold text-pos-text">
-                            <span>#{v.orderCode}</span>
-                            <span className="text-pos-danger">
-                              {formatPrice(v.grandTotal)}
-                            </span>
-                          </div>
-                          <p className="text-[10px] text-pos-text-muted">
-                            Reason: {v.voidReason || 'None'} • By {v.staffName}
-                          </p>
-                        </div>
-                      ))}
                     </div>
-
-                    {/* Cancelled Orders */}
-                    <div className="space-y-2">
-                      <span className="text-[11px] font-semibold text-pos-danger block">
-                        Cancelled Orders ({financialAdjQuery.data.cancelledOrders.length})
+                    <div className="p-2.5 rounded-md bg-pos-surface-subtle border border-pos-border">
+                      <span className="text-[10px] text-pos-text-muted block">
+                        Discounts
                       </span>
-                      {financialAdjQuery.data.cancelledOrders.slice(0, 5).map(c => (
-                        <div
-                          key={c.orderId}
-                          className="p-2.5 rounded-md bg-pos-surface-subtle border border-[#FECACA] text-xs space-y-0.5"
-                        >
-                          <div className="flex items-center justify-between font-mono font-bold text-pos-text">
-                            <span>#{c.orderCode}</span>
-                            <span className="text-pos-danger">
-                              {formatPrice(c.grandTotal)}
-                            </span>
-                          </div>
-                          <p className="text-[10px] text-pos-text-muted">
-                            Reason: {c.cancelReason || 'None'} • By {c.staffName}
-                          </p>
-                        </div>
-                      ))}
+                      <span className="font-mono font-bold text-pos-danger">
+                        {formatPrice(financialAdjQuery.data.discounts.totalDiscounts)}
+                      </span>
+                    </div>
+                    <div className="p-2.5 rounded-md bg-pos-surface-subtle border border-pos-border">
+                      <span className="text-[10px] text-pos-text-muted block">
+                        Voids ({financialAdjQuery.data.voids.voidedOrdersCount})
+                      </span>
+                      <span className="font-mono font-bold text-pos-danger">
+                        {formatPrice(financialAdjQuery.data.voids.voidedOrdersValue)}
+                      </span>
+                    </div>
+                    <div className="p-2.5 rounded-md bg-pos-surface-subtle border border-pos-border">
+                      <span className="text-[10px] text-pos-text-muted block">
+                        Cancelled (
+                        {financialAdjQuery.data.cancellations.cancelledOrdersCount})
+                      </span>
+                      <span className="font-mono font-bold text-pos-danger">
+                        {formatPrice(
+                          financialAdjQuery.data.cancellations.cancelledOrdersValue
+                        )}
+                      </span>
                     </div>
                   </div>
                 </div>
-              )}
+              ) : null}
             </div>
           )}
 
-          {/* VIEW 6: OPERATIONS & SPEED */}
+          {/* VIEW 6: OPERATIONS */}
           {activeTab === 'operations' && (
             <div>
               {operationsQuery.isLoading ? (
@@ -1218,6 +1417,15 @@ export const ReportsPage: React.FC = () => {
                   <Spinner size="lg" />
                   <span>Loading Operations Performance...</span>
                 </div>
+              ) : operationsQuery.isError ? (
+                <ReportErrorState
+                  message={
+                    operationsQuery.error instanceof Error
+                      ? operationsQuery.error.message
+                      : 'Unable to load operations report.'
+                  }
+                  onRetry={() => operationsQuery.refetch()}
+                />
               ) : !operationsQuery.data ? (
                 <div className="py-24 text-center text-xs text-pos-text-muted">
                   No operations data recorded.
@@ -1227,67 +1435,61 @@ export const ReportsPage: React.FC = () => {
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <div className="p-3.5 rounded-lg bg-pos-surface border border-pos-border shadow-xs space-y-1">
                       <span className="text-[10px] font-semibold uppercase tracking-wider text-pos-text-secondary block">
-                        Delivery Avg Duration
+                        Delivery Orders
                       </span>
                       <span className="text-xl font-bold font-mono text-pos-primary block">
-                        {operationsQuery.data.delivery.averageDeliveryTimeMinutes || 0}{' '}
-                        mins
+                        {operationsQuery.data.delivery.totalOrders}
                       </span>
                       <span className="text-[10px] text-pos-text-muted">
-                        {operationsQuery.data.delivery.completedDeliveries} /{' '}
-                        {operationsQuery.data.delivery.totalDeliveries} Completed
+                        {operationsQuery.data.delivery.completedDeliveries} completed ·{' '}
+                        {operationsQuery.data.delivery.cancelledDeliveries} cancelled
                       </span>
                     </div>
 
                     <div className="p-3.5 rounded-lg bg-pos-surface border border-pos-border shadow-xs space-y-1">
                       <span className="text-[10px] font-semibold uppercase tracking-wider text-pos-text-secondary block">
-                        Takeaway Prep Time
+                        Delivery Fees
                       </span>
                       <span className="text-xl font-bold font-mono text-pos-text block">
-                        {operationsQuery.data.takeaway.averagePreparationTimeMinutes || 0}{' '}
-                        mins
+                        {formatPrice(operationsQuery.data.delivery.totalDeliveryFees)}
                       </span>
                       <span className="text-[10px] text-pos-text-muted">
-                        {operationsQuery.data.takeaway.completedTakeaways} Orders
+                        Charged on delivery orders
                       </span>
                     </div>
 
                     <div className="p-3.5 rounded-lg bg-pos-surface border border-pos-border shadow-xs space-y-1">
                       <span className="text-[10px] font-semibold uppercase tracking-wider text-pos-text-secondary block">
-                        Dine-In Avg Seating
+                        Takeaway Orders
                       </span>
                       <span className="text-xl font-bold font-mono text-pos-text block">
-                        {operationsQuery.data.dineIn.averageSeatingTimeMinutes || 0} mins
+                        {operationsQuery.data.takeaway.totalOrders}
                       </span>
                       <span className="text-[10px] text-pos-text-muted">
-                        {operationsQuery.data.dineIn.totalDineIn} Guests seated
+                        Valid takeaway volume
                       </span>
                     </div>
                   </div>
 
-                  {/* Rider Performance */}
-                  {operationsQuery.data.delivery.riderPerformance && (
+                  {operationsQuery.data.delivery.ridersBreakdown.length > 0 && (
                     <div className="p-4 rounded-lg bg-pos-surface border border-pos-border shadow-xs space-y-3">
                       <h4 className="text-xs font-semibold uppercase tracking-wider text-pos-text-secondary flex items-center gap-1.5">
                         <Truck size={14} className="text-pos-primary" />
-                        <span>Rider Fulfillment Leaderboard</span>
+                        <span>Rider Fulfillment</span>
                       </h4>
 
                       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-                        {operationsQuery.data.delivery.riderPerformance.map(r => (
+                        {operationsQuery.data.delivery.ridersBreakdown.map(r => (
                           <div
-                            key={r.riderId}
+                            key={r.riderName}
                             className="p-3 rounded-md bg-pos-surface-subtle border border-pos-border space-y-1 text-xs"
                           >
                             <span className="font-bold text-pos-text block">
                               {r.riderName}
                             </span>
-                            <div className="flex items-center justify-between text-[11px] text-pos-text-muted pt-1">
-                              <span>{r.deliveriesCompleted} Deliveries</span>
-                              <span className="font-mono font-bold text-pos-primary">
-                                {r.averageTimeMinutes} mins avg
-                              </span>
-                            </div>
+                            <span className="text-[11px] text-pos-text-muted">
+                              {r.deliveriesCount} deliveries assigned
+                            </span>
                           </div>
                         ))}
                       </div>

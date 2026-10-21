@@ -59,7 +59,7 @@ export const OpenShiftModal: React.FC<OpenShiftModalProps> = ({
             <div>
               <h3 className="text-base font-bold text-pos-text">Open Register Shift</h3>
               <p className="text-xs text-pos-text-muted">
-                Start cashier drawer & record opening float (PKR)
+                Start cashier drawer & record opening float ({currency})
               </p>
             </div>
           </div>

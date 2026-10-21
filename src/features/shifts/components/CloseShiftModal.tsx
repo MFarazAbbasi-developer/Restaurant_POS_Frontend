@@ -31,13 +31,16 @@ export const CloseShiftModal: React.FC<CloseShiftModalProps> = ({
   const [closingNotes, setClosingNotes] = useState<string>('');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
+  // Prefer server-computed drawer balance; fall back to the same ledger formula.
   const expectedClosingCash =
-    shift.openingCash +
-    shift.cashSales -
-    shift.cashRefunds -
-    shift.cashDrops +
-    shift.cashAdjustments -
-    shift.cashExpenses;
+    typeof shift.currentDrawerCash === 'number'
+      ? shift.currentDrawerCash
+      : shift.openingCash +
+        shift.cashSales -
+        shift.cashRefunds -
+        shift.cashDrops +
+        shift.cashAdjustments -
+        shift.cashExpenses;
 
   const parsedActualCash = parseFloat(actualCash);
   const isValidActual = !isNaN(parsedActualCash) && parsedActualCash >= 0;

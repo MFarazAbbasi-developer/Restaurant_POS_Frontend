@@ -6,7 +6,14 @@ import {
 } from '@/features/shifts/hooks/useShiftsData';
 import { ShiftsApi } from '@/core/api/shiftsApi';
 import { useAuthStore } from '@/core/auth/authStore';
-import { ShiftSummaryData, PaymentRecord, CashierShiftRecord } from '@/types';
+import { usePermissions } from '@/core/auth/usePermissions';
+import {
+  ShiftSummaryData,
+  PaymentRecord,
+  CashierShiftRecord,
+  CashTransactionType,
+  ShiftStatus,
+} from '@/types';
 import { OpenShiftModal } from '@/features/shifts/components/OpenShiftModal';
 import { CashDropModal } from '@/features/shifts/components/CashDropModal';
 import { CashAdjustmentModal } from '@/features/shifts/components/CashAdjustmentModal';
@@ -26,19 +33,89 @@ import {
   Receipt,
   History,
   Building,
+  AlertCircle,
 } from 'lucide-react';
 import { cn } from '@/utils/cn';
 import { formatPrice } from '@/utils/format';
 
+function cashTxMeta(type: CashTransactionType | string): {
+  short: string;
+  tone: string;
+  isOutflow: boolean;
+} {
+  switch (type) {
+    case 'OPENING_FLOAT':
+      return {
+        short: 'OF',
+        tone: 'bg-pos-primary-soft text-pos-primary',
+        isOutflow: false,
+      };
+    case 'CASH_SALE':
+      return {
+        short: 'CS',
+        tone: 'bg-pos-success-soft text-pos-success',
+        isOutflow: false,
+      };
+    case 'PAY_IN':
+      return {
+        short: 'PI',
+        tone: 'bg-pos-success-soft text-pos-success',
+        isOutflow: false,
+      };
+    case 'CASH_DROP':
+      return {
+        short: 'CD',
+        tone: 'bg-pos-warning-soft text-pos-warning',
+        isOutflow: true,
+      };
+    case 'CASH_REFUND':
+      return {
+        short: 'CR',
+        tone: 'bg-pos-danger-soft text-pos-danger',
+        isOutflow: true,
+      };
+    case 'PAY_OUT':
+      return {
+        short: 'PO',
+        tone: 'bg-pos-danger-soft text-pos-danger',
+        isOutflow: true,
+      };
+    case 'EXPENSE':
+      return {
+        short: 'EX',
+        tone: 'bg-pos-danger-soft text-pos-danger',
+        isOutflow: true,
+      };
+    default:
+      return {
+        short: 'TX',
+        tone: 'bg-pos-surface-subtle text-pos-text-muted',
+        isOutflow: false,
+      };
+  }
+}
+
 export const ShiftsPage: React.FC = () => {
   const { user } = useAuthStore();
+  const { hasPermission } = usePermissions();
   const currency =
     user && 'restaurant' in user && user.restaurant?.currency
       ? user.restaurant.currency
       : 'PKR';
 
+  const canOpenShift = hasPermission('shifts.open');
+  const canCloseShift = hasPermission('shifts.close');
+  const canViewPayments = hasPermission('payments.view');
+  const canRefund = hasPermission('payments.refund');
+
   // Tabs: 'DRAWER' | 'PAYMENTS' | 'HISTORY'
   const [activeTab, setActiveTab] = useState<'DRAWER' | 'PAYMENTS' | 'HISTORY'>('DRAWER');
+
+  // History filters
+  const [historyStatus, setHistoryStatus] = useState<'ALL' | ShiftStatus>('ALL');
+  const [historyBusinessDate, setHistoryBusinessDate] = useState<string>('');
+  const [summaryError, setSummaryError] = useState<string | null>(null);
+  const [isSummaryLoading, setIsSummaryLoading] = useState(false);
 
   // Modals state
   const [isOpenShiftOpen, setIsOpenShiftOpen] = useState(false);
@@ -53,25 +130,59 @@ export const ShiftsPage: React.FC = () => {
   const {
     data: currentShift,
     isLoading: isCurrentLoading,
+    isError: isCurrentError,
+    error: currentError,
     isRefetching,
     refetch: refetchCurrent,
   } = useCurrentShiftQuery();
 
-  const { data: pastShiftsData, isLoading: isPastLoading } = usePastShiftsQuery({
-    limit: 20,
-  });
-
-  const { data: paymentsData, isLoading: isPaymentsLoading } = usePaymentsListQuery({
-    limit: 50,
-  });
-
   const hasActiveShift = Boolean(currentShift && currentShift.status === 'OPEN');
 
+  const {
+    data: pastShiftsData,
+    isLoading: isPastLoading,
+    isError: isPastError,
+    error: pastError,
+    refetch: refetchPast,
+  } = usePastShiftsQuery({
+    limit: 50,
+    status: historyStatus !== 'ALL' ? historyStatus : undefined,
+    businessDate: historyBusinessDate.trim() || undefined,
+  });
+
+  const {
+    data: paymentsData,
+    isLoading: isPaymentsLoading,
+    isError: isPaymentsError,
+    error: paymentsError,
+    refetch: refetchPayments,
+  } = usePaymentsListQuery(
+    {
+      limit: 50,
+      shiftId: hasActiveShift && currentShift ? currentShift.id : undefined,
+    },
+    { enabled: canViewPayments }
+  );
+
+  const handleRefreshAll = () => {
+    refetchCurrent();
+    refetchPast();
+    if (canViewPayments) refetchPayments();
+  };
+
   const handleOpenSummaryForPastShift = async (shift: CashierShiftRecord) => {
+    setSummaryError(null);
+    setIsSummaryLoading(true);
     try {
       const fullSummary = await ShiftsApi.getShiftSummary(shift.id);
       setSelectedShiftSummary(fullSummary);
-    } catch {
+    } catch (err) {
+      setSummaryError(
+        err instanceof Error
+          ? err.message
+          : 'Failed to load shift settlement summary.'
+      );
+      // Fall back to list-row totals so managers still see reconciliation basics.
       const summary: ShiftSummaryData = {
         shiftId: shift.id,
         businessDate: shift.businessDate,
@@ -101,6 +212,8 @@ export const ShiftsPage: React.FC = () => {
         },
       };
       setSelectedShiftSummary(summary);
+    } finally {
+      setIsSummaryLoading(false);
     }
   };
 
@@ -150,11 +263,11 @@ export const ShiftsPage: React.FC = () => {
           </div>
 
           {/* Header Action Buttons */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap justify-end">
             <Button
               variant="secondary"
               size="sm"
-              onClick={() => refetchCurrent()}
+              onClick={handleRefreshAll}
               disabled={isRefetching}
               className="min-h-[36px] px-3 font-medium flex items-center gap-1.5"
             >
@@ -184,26 +297,30 @@ export const ShiftsPage: React.FC = () => {
                   <span>Pay In / Out</span>
                 </Button>
 
-                <Button
-                  variant="danger"
-                  size="sm"
-                  onClick={() => setIsCloseShiftOpen(true)}
-                  className="min-h-[36px] text-xs font-bold flex items-center gap-1.5 shadow-xs"
-                >
-                  <Lock size={15} />
-                  <span>Close Shift</span>
-                </Button>
+                {canCloseShift && (
+                  <Button
+                    variant="danger"
+                    size="sm"
+                    onClick={() => setIsCloseShiftOpen(true)}
+                    className="min-h-[36px] text-xs font-bold flex items-center gap-1.5 shadow-xs"
+                  >
+                    <Lock size={15} />
+                    <span>Close Shift</span>
+                  </Button>
+                )}
               </>
             ) : (
-              <Button
-                variant="primary"
-                size="sm"
-                onClick={() => setIsOpenShiftOpen(true)}
-                className="min-h-[36px] text-xs font-bold flex items-center gap-1.5 shadow-xs"
-              >
-                <Plus size={16} />
-                <span>Open Register Shift</span>
-              </Button>
+              canOpenShift && (
+                <Button
+                  variant="primary"
+                  size="sm"
+                  onClick={() => setIsOpenShiftOpen(true)}
+                  className="min-h-[36px] text-xs font-bold flex items-center gap-1.5 shadow-xs"
+                >
+                  <Plus size={16} />
+                  <span>Open Register Shift</span>
+                </Button>
+              )
             )}
           </div>
         </div>
@@ -224,19 +341,23 @@ export const ShiftsPage: React.FC = () => {
             <span>Active Drawer & Ledger</span>
           </button>
 
-          <button
-            type="button"
-            onClick={() => setActiveTab('PAYMENTS')}
-            className={cn(
-              'px-3 py-1.5 rounded-md text-xs font-semibold whitespace-nowrap transition-colors flex items-center gap-1.5 min-h-[32px]',
-              activeTab === 'PAYMENTS'
-                ? 'bg-pos-primary text-white shadow-xs'
-                : 'bg-pos-surface text-pos-text-secondary hover:text-pos-text border border-pos-border'
-            )}
-          >
-            <Receipt size={14} />
-            <span>Payment Transactions</span>
-          </button>
+          {canViewPayments && (
+            <button
+              type="button"
+              onClick={() => setActiveTab('PAYMENTS')}
+              className={cn(
+                'px-3 py-1.5 rounded-md text-xs font-semibold whitespace-nowrap transition-colors flex items-center gap-1.5 min-h-[32px]',
+                activeTab === 'PAYMENTS'
+                  ? 'bg-pos-primary text-white shadow-xs'
+                  : 'bg-pos-surface text-pos-text-secondary hover:text-pos-text border border-pos-border'
+              )}
+            >
+              <Receipt size={14} />
+              <span>
+                {hasActiveShift ? 'Shift Payments' : 'Payment Transactions'}
+              </span>
+            </button>
+          )}
 
           <button
             type="button"
@@ -265,6 +386,19 @@ export const ShiftsPage: React.FC = () => {
                   <Spinner size="lg" />
                   <span>Checking Active Shift Status...</span>
                 </div>
+              ) : isCurrentError ? (
+                <div className="py-16 flex flex-col items-center justify-center gap-3 text-xs">
+                  <AlertCircle size={32} className="text-pos-danger" />
+                  <p className="font-bold text-pos-text">Failed to load active shift</p>
+                  <p className="text-pos-text-muted max-w-sm text-center">
+                    {currentError instanceof Error
+                      ? currentError.message
+                      : 'Unable to check shift status.'}
+                  </p>
+                  <Button variant="secondary" size="sm" onClick={() => refetchCurrent()}>
+                    Retry
+                  </Button>
+                </div>
               ) : !hasActiveShift ? (
                 <div className="py-24 text-center text-xs text-pos-text-muted flex flex-col items-center gap-3">
                   <Wallet size={40} className="text-pos-text-muted/40" />
@@ -272,26 +406,30 @@ export const ShiftsPage: React.FC = () => {
                     Register is Currently Closed
                   </p>
                   <p className="text-xs max-w-sm text-pos-text-secondary">
-                    There is no active open shift for your cashier account. Click below to
-                    enter opening cash float and open the register drawer.
+                    There is no active open shift for your cashier account.
+                    {canOpenShift
+                      ? ' Enter opening cash float to open the register drawer.'
+                      : ' Ask a cashier or manager with shift-open permission to start a shift.'}
                   </p>
-                  <Button
-                    variant="primary"
-                    size="md"
-                    onClick={() => setIsOpenShiftOpen(true)}
-                    className="font-bold mt-2 flex items-center gap-2"
-                  >
-                    <Plus size={16} />
-                    <span>Open Register Shift</span>
-                  </Button>
+                  {canOpenShift && (
+                    <Button
+                      variant="primary"
+                      size="md"
+                      onClick={() => setIsOpenShiftOpen(true)}
+                      className="font-bold mt-2 flex items-center gap-2"
+                    >
+                      <Plus size={16} />
+                      <span>Open Register Shift</span>
+                    </Button>
+                  )}
                 </div>
               ) : (
                 <div className="space-y-4">
                   {/* Top Metric Cards */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-                    <div className="p-3.5 rounded-lg bg-pos-surface border border-pos-border shadow-xs">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3">
+                    <div className="p-3.5 rounded-lg bg-pos-surface border border-pos-border shadow-xs sm:col-span-2">
                       <span className="text-[10px] font-semibold text-pos-text-muted uppercase tracking-wider block mb-1">
-                        Current Drawer Balance
+                        Expected Drawer Cash
                       </span>
                       <span className="text-xl sm:text-2xl font-black font-mono text-pos-primary block">
                         {formatPrice(currentShift?.currentDrawerCash || 0)}
@@ -303,38 +441,42 @@ export const ShiftsPage: React.FC = () => {
 
                     <div className="p-3.5 rounded-lg bg-pos-surface border border-pos-border shadow-xs">
                       <span className="text-[10px] font-semibold text-pos-text-muted uppercase tracking-wider block mb-1">
-                        Cash Sales Inflow
+                        Cash Sales
                       </span>
-                      <span className="text-xl sm:text-2xl font-black font-mono text-pos-success block">
+                      <span className="text-lg font-black font-mono text-pos-success block">
                         +{formatPrice(currentShift?.cashSales || 0)}
                       </span>
-                      <span className="text-[11px] text-pos-text-muted mt-1 block">
-                        Direct register cash intake
+                    </div>
+
+                    <div className="p-3.5 rounded-lg bg-pos-surface border border-pos-border shadow-xs">
+                      <span className="text-[10px] font-semibold text-pos-text-muted uppercase tracking-wider block mb-1">
+                        Cash Refunds
+                      </span>
+                      <span className="text-lg font-black font-mono text-pos-danger block">
+                        -{formatPrice(currentShift?.cashRefunds || 0)}
                       </span>
                     </div>
 
                     <div className="p-3.5 rounded-lg bg-pos-surface border border-pos-border shadow-xs">
                       <span className="text-[10px] font-semibold text-pos-text-muted uppercase tracking-wider block mb-1">
-                        Safe Cash Drops
+                        Safe Drops
                       </span>
-                      <span className="text-xl sm:text-2xl font-black font-mono text-pos-warning block">
+                      <span className="text-lg font-black font-mono text-pos-warning block">
                         -{formatPrice(currentShift?.cashDrops || 0)}
                       </span>
-                      <span className="text-[11px] text-pos-text-muted mt-1 block">
-                        Safe deposits recorded
-                      </span>
                     </div>
 
                     <div className="p-3.5 rounded-lg bg-pos-surface border border-pos-border shadow-xs">
                       <span className="text-[10px] font-semibold text-pos-text-muted uppercase tracking-wider block mb-1">
-                        Cash Adjustments (Net)
+                        Adjustments / Expenses
                       </span>
-                      <span className="text-xl sm:text-2xl font-black font-mono text-pos-info block">
+                      <span className="text-sm font-black font-mono text-pos-info block">
+                        Adj{' '}
                         {currentShift && currentShift.cashAdjustments >= 0 ? '+' : ''}
                         {formatPrice(currentShift?.cashAdjustments || 0)}
                       </span>
-                      <span className="text-[11px] text-pos-text-muted mt-1 block">
-                        Pay In / Pay Out transactions
+                      <span className="text-[11px] font-mono text-pos-danger mt-0.5 block">
+                        Exp -{formatPrice(currentShift?.cashExpenses || 0)}
                       </span>
                     </div>
                   </div>
@@ -342,75 +484,63 @@ export const ShiftsPage: React.FC = () => {
                   {/* Cash Transactions List */}
                   <div>
                     <h4 className="text-xs font-semibold uppercase tracking-wider text-pos-text-secondary mb-2.5 flex items-center justify-between">
-                      <span>Shift Cash Transactions Log</span>
+                      <span>Shift Cash Movements</span>
                       <span className="text-[11px] text-pos-text-muted font-normal">
-                        {currentShift?.cashTransactions?.length || 0} recorded movements
+                        {currentShift?.cashTransactions?.length || 0} recorded
                       </span>
                     </h4>
 
                     {currentShift?.cashTransactions &&
                     currentShift.cashTransactions.length > 0 ? (
                       <div className="space-y-2">
-                        {currentShift.cashTransactions.map(tx => (
-                          <div
-                            key={tx.id}
-                            className="p-3 rounded-lg bg-pos-surface border border-pos-border flex items-center justify-between text-xs shadow-xs"
-                          >
-                            <div className="flex items-center gap-2.5">
-                              <div
+                        {currentShift.cashTransactions.map(tx => {
+                          const meta = cashTxMeta(tx.type);
+                          return (
+                            <div
+                              key={tx.id}
+                              className="p-3 rounded-lg bg-pos-surface border border-pos-border flex items-center justify-between text-xs shadow-xs"
+                            >
+                              <div className="flex items-center gap-2.5">
+                                <div
+                                  className={cn(
+                                    'h-8 w-8 rounded-md flex items-center justify-center shrink-0 text-xs font-bold',
+                                    meta.tone
+                                  )}
+                                >
+                                  {meta.short}
+                                </div>
+
+                                <div>
+                                  <span className="font-bold text-pos-text block">
+                                    {tx.type.replace(/_/g, ' ')}
+                                  </span>
+                                  <span className="text-[11px] text-pos-text-muted">
+                                    {tx.reason || 'Drawer balance entry'} •{' '}
+                                    {new Date(tx.createdAt).toLocaleTimeString([], {
+                                      hour: '2-digit',
+                                      minute: '2-digit',
+                                    })}
+                                  </span>
+                                </div>
+                              </div>
+
+                              <span
                                 className={cn(
-                                  'h-8 w-8 rounded-md flex items-center justify-center shrink-0 text-xs font-bold',
-                                  tx.type === 'OPENING_FLOAT'
-                                    ? 'bg-pos-primary-soft text-pos-primary'
-                                    : tx.type === 'CASH_DROP'
-                                      ? 'bg-pos-warning-soft text-pos-warning'
-                                      : tx.type === 'PAY_IN'
-                                        ? 'bg-pos-success-soft text-pos-success'
-                                        : 'bg-pos-danger-soft text-pos-danger'
+                                  'font-mono font-bold text-sm',
+                                  meta.isOutflow ? 'text-pos-danger' : 'text-pos-success'
                                 )}
                               >
-                                {tx.type === 'OPENING_FLOAT'
-                                  ? 'OF'
-                                  : tx.type === 'CASH_DROP'
-                                    ? 'CD'
-                                    : tx.type === 'PAY_IN'
-                                      ? 'PI'
-                                      : 'PO'}
-                              </div>
-
-                              <div>
-                                <span className="font-bold text-pos-text block">
-                                  {tx.type.replace('_', ' ')}
-                                </span>
-                                <span className="text-[11px] text-pos-text-muted">
-                                  {tx.reason || 'Standard drawer balance entry'} •{' '}
-                                  {new Date(tx.createdAt).toLocaleTimeString([], {
-                                    hour: '2-digit',
-                                    minute: '2-digit',
-                                  })}
-                                </span>
-                              </div>
+                                {meta.isOutflow ? '-' : '+'}
+                                {formatPrice(tx.amount)}
+                              </span>
                             </div>
-
-                            <span
-                              className={cn(
-                                'font-mono font-bold text-sm',
-                                tx.type === 'CASH_DROP' || tx.type === 'PAY_OUT'
-                                  ? 'text-pos-danger'
-                                  : 'text-pos-success'
-                              )}
-                            >
-                              {tx.type === 'CASH_DROP' || tx.type === 'PAY_OUT'
-                                ? '-'
-                                : '+'}
-                              {formatPrice(tx.amount)}
-                            </span>
-                          </div>
-                        ))}
+                          );
+                        })}
                       </div>
                     ) : (
                       <div className="p-8 text-center bg-pos-surface border border-pos-border rounded-lg text-xs text-pos-text-muted">
-                        No manual cash transactions logged in this shift yet.
+                        No cash movements logged in this shift yet. Cash sales and refunds
+                        appear here after payments are taken.
                       </div>
                     )}
                   </div>
@@ -422,16 +552,42 @@ export const ShiftsPage: React.FC = () => {
           {/* =========================================================================
               TAB 2: Payment Transactions History
           ========================================================================= */}
-          {activeTab === 'PAYMENTS' && (
+          {activeTab === 'PAYMENTS' && canViewPayments && (
             <div>
+              {hasActiveShift ? (
+                <p className="text-xs text-pos-text-muted mb-3">
+                  Showing payments linked to the active shift. Cash payments update
+                  drawer cash sales automatically.
+                </p>
+              ) : (
+                <p className="text-xs text-pos-text-muted mb-3">
+                  No active shift — recent restaurant payments are listed below.
+                </p>
+              )}
+
               {isPaymentsLoading ? (
                 <div className="py-24 flex flex-col items-center justify-center gap-3 text-pos-text-muted text-xs">
                   <Spinner size="lg" />
                   <span>Loading Payment Transactions...</span>
                 </div>
+              ) : isPaymentsError ? (
+                <div className="py-16 flex flex-col items-center justify-center gap-3 text-xs">
+                  <AlertCircle size={32} className="text-pos-danger" />
+                  <p className="font-bold text-pos-text">Failed to load payments</p>
+                  <p className="text-pos-text-muted max-w-sm text-center">
+                    {paymentsError instanceof Error
+                      ? paymentsError.message
+                      : 'Unable to load payment transactions.'}
+                  </p>
+                  <Button variant="secondary" size="sm" onClick={() => refetchPayments()}>
+                    Retry
+                  </Button>
+                </div>
               ) : !paymentsData?.payments || paymentsData.payments.length === 0 ? (
                 <div className="py-24 text-center text-xs text-pos-text-muted">
-                  No payment transactions found.
+                  {hasActiveShift
+                    ? 'No payments recorded on this shift yet.'
+                    : 'No payment transactions found.'}
                 </div>
               ) : (
                 <div className="overflow-x-auto border border-pos-border rounded-lg bg-pos-surface">
@@ -506,7 +662,7 @@ export const ShiftsPage: React.FC = () => {
                               })}
                             </td>
                             <td className="p-3 text-right">
-                              {isRefundable && (
+                              {isRefundable && canRefund && (
                                 <button
                                   type="button"
                                   onClick={() => setRefundPayment(p)}
@@ -530,15 +686,74 @@ export const ShiftsPage: React.FC = () => {
               TAB 3: Past Shift Reports
           ========================================================================= */}
           {activeTab === 'HISTORY' && (
-            <div>
+            <div className="space-y-3">
+              <div className="flex flex-wrap items-center gap-2">
+                <select
+                  value={historyStatus}
+                  onChange={e =>
+                    setHistoryStatus(e.target.value as 'ALL' | ShiftStatus)
+                  }
+                  className="px-2.5 py-1.5 rounded-md bg-pos-surface border border-pos-border text-xs text-pos-text font-medium focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary"
+                >
+                  <option value="ALL">All Statuses</option>
+                  <option value="OPEN">Open</option>
+                  <option value="CLOSED">Closed</option>
+                </select>
+                <input
+                  type="date"
+                  value={historyBusinessDate}
+                  onChange={e => setHistoryBusinessDate(e.target.value)}
+                  className="px-2.5 py-1.5 rounded-md bg-pos-surface border border-pos-border text-xs text-pos-text font-medium focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary"
+                  aria-label="Filter by business date"
+                />
+                {historyBusinessDate && (
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => setHistoryBusinessDate('')}
+                    className="text-xs"
+                  >
+                    Clear Date
+                  </Button>
+                )}
+              </div>
+
+              {summaryError && (
+                <div className="p-2.5 rounded-md bg-pos-warning-soft border border-[#FDE68A] text-pos-warning text-xs flex items-center gap-2">
+                  <AlertCircle size={14} className="shrink-0" />
+                  <span>
+                    Settlement summary partially loaded: {summaryError}
+                  </span>
+                </div>
+              )}
+
+              {isSummaryLoading && (
+                <div className="text-xs text-pos-text-muted flex items-center gap-2">
+                  <Spinner size="sm" /> Loading settlement summary…
+                </div>
+              )}
+
               {isPastLoading ? (
                 <div className="py-24 flex flex-col items-center justify-center gap-3 text-pos-text-muted text-xs">
                   <Spinner size="lg" />
-                  <span>Loading Past Shift History...</span>
+                  <span>Loading Shift History...</span>
+                </div>
+              ) : isPastError ? (
+                <div className="py-16 flex flex-col items-center justify-center gap-3 text-xs">
+                  <AlertCircle size={32} className="text-pos-danger" />
+                  <p className="font-bold text-pos-text">Failed to load shift history</p>
+                  <p className="text-pos-text-muted max-w-sm text-center">
+                    {pastError instanceof Error
+                      ? pastError.message
+                      : 'Unable to load shifts.'}
+                  </p>
+                  <Button variant="secondary" size="sm" onClick={() => refetchPast()}>
+                    Retry
+                  </Button>
                 </div>
               ) : !pastShiftsData?.shifts || pastShiftsData.shifts.length === 0 ? (
                 <div className="py-24 text-center text-xs text-pos-text-muted">
-                  No past closed shifts found.
+                  No shifts match the selected filters.
                 </div>
               ) : (
                 <div className="overflow-x-auto border border-pos-border rounded-lg bg-pos-surface">
@@ -549,7 +764,8 @@ export const ShiftsPage: React.FC = () => {
                         <th className="p-3">Cashier</th>
                         <th className="p-3">Date</th>
                         <th className="p-3">Opening</th>
-                        <th className="p-3">Cash Sales</th>
+                        <th className="p-3">Expected</th>
+                        <th className="p-3">Counted</th>
                         <th className="p-3">Variance</th>
                         <th className="p-3">Status</th>
                         <th className="p-3 text-right">Z-Report</th>
@@ -569,11 +785,18 @@ export const ShiftsPage: React.FC = () => {
                             {s.businessDate}
                           </td>
                           <td className="p-3 font-mono">{formatPrice(s.openingCash)}</td>
-                          <td className="p-3 font-mono text-pos-success font-bold">
-                            +{formatPrice(s.cashSales)}
+                          <td className="p-3 font-mono text-pos-text">
+                            {s.expectedClosingCash != null
+                              ? formatPrice(s.expectedClosingCash)
+                              : '—'}
+                          </td>
+                          <td className="p-3 font-mono text-pos-text">
+                            {s.actualClosingCash != null
+                              ? formatPrice(s.actualClosingCash)
+                              : '—'}
                           </td>
                           <td className="p-3 font-mono">
-                            {s.variance !== null ? (
+                            {s.variance !== null && s.variance !== undefined ? (
                               <span
                                 className={cn(
                                   'font-bold',
@@ -603,7 +826,8 @@ export const ShiftsPage: React.FC = () => {
                             <button
                               type="button"
                               onClick={() => handleOpenSummaryForPastShift(s)}
-                              className="text-xs text-pos-primary hover:underline font-semibold"
+                              disabled={isSummaryLoading}
+                              className="text-xs text-pos-primary hover:underline font-semibold disabled:opacity-50"
                             >
                               View Z-Report
                             </button>

@@ -613,7 +613,14 @@ export interface RecallKitchenInput {
  */
 export type ShiftStatus = 'OPEN' | 'CLOSED';
 export type CashAdjustmentType = 'PAY_IN' | 'PAY_OUT';
-export type CashTransactionType = 'OPENING_FLOAT' | 'CASH_DROP' | 'PAY_IN' | 'PAY_OUT';
+export type CashTransactionType =
+  | 'OPENING_FLOAT'
+  | 'CASH_SALE'
+  | 'CASH_REFUND'
+  | 'CASH_DROP'
+  | 'PAY_IN'
+  | 'PAY_OUT'
+  | 'EXPENSE';
 
 export interface CashTransactionRecord {
   id: string;
@@ -994,6 +1001,24 @@ export interface InventoryLocationRecord {
   code?: string | null;
   isDefault: boolean;
   isActive: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+  _count?: {
+    inventoryItems: number;
+  };
+}
+
+export interface CreateInventoryLocationInput {
+  name: string;
+  code?: string;
+  isDefault?: boolean;
+}
+
+export interface UpdateInventoryLocationInput {
+  name?: string;
+  code?: string | null;
+  isDefault?: boolean;
+  isActive?: boolean;
 }
 
 export interface SupplierRecord {
@@ -1351,6 +1376,72 @@ export interface ListLedgerQueryParams {
   inventoryItemId?: string;
   locationId?: string;
   type?: string;
+  startDate?: string;
+  endDate?: string;
+  page?: number;
+  limit?: number;
+}
+
+export interface CreateStockTransferInput {
+  fromLocationId: string;
+  toLocationId: string;
+  notes?: string;
+  items: Array<{
+    inventoryItemId: string;
+    quantity: number;
+  }>;
+}
+
+export interface StockTransferItemRecord {
+  id: string;
+  inventoryItemId: string;
+  quantity: number;
+  unitCost: number;
+  inventoryItem?: {
+    id: string;
+    itemCode: string;
+    name: string;
+    unit: string;
+  };
+}
+
+export interface StockTransferRecord {
+  id: string;
+  transferNumber: string;
+  fromLocationId: string;
+  toLocationId: string;
+  status: string;
+  notes?: string | null;
+  createdAt: string;
+  fromLocation?: {
+    id: string;
+    name: string;
+  };
+  toLocation?: {
+    id: string;
+    name: string;
+  };
+  items: StockTransferItemRecord[];
+  createdByUser?: {
+    id: string;
+    name: string;
+    username: string;
+  };
+}
+
+export interface PaginatedTransfersData {
+  transfers: StockTransferRecord[];
+  pagination: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
+}
+
+export interface ListTransfersQueryParams {
+  fromLocationId?: string;
+  toLocationId?: string;
   startDate?: string;
   endDate?: string;
   page?: number;
@@ -2249,125 +2340,111 @@ export interface SalesSummaryReportData {
 }
 
 export interface SalesByOrderTypeItem {
-  orderType: 'DINE_IN' | 'TAKEAWAY' | 'DELIVERY';
+  orderType: 'DINE_IN' | 'TAKEAWAY' | 'DELIVERY' | string;
   orderCount: number;
-  percentageOfOrders: number;
   grossSales: number;
-  totalDiscount: number;
+  discounts: number;
   netSales: number;
-  taxAmount: number;
+  tax: number;
+  serviceCharge: number;
+  deliveryCharge: number;
+  packagingCharge: number;
   grandTotal: number;
-  percentageOfSales: number;
-  averageOrderValue: number;
+  paid: number;
+  averageTicket: number;
+  percentageOfTotal: number;
 }
 
 export interface SalesByOrderTypeReportData {
-  period: ReportPeriodInfo;
-  breakdown: SalesByOrderTypeItem[];
-  totals: {
-    totalOrders: number;
-    totalSales: number;
-    totalDiscounts: number;
-  };
+  totalRevenue: number;
+  channels: SalesByOrderTypeItem[];
 }
 
 export interface SalesByPaymentMethodItem {
   paymentMethod: string;
   transactionCount: number;
-  percentageOfTransactions: number;
-  totalAmountCollected: number;
-  percentageOfAmount: number;
-  averageTransactionValue: number;
+  grossAmount: number;
+  refundAmount: number;
+  netAmount: number;
+  percentageOfTotal: number;
 }
 
 export interface SalesByPaymentMethodReportData {
-  period: ReportPeriodInfo;
-  breakdown: SalesByPaymentMethodItem[];
-  totals: {
-    totalTransactions: number;
-    totalAmountCollected: number;
-  };
+  totalCollected: number;
+  methods: SalesByPaymentMethodItem[];
 }
 
 export interface ItemRankingRecord {
   menuItemId: string;
-  itemName: string;
   itemCode: string;
+  name: string;
+  categoryId: string | null;
   categoryName: string;
   quantitySold: number;
-  grossSales: number;
-  discountAmount: number;
-  netSales: number;
-  averagePrice: number;
-  orderCount: number;
+  grossRevenue: number;
+  totalDiscount: number;
+  netRevenue: number;
+  revenueShare: number;
 }
 
 export interface ItemsRankingReportData {
-  period: ReportPeriodInfo;
-  pagination: {
-    page: number;
-    limit: number;
-    totalItems: number;
-    totalPages: number;
-  };
+  totalItems: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+  totalSalesVolume: number;
   items: ItemRankingRecord[];
 }
 
 export interface CategorySalesItem {
   categoryId: string;
   categoryName: string;
-  itemsCount: number;
-  quantitySold: number;
-  grossSales: number;
-  netSales: number;
-  percentageOfSales: number;
+  itemsSold: number;
+  grossRevenue: number;
+  discountAmount: number;
+  netRevenue: number;
+  revenueShare: number;
 }
 
 export interface CategorySalesReportData {
-  period: ReportPeriodInfo;
+  totalCategoryRevenue: number;
   categories: CategorySalesItem[];
-  totals: {
-    totalQuantitySold: number;
-    totalGrossSales: number;
-    totalNetSales: number;
-  };
 }
 
 export interface FinancialAdjustmentsReportData {
-  period: ReportPeriodInfo;
-  summary: {
+  taxes: {
     totalTaxCollected: number;
-    totalDiscountsGiven: number;
-    totalVoidsValue: number;
-    totalVoidsCount: number;
-    totalCancelledValue: number;
-    totalCancelledCount: number;
+    totalServiceCharges: number;
+    taxableSubtotal: number;
   };
-  taxBreakdown: Array<{
-    taxRate: number;
-    amount: number;
-  }>;
-  discountBreakdown: {
-    itemDiscounts: number;
-    orderDiscounts: number;
+  discounts: {
+    itemDiscountsTotal: number;
+    orderDiscountsTotal: number;
     totalDiscounts: number;
+    reasonsBreakdown: Array<{
+      reason: string;
+      amount: number;
+      ordersCount: number;
+    }>;
   };
-  voidedOrders: Array<{
-    orderId: string;
-    orderCode: string;
-    voidReason: string | null;
-    voidedAt: string;
-    grandTotal: number;
-    staffName: string;
-  }>;
-  cancelledOrders: Array<{
-    orderId: string;
-    orderCode: string;
-    cancelReason: string | null;
-    cancelledAt: string;
-    grandTotal: number;
-    staffName: string;
-  }>;
+  voids: {
+    voidedItemsCount: number;
+    voidedItemsValue: number;
+    voidedOrdersCount: number;
+    voidedOrdersValue: number;
+    reasonsBreakdown: Array<{
+      reason: string;
+      count: number;
+    }>;
+  };
+  cancellations: {
+    cancelledOrdersCount: number;
+    cancelledOrdersValue: number;
+    reasonsBreakdown: Array<{
+      reason: string;
+      count: number;
+    }>;
+  };
 }
 
 export interface HourlyTrendsItem {
@@ -2376,92 +2453,78 @@ export interface HourlyTrendsItem {
   orderCount: number;
   grossSales: number;
   netSales: number;
-  averageOrderValue: number;
+  grandTotal: number;
 }
 
 export interface HourlyTrendsReportData {
-  period: ReportPeriodInfo;
-  hourlyData: HourlyTrendsItem[];
+  totalOrders: number;
   peakHour: {
     hour: number;
     hourLabel: string;
-    orderCount: number;
-    netSales: number;
+    revenue: number;
   };
+  hourlyDistribution: HourlyTrendsItem[];
 }
 
 export interface StaffPerformanceRecord {
   staffId: string;
-  staffName: string;
-  role: string;
+  name: string;
   username: string;
-  totalOrders: number;
-  completedOrders: number;
-  cancelledOrders: number;
-  totalSales: number;
-  averageOrderValue: number;
-  averagePreparationTimeMinutes: number;
+  shiftsCount: number;
+  ordersProcessed: number;
+  grossSales: number;
+  totalDiscounts: number;
+  totalRevenue: number;
 }
 
 export interface StaffPerformanceReportData {
-  period: ReportPeriodInfo;
   staff: StaffPerformanceRecord[];
 }
 
 export interface ShiftSummaryReportRecord {
-  shiftId: string;
+  id: string;
   registerName: string;
+  businessDate: string;
+  status: string;
   cashierName: string;
   openedAt: string;
   closedAt: string | null;
-  status: string;
-  openingFloat: number;
-  closingCash: number;
-  systemExpectedCash: number;
-  cashVariance: number;
+  openingCash: number;
   cashSales: number;
-  cardSales: number;
-  otherSales: number;
-  totalSales: number;
-  dropsCount: number;
-  totalDropsAmount: number;
-  expensesCount: number;
-  totalExpensesAmount: number;
+  cashDrops: number;
+  expectedClosingCash: number | null;
+  actualClosingCash: number | null;
+  variance: number | null;
 }
 
 export interface ShiftsSummaryReportData {
-  period: ReportPeriodInfo;
-  shifts: ShiftSummaryReportRecord[];
-  totals: {
+  summary: {
     totalShifts: number;
-    totalSales: number;
-    totalCashVariance: number;
-    totalExpenses: number;
+    totalOpeningCash: number;
+    totalCashSales: number;
+    totalCashRefunds: number;
+    totalCashDrops: number;
+    totalCashAdjustments: number;
+    totalExpectedCash: number;
+    totalActualCash: number;
+    totalVariance: number;
   };
+  shifts: ShiftSummaryReportRecord[];
 }
 
 export interface OperationsPerformanceReportData {
-  period: ReportPeriodInfo;
+  takeaway: {
+    totalOrders: number;
+  };
   delivery: {
-    totalDeliveries: number;
+    totalOrders: number;
     completedDeliveries: number;
     cancelledDeliveries: number;
-    averageDeliveryTimeMinutes: number;
-    riderPerformance: Array<{
-      riderId: string;
+    totalDeliveryFees: number;
+    ridersBreakdown: Array<{
       riderName: string;
-      deliveriesCompleted: number;
-      averageTimeMinutes: number;
+      deliveriesCount: number;
     }>;
-  };
-  takeaway: {
-    totalTakeaways: number;
-    completedTakeaways: number;
-    averagePreparationTimeMinutes: number;
-  };
-  dineIn: {
-    totalDineIn: number;
-    averageSeatingTimeMinutes: number;
   };
 }
 

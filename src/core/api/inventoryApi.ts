@@ -23,7 +23,13 @@ import {
   ListLedgerQueryParams,
   PaginatedLedgerData,
   InventoryLocationRecord,
+  CreateInventoryLocationInput,
+  UpdateInventoryLocationInput,
   SupplierRecord,
+  CreateStockTransferInput,
+  StockTransferRecord,
+  PaginatedTransfersData,
+  ListTransfersQueryParams,
 } from '@/types';
 
 export class InventoryApi {
@@ -244,6 +250,62 @@ export class InventoryApi {
       return (data as { locations: InventoryLocationRecord[] }).locations;
     }
     return [];
+  }
+
+  public static async createLocation(
+    payload: CreateInventoryLocationInput
+  ): Promise<InventoryLocationRecord> {
+    const response = await apiClient.post<
+      ApiResponse<{ location: InventoryLocationRecord }>,
+      CreateInventoryLocationInput
+    >('/inventory/locations', payload);
+    return response.data.location;
+  }
+
+  public static async updateLocation(
+    id: string,
+    payload: UpdateInventoryLocationInput
+  ): Promise<InventoryLocationRecord> {
+    const response = await apiClient.patch<
+      ApiResponse<{ location: InventoryLocationRecord }>,
+      UpdateInventoryLocationInput
+    >(`/inventory/locations/${id}`, payload);
+    return response.data.location;
+  }
+
+  public static async deleteLocation(id: string): Promise<void> {
+    await apiClient.delete<ApiResponse<null>>(`/inventory/locations/${id}`);
+  }
+
+  // ===========================================================================
+  // 8. Stock Transfers
+  // ===========================================================================
+
+  public static async createTransfer(
+    payload: CreateStockTransferInput
+  ): Promise<StockTransferRecord> {
+    const response = await apiClient.post<
+      ApiResponse<{ transfer: StockTransferRecord }>,
+      CreateStockTransferInput
+    >('/inventory/transfers', payload);
+    return response.data.transfer;
+  }
+
+  public static async listTransfers(
+    params?: ListTransfersQueryParams
+  ): Promise<PaginatedTransfersData> {
+    const response = await apiClient.get<ApiResponse<PaginatedTransfersData>>(
+      '/inventory/transfers',
+      { params }
+    );
+    return response.data;
+  }
+
+  public static async getTransferById(id: string): Promise<StockTransferRecord> {
+    const response = await apiClient.get<ApiResponse<{ transfer: StockTransferRecord }>>(
+      `/inventory/transfers/${id}`
+    );
+    return response.data.transfer;
   }
 
   public static async listSuppliers(): Promise<SupplierRecord[]> {

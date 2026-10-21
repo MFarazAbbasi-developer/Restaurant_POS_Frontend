@@ -399,17 +399,17 @@ export const DashboardPage: React.FC = () => {
 
   // Hourly Trends Peak calculation
   const hourlyData = useMemo(() => {
-    return hourlyTrendsQuery.data?.hourlyData || [];
-  }, [hourlyTrendsQuery.data?.hourlyData]);
+    return hourlyTrendsQuery.data?.hourlyDistribution || [];
+  }, [hourlyTrendsQuery.data?.hourlyDistribution]);
 
   const peakHour = hourlyTrendsQuery.data?.peakHour;
   const maxHourlyNet = useMemo(() => {
-    return Math.max(...hourlyData.map(h => h.netSales), 1);
+    return Math.max(...hourlyData.map(h => h.grandTotal), 1);
   }, [hourlyData]);
 
   // Channel breakdown
-  const channelBreakdown = orderTypeQuery.data?.breakdown || [];
-  const totalChannelRevenue = orderTypeQuery.data?.totals?.totalSales || 0;
+  const channelBreakdown = orderTypeQuery.data?.channels || [];
+  const totalChannelRevenue = orderTypeQuery.data?.totalRevenue || 0;
 
   // Format relative time helper
   const getRelativeTime = (dateStr: string) => {
@@ -1105,12 +1105,12 @@ export const DashboardPage: React.FC = () => {
                 </p>
               </div>
 
-              {peakHour && peakHour.orderCount > 0 && (
+              {peakHour && peakHour.revenue > 0 && (
                 <div className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-amber-50 border border-amber-200 text-amber-900 text-xs">
                   <Flame size={13} className="text-pos-primary" />
                   <span className="font-semibold">Peak: {peakHour.hourLabel}</span>
                   <span className="font-mono text-[11px]">
-                    ({formatPrice(peakHour.netSales)})
+                    ({formatPrice(peakHour.revenue)})
                   </span>
                 </div>
               )}
@@ -1123,12 +1123,12 @@ export const DashboardPage: React.FC = () => {
                   <div className="h-28 flex items-end gap-1 sm:gap-1.5 pb-2 border-b border-pos-border">
                     {hourlyData.map(h => {
                       const heightPercent =
-                        h.netSales > 0
-                          ? Math.max(Math.round((h.netSales / maxHourlyNet) * 100), 8)
+                        h.grandTotal > 0
+                          ? Math.max(Math.round((h.grandTotal / maxHourlyNet) * 100), 8)
                           : 4;
                       const isPeak =
-                        peakHour && peakHour.hour === h.hour && h.netSales > 0;
-                      const hasSales = h.netSales > 0;
+                        peakHour && peakHour.hour === h.hour && h.grandTotal > 0;
+                      const hasSales = h.grandTotal > 0;
 
                       return (
                         <div
@@ -1139,7 +1139,7 @@ export const DashboardPage: React.FC = () => {
                           <div className="absolute bottom-full mb-1 hidden group-hover:flex flex-col items-center z-20 pointer-events-none">
                             <div className="bg-slate-900 text-white text-[10px] font-mono py-1 px-2 rounded shadow-lg whitespace-nowrap">
                               <p className="font-bold">{h.hourLabel}</p>
-                              <p>Net: {formatPrice(h.netSales)}</p>
+                              <p>Total: {formatPrice(h.grandTotal)}</p>
                               <p>
                                 {h.orderCount} Order{h.orderCount === 1 ? '' : 's'}
                               </p>
@@ -1216,7 +1216,7 @@ export const DashboardPage: React.FC = () => {
                   const item = channelBreakdown.find(c => c.orderType === 'DINE_IN');
                   const count = item?.orderCount || 0;
                   const total = item?.grandTotal || 0;
-                  const pct = item?.percentageOfSales || 0;
+                  const pct = item?.percentageOfTotal || 0;
                   return (
                     <div className="p-2.5 rounded-lg bg-pos-surface-subtle border border-pos-border">
                       <div className="flex items-center justify-between text-xs">
@@ -1251,7 +1251,7 @@ export const DashboardPage: React.FC = () => {
                   const item = channelBreakdown.find(c => c.orderType === 'TAKEAWAY');
                   const count = item?.orderCount || 0;
                   const total = item?.grandTotal || 0;
-                  const pct = item?.percentageOfSales || 0;
+                  const pct = item?.percentageOfTotal || 0;
                   return (
                     <div className="p-2.5 rounded-lg bg-pos-surface-subtle border border-pos-border">
                       <div className="flex items-center justify-between text-xs">
@@ -1286,7 +1286,7 @@ export const DashboardPage: React.FC = () => {
                   const item = channelBreakdown.find(c => c.orderType === 'DELIVERY');
                   const count = item?.orderCount || 0;
                   const total = item?.grandTotal || 0;
-                  const pct = item?.percentageOfSales || 0;
+                  const pct = item?.percentageOfTotal || 0;
                   return (
                     <div className="p-2.5 rounded-lg bg-pos-surface-subtle border border-pos-border">
                       <div className="flex items-center justify-between text-xs">

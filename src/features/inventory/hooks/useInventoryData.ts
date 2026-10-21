@@ -9,6 +9,10 @@ import {
   CreatePurchaseOrderInput,
   UpsertRecipeInput,
   ListLedgerQueryParams,
+  CreateInventoryLocationInput,
+  UpdateInventoryLocationInput,
+  CreateStockTransferInput,
+  ListTransfersQueryParams,
 } from '@/types';
 
 export const INVENTORY_QUERY_KEYS = {
@@ -25,6 +29,8 @@ export const INVENTORY_QUERY_KEYS = {
   PURCHASES: (params?: Record<string, unknown>) =>
     ['inventory', 'purchases', params] as const,
   LEDGER: (params?: ListLedgerQueryParams) => ['inventory', 'ledger', params] as const,
+  TRANSFERS: (params?: ListTransfersQueryParams) =>
+    ['inventory', 'transfers', params] as const,
   RECIPES: (menuItemId: string) => ['inventory', 'recipes', menuItemId] as const,
   LOCATIONS: ['inventory', 'locations'] as const,
   SUPPLIERS: ['inventory', 'suppliers'] as const,
@@ -254,6 +260,29 @@ export const useDeleteRecipeMutation = () => {
 };
 
 // =============================================================================
+// Stock Transfers
+// =============================================================================
+
+export const useStockTransfersQuery = (params?: ListTransfersQueryParams) => {
+  return useQuery({
+    queryKey: INVENTORY_QUERY_KEYS.TRANSFERS(params),
+    queryFn: () => InventoryApi.listTransfers(params),
+    staleTime: 1000 * 30,
+  });
+};
+
+export const useCreateStockTransferMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (payload: CreateStockTransferInput) =>
+      InventoryApi.createTransfer(payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['inventory'] });
+    },
+  });
+};
+
+// =============================================================================
 // Locations & Suppliers
 // =============================================================================
 
@@ -262,6 +291,43 @@ export const useInventoryLocationsQuery = () => {
     queryKey: INVENTORY_QUERY_KEYS.LOCATIONS,
     queryFn: () => InventoryApi.listLocations(),
     staleTime: 1000 * 60 * 5,
+  });
+};
+
+export const useCreateInventoryLocationMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (payload: CreateInventoryLocationInput) =>
+      InventoryApi.createLocation(payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['inventory'] });
+    },
+  });
+};
+
+export const useUpdateInventoryLocationMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      id,
+      payload,
+    }: {
+      id: string;
+      payload: UpdateInventoryLocationInput;
+    }) => InventoryApi.updateLocation(id, payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['inventory'] });
+    },
+  });
+};
+
+export const useDeleteInventoryLocationMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => InventoryApi.deleteLocation(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['inventory'] });
+    },
   });
 };
 
