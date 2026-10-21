@@ -32,7 +32,9 @@ export interface RestaurantProfile {
   currency: string;
   timezone: string;
   taxRate?: number | null;
+  taxInclusive?: boolean;
   serviceChargeRate?: number | null;
+  serviceChargeEnabled?: boolean;
   isActive: boolean;
 }
 

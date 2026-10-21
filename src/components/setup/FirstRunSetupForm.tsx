@@ -148,7 +148,9 @@ export const FirstRunSetupForm: React.FC = () => {
       <div className="mb-6">
         <h2 className="text-xl font-semibold text-pos-text tracking-tight">First-run setup</h2>
         <p className="mt-1 text-sm text-pos-text-muted">
-          Create your restaurant profile and the initial owner account. No demo data is created.
+          Create your restaurant profile and the initial owner account. No demo data is
+          created. After sign-in: add a menu category, add products, then complete your first
+          sale via Takeaway. Dine-in requires tables to be configured separately.
         </p>
       </div>
 

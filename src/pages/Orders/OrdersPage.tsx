@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import { Link } from 'react-router-dom';
 import { PosMenuItem, OrderType, OrderRecord, PaymentResponseData } from '@/types';
 import {
   usePosMenuQuery,
@@ -34,6 +35,7 @@ import {
   MapPin,
   LayoutGrid,
   Tag,
+  ListOrdered,
 } from 'lucide-react';
 import { cn } from '@/utils/cn';
 
@@ -65,11 +67,11 @@ export const OrdersPage: React.FC = () => {
     resetAll,
   } = useCartStore();
 
-  // Extract restaurant tax rate & currency from auth user state
+  // Cart tax preview from /auth/me restaurant.taxRate (server order totals remain authoritative)
   const restaurantTaxRate =
-    user && 'restaurant' in user && user.restaurant?.taxRate
+    user && 'restaurant' in user && user.restaurant?.taxRate != null
       ? Number(user.restaurant.taxRate)
-      : 8.875;
+      : 0;
   const currency =
     user && 'restaurant' in user && user.restaurant?.currency
       ? user.restaurant.currency
@@ -346,6 +348,9 @@ export const OrdersPage: React.FC = () => {
         <div className="p-2 border-b border-pos-border bg-pos-surface-subtle/50 shrink-0">
           {orderType === 'DINE_IN' && (
             <div className="space-y-1.5">
+              <p className="text-[10px] text-pos-text-muted leading-snug px-0.5">
+                Dine-in needs configured tables. Prefer Takeaway for your first sale.
+              </p>
               <div className="flex items-center justify-between">
                 <span className="text-[10px] font-semibold uppercase tracking-wider text-pos-text-muted">
                   Table Context
@@ -585,9 +590,36 @@ export const OrdersPage: React.FC = () => {
             </div>
           )}
 
-          {!isMenuLoading && filteredItems.length === 0 && (
+          {!isMenuLoading && filteredItems.length === 0 && allItems.length === 0 && (
+            <div className="py-16 px-4 text-center text-xs text-pos-text-muted flex flex-col items-center gap-3 max-w-md mx-auto">
+              <ListOrdered size={36} className="text-pos-text-muted/40" />
+              <p className="font-bold text-base text-pos-text">No products on the register yet</p>
+              <ol className="text-left text-pos-text-secondary space-y-1.5 list-decimal list-inside leading-relaxed">
+                <li>
+                  Open{' '}
+                  <Link to="/menu" className="text-pos-primary font-semibold hover:underline">
+                    Menu &amp; Pricing
+                  </Link>{' '}
+                  and create a category
+                </li>
+                <li>Add at least one product (active and available)</li>
+                <li>Return here, select Takeaway, then add items and Pay</li>
+              </ol>
+              <p className="text-[11px] text-pos-text-muted">
+                Dine-in requires tables to be configured; use Takeaway for the first sale.
+              </p>
+              <Link
+                to="/menu"
+                className="mt-1 inline-flex items-center justify-center px-3 py-1.5 rounded-md bg-pos-primary text-white text-xs font-semibold shadow-xs hover:opacity-90"
+              >
+                Go to Menu &amp; Pricing
+              </Link>
+            </div>
+          )}
+
+          {!isMenuLoading && filteredItems.length === 0 && allItems.length > 0 && (
             <div className="py-24 text-center text-xs text-pos-text-muted">
-              No menu items found matching "{searchQuery || currentCategoryName}".
+              No menu items found matching &quot;{searchQuery || currentCategoryName}&quot;.
             </div>
           )}
 

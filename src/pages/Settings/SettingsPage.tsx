@@ -166,6 +166,13 @@ export const SettingsPage: React.FC = () => {
         receiptFooter: receiptFooter.trim() || null,
       });
 
+      // Refresh /auth/me so POS cart tax preview picks up the new restaurant.taxRate
+      try {
+        await useAuthStore.getState().fetchMe();
+      } catch {
+        // Settings save already succeeded; cart will refresh on next login/session init
+      }
+
       setSuccessMessage('Restaurant configuration successfully updated!');
       setTimeout(() => setSuccessMessage(null), 4000);
     } catch (err) {

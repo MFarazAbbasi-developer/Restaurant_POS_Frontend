@@ -35,6 +35,15 @@ const envSchema = z.object({
   VITE_RECEIPT_ATTRIBUTION_TEXT: z
     .string()
     .default('Powered by FARMAX POS · Developed by Developer Name'),
+
+  /**
+   * Opt-in Quick Staff presets for local demo-seed testing only.
+   * Defaults off so fresh customer installs never see seeded demo credentials.
+   */
+  VITE_ENABLE_DEMO_LOGIN_PRESETS: z
+    .string()
+    .optional()
+    .transform((val) => val === 'true' || val === '1'),
 });
 
 const parsedEnv = envSchema.safeParse(import.meta.env);
@@ -82,6 +91,7 @@ export const env = {
   receiptAttributionEnabled: parsedEnv.data.VITE_RECEIPT_ATTRIBUTION_ENABLED,
   receiptAttributionShowPhone: parsedEnv.data.VITE_RECEIPT_ATTRIBUTION_SHOW_PHONE,
   receiptAttributionText: parsedEnv.data.VITE_RECEIPT_ATTRIBUTION_TEXT,
+  enableDemoLoginPresets: parsedEnv.data.VITE_ENABLE_DEMO_LOGIN_PRESETS,
   isDev,
   isProd,
 } as const;

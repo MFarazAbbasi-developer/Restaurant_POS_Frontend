@@ -367,19 +367,36 @@ export const MenuPage: React.FC = () => {
                     <p className="font-bold text-base text-pos-text">
                       No Menu Items Found
                     </p>
-                    <p className="text-xs max-w-sm text-pos-text-secondary">
+                    <p className="text-xs max-w-md text-pos-text-secondary leading-relaxed">
                       {searchQuery || selectedCategoryId !== 'ALL'
                         ? 'No items match your active search or category filters.'
-                        : 'Your restaurant catalog is currently empty. Click below to add your first menu item.'}
+                        : categories.length === 0
+                          ? 'Start here: create a category first (Categories tab), then add products. After that, open POS Register, select Takeaway, and complete your first sale. Dine-in needs tables configured separately.'
+                          : 'Add your first product, then sell it from POS Register using Takeaway. Dine-in requires configured tables.'}
                     </p>
-                    <Button
-                      variant="primary"
-                      size="sm"
-                      onClick={() => setItemModal({ open: true, item: null })}
-                      className="font-bold mt-2 shadow-xs"
-                    >
-                      + Add Menu Item
-                    </Button>
+                    {categories.length === 0 &&
+                    !(searchQuery || selectedCategoryId !== 'ALL') ? (
+                      <Button
+                        variant="primary"
+                        size="sm"
+                        onClick={() => {
+                          setActiveTab('CATEGORIES');
+                          setCategoryModal({ open: true, category: null });
+                        }}
+                        className="font-bold mt-2 shadow-xs"
+                      >
+                        + Create First Category
+                      </Button>
+                    ) : (
+                      <Button
+                        variant="primary"
+                        size="sm"
+                        onClick={() => setItemModal({ open: true, item: null })}
+                        className="font-bold mt-2 shadow-xs"
+                      >
+                        + Add Menu Item
+                      </Button>
+                    )}
                   </div>
                 ) : (
                   <div className="overflow-x-auto border border-pos-border rounded-lg bg-pos-surface">
@@ -528,6 +545,10 @@ export const MenuPage: React.FC = () => {
                   <FolderTree size={40} className="text-pos-text-muted/40" />
                   <p className="font-bold text-base text-pos-text">
                     No Categories Defined
+                  </p>
+                  <p className="text-xs max-w-md text-pos-text-secondary leading-relaxed">
+                    Create a category, then add products under Items. Sell your first order from
+                    POS Register using Takeaway. Dine-in requires tables to be configured later.
                   </p>
                   <Button
                     variant="primary"

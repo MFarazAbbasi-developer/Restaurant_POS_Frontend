@@ -10,8 +10,10 @@ import {
   Sparkles,
   ChevronDown,
   ChevronUp,
+  ListOrdered,
 } from 'lucide-react';
 import { useAuthStore } from '@/core/auth/authStore';
+import { env } from '@/config/env';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Card } from '@/components/ui/Card';
@@ -24,6 +26,10 @@ interface PresetStaff {
   defaultPin: string;
 }
 
+/**
+ * Demo-seed Quick Staff shortcuts. Hidden unless VITE_ENABLE_DEMO_LOGIN_PRESETS=true.
+ * Never shown to fresh customer installs by default.
+ */
 const PRESET_STAFF: PresetStaff[] = [
   {
     label: 'Owner Admin',
@@ -74,15 +80,17 @@ export const StaffLoginForm: React.FC = () => {
   const setupUsername =
     (location.state as { username?: string } | null)?.username?.trim() || '';
 
-  const [username, setUsername] = useState(setupUsername || 'owner_admin');
-  const [pin, setPin] = useState(setupComplete ? '' : '1234');
+  const showDemoPresets = env.enableDemoLoginPresets;
+
+  const [username, setUsername] = useState(setupUsername);
+  const [pin, setPin] = useState('');
   const [password, setPassword] = useState('');
   const [isPasswordMode, setIsPasswordMode] = useState(false);
   const [restaurantId, setRestaurantId] = useState('');
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [setupNotice] = useState(
     setupComplete
-      ? 'Setup complete. Sign in with the owner account you just created.'
+      ? 'Setup complete. Sign in with the owner account you just created, then: (1) create a menu category, (2) add products, (3) sell via Takeaway. Dine-in needs tables configured later.'
       : null
   );
 
@@ -186,44 +194,46 @@ export const StaffLoginForm: React.FC = () => {
         </div>
         <h2 className="text-xl font-bold text-pos-text">Terminal Staff Sign-In</h2>
         <p className="text-xs text-pos-text-muted mt-1">
-          Enter your staff credentials or PIN to access this register
+          Enter your staff username and PIN (or password) to access this register
         </p>
       </div>
 
-      {/* Quick Staff Selectors */}
-      <div className="mb-5">
-        <div className="flex items-center justify-between text-xs text-pos-text-secondary mb-2">
-          <span className="font-semibold">Quick Staff Select:</span>
-          <span className="flex items-center gap-1 text-[11px] text-pos-primary font-semibold">
-            <Sparkles size={12} /> Seeded Users
-          </span>
+      {/* Opt-in demo Quick Staff — only when VITE_ENABLE_DEMO_LOGIN_PRESETS is set */}
+      {showDemoPresets && (
+        <div className="mb-5">
+          <div className="flex items-center justify-between text-xs text-pos-text-secondary mb-2">
+            <span className="font-semibold">Quick Staff Select:</span>
+            <span className="flex items-center gap-1 text-[11px] text-pos-primary font-semibold">
+              <Sparkles size={12} /> Demo presets
+            </span>
+          </div>
+          <div className="grid grid-cols-3 gap-2">
+            {PRESET_STAFF.map(staff => (
+              <button
+                key={staff.username}
+                type="button"
+                onClick={() => handleSelectPreset(staff)}
+                className={cn(
+                  'p-2 rounded-lg border text-left transition-colors text-xs select-none',
+                  username === staff.username
+                    ? 'border-pos-primary bg-pos-primary-soft text-pos-primary font-semibold ring-1 ring-pos-primary'
+                    : 'border-pos-border bg-pos-surface text-pos-text-secondary hover:border-pos-border-strong hover:text-pos-text'
+                )}
+              >
+                <p className="truncate font-semibold text-pos-text">{staff.label}</p>
+                <p className="text-[11px] text-pos-text-muted">
+                  {staff.role} • PIN: {staff.defaultPin}
+                </p>
+              </button>
+            ))}
+          </div>
         </div>
-        <div className="grid grid-cols-3 gap-2">
-          {PRESET_STAFF.map(staff => (
-            <button
-              key={staff.username}
-              type="button"
-              onClick={() => handleSelectPreset(staff)}
-              className={cn(
-                'p-2 rounded-lg border text-left transition-colors text-xs select-none',
-                username === staff.username
-                  ? 'border-pos-primary bg-pos-primary-soft text-pos-primary font-semibold ring-1 ring-pos-primary'
-                  : 'border-pos-border bg-pos-surface text-pos-text-secondary hover:border-pos-border-strong hover:text-pos-text'
-              )}
-            >
-              <p className="truncate font-semibold text-pos-text">{staff.label}</p>
-              <p className="text-[11px] text-pos-text-muted">
-                {staff.role} • PIN: {staff.defaultPin}
-              </p>
-            </button>
-          ))}
-        </div>
-      </div>
+      )}
 
       {setupNotice && (
         <div className="mb-5 p-3 rounded-lg bg-pos-surface-subtle border border-pos-border text-pos-text-secondary flex items-start gap-2.5 text-xs">
-          <Sparkles size={16} className="shrink-0 mt-0.5 text-pos-primary" />
-          <p className="font-medium">{setupNotice}</p>
+          <ListOrdered size={16} className="shrink-0 mt-0.5 text-pos-primary" />
+          <p className="font-medium leading-relaxed">{setupNotice}</p>
         </div>
       )}
 
@@ -254,7 +264,7 @@ export const StaffLoginForm: React.FC = () => {
               autoComplete="off"
               value={username}
               onChange={e => setUsername(e.target.value)}
-              placeholder="e.g. owner_admin"
+              placeholder="Enter your username"
               className="w-full pl-9 pr-3 py-2 rounded-lg bg-pos-surface border border-pos-border text-pos-text placeholder-pos-text-muted text-sm focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary font-medium transition-colors"
             />
           </div>
