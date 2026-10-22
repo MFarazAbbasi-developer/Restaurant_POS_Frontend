@@ -421,7 +421,7 @@ export const SettingsPage: React.FC = () => {
                           required
                           value={name}
                           onChange={e => setName(e.target.value)}
-                          placeholder="e.g. Faraz Fine Dining"
+                          placeholder="e.g. Flagship Fine Dining"
                           className="w-full px-3 py-2 rounded-md bg-pos-surface border border-pos-border text-pos-text font-semibold text-sm focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary"
                         />
                       </div>
@@ -434,7 +434,7 @@ export const SettingsPage: React.FC = () => {
                           type="text"
                           value={legalName}
                           onChange={e => setLegalName(e.target.value)}
-                          placeholder="e.g. Faraz Foods & Hospitality (Pvt) Ltd"
+                          placeholder="e.g. Flagship Foods & Hospitality (Pvt) Ltd"
                           className="w-full px-3 py-2 rounded-md bg-pos-surface border border-pos-border text-pos-text font-normal focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary"
                         />
                       </div>
@@ -763,7 +763,7 @@ export const SettingsPage: React.FC = () => {
                         rows={3}
                         value={receiptHeader}
                         onChange={e => setReceiptHeader(e.target.value)}
-                        placeholder="e.g. Welcome to FARMAX POS! Specializing in Traditional & Continental Delights."
+                        placeholder="e.g. Welcome! Specializing in Traditional & Continental Delights."
                         className="w-full p-2.5 rounded-md bg-pos-surface border border-pos-border text-pos-text text-xs focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary resize-none font-normal"
                       />
                     </div>
@@ -776,7 +776,7 @@ export const SettingsPage: React.FC = () => {
                         rows={3}
                         value={receiptFooter}
                         onChange={e => setReceiptFooter(e.target.value)}
-                        placeholder="e.g. Thank you for dining with us! Free WiFi: FarazGuest / Pass: welcome123"
+                        placeholder="e.g. Thank you for dining with us! Free WiFi: GuestWiFi / Pass: welcome123"
                         className="w-full p-2.5 rounded-md bg-pos-surface border border-pos-border text-pos-text text-xs focus:outline-none focus:ring-2 focus:ring-pos-primary/20 focus:border-pos-primary resize-none font-normal"
                       />
                     </div>
@@ -923,7 +923,7 @@ export const SettingsPage: React.FC = () => {
                         {/* Store Header */}
                         <div className="text-center space-y-0.5 border-b border-dashed border-pos-border-strong pb-2">
                           <p className="font-bold text-sm uppercase">
-                            {name || receiptPreview.restaurant?.name || 'Faraz Bistro'}
+                            {name || receiptPreview.restaurant?.name || 'Restaurant'}
                           </p>
                           {(address || receiptPreview.restaurant?.address) && (
                             <p className="text-[10px] text-pos-text-secondary">

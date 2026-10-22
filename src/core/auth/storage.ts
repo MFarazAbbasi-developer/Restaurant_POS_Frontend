@@ -16,9 +16,9 @@ export interface IAuthStorage {
 }
 
 const STORAGE_KEYS = {
-  TOKENS: 'faraz_pos_auth_tokens',
-  USER: 'faraz_pos_auth_user',
-  TERMINAL: 'faraz_pos_terminal_session',
+  TOKENS: 'farmax_pos_auth_tokens',
+  USER: 'farmax_pos_auth_user',
+  TERMINAL: 'farmax_pos_terminal_session',
 } as const;
 
 /**

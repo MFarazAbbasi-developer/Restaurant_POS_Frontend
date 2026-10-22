@@ -127,7 +127,7 @@ export const POSLayout: React.FC = () => {
   const restaurantName =
     user && 'restaurant' in user && user.restaurant?.name
       ? user.restaurant.name
-      : 'Faraz Flagship Bistro';
+      : 'Restaurant';
 
   return (
     <div className="h-screen w-screen flex flex-col bg-pos-bg text-pos-text overflow-hidden select-none">

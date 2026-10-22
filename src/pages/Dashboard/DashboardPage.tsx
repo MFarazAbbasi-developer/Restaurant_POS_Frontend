@@ -511,7 +511,7 @@ export const DashboardPage: React.FC = () => {
               <span>
                 {user && 'restaurant' in user && user.restaurant?.name
                   ? user.restaurant.name
-                  : 'Faraz Bistro'}
+                  : 'Restaurant'}
               </span>
             </p>
           </div>
