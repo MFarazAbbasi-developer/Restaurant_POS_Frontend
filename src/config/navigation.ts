@@ -17,6 +17,7 @@ import {
   BarChart3,
   UserCog,
   Settings,
+  Network,
   type LucideIcon,
 } from 'lucide-react';
 
@@ -195,6 +196,14 @@ export const NAVIGATION_GROUPS: NavGroupConfig[] = [
         icon: Settings,
         description: 'Store parameters, tax rules, receipts, and POS hardware',
         permissionKey: 'settings.view',
+      },
+      {
+        id: 'lan-terminals',
+        label: 'LAN Terminals',
+        path: '/lan-terminals',
+        icon: Network,
+        description: 'Pair additional terminals, TLS pins, and local roster',
+        permissionKey: 'terminals.pair',
       },
     ],
   },

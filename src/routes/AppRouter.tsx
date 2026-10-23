@@ -28,6 +28,7 @@ import { LoyaltyPage } from '@/pages/Loyalty/LoyaltyPage';
 import { ReportsPage } from '@/pages/Reports/ReportsPage';
 import { StaffPage } from '@/pages/Staff/StaffPage';
 import { SettingsPage } from '@/pages/Settings/SettingsPage';
+import { LanTerminalsPage } from '@/pages/LanTerminals/LanTerminalsPage';
 
 export const AppRouter: React.FC = () => {
   return (
@@ -220,6 +221,17 @@ export const AppRouter: React.FC = () => {
                 moduleName="Restaurant Settings"
               >
                 <SettingsPage />
+              </RequirePermission>
+            }
+          />
+          <Route
+            path="lan-terminals"
+            element={
+              <RequirePermission
+                permissionKey="terminals.pair"
+                moduleName="LAN Terminals"
+              >
+                <LanTerminalsPage />
               </RequirePermission>
             }
           />
